@@ -1,0 +1,39 @@
+# See: https://taskfile.dev/docs/getting-started
+version: '3'
+
+tasks:
+  generate:
+    cmd: go generate ./...
+
+  build:
+    deps: [generate]
+    cmd: go build .
+
+  test:
+    cmd: go test -v -race -cover ./...
+
+  lint:
+    cmd: golangci-lint run --allow-parallel-runners --verbose
+
+  lint-fix:
+    cmd: golangci-lint run --fix --allow-parallel-runners --verbose
+
+  fmt:
+    cmd: golangci-lint fmt -v
+
+  run:
+    cmd: go run . {{.CLI_ARGS}}
+
+  mod.update:
+    cmd: go get -t -u ./...
+
+  mod.tidy:
+    cmd: go mod tidy -v
+
+  update-dependencies:
+    deps:
+      - mod.update
+      - mod.tidy
+
+  readme:
+    cmd: glow -t README.md

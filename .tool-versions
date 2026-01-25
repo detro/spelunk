@@ -1,0 +1,4 @@
+task 3.45.4
+golang 1.25.3
+golangci-lint 2.5.0
+glow 2.1.1
