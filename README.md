@@ -39,7 +39,7 @@ The [JSONPath] modifier can be used with secrets that are in JSON format.
 After parsing, the modifier digs further at the provided path, and returns
 the value found there.
 
-> [!WARN]
+> [!WARNING]
 > The given [JSONPath] is assumed to be referring to a single element.
 > Otherwise, returns the first matching.
 
