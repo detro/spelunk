@@ -39,9 +39,14 @@ func NewSecretCoord(secretCoordURI string) (*SecretCoord, error) {
 		return nil, fmt.Errorf("%w (%q): %w", ErrSecretCoordFailedParsing, secretCoordURI, err)
 	}
 
+	loc := fmt.Sprintf("%s%s", u.Host, u.Path)
+	if u.User != nil {
+		loc = fmt.Sprintf("%s@%s", u.User.String(), loc)
+	}
+
 	coord := &SecretCoord{
 		Type:      u.Scheme,
-		Location:  fmt.Sprintf("%s%s", u.Host, u.Path),
+		Location:  loc,
 		Modifiers: make(map[string]string),
 	}
 	if len(coord.Type) == 0 {

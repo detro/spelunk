@@ -39,6 +39,20 @@ func TestNewSecretCoord(t *testing.T) {
 			wantMods: map[string]string{},
 		},
 		{
+			name:     "valid coordinate with userinfo in the URI",
+			input:    "env://JUVE@MERDA",
+			wantType: "env",
+			wantLoc:  "JUVE@MERDA",
+			wantMods: map[string]string{},
+		},
+		{
+			name:     "valid coordinate with userinfo in the URI",
+			input:    "env://JUVE:MERDA@TORINO:1897",
+			wantType: "env",
+			wantLoc:  "JUVE:MERDA@TORINO:1897",
+			wantMods: map[string]string{},
+		},
+		{
 			name:     "valid coordinate with encoded characters in path",
 			input:    "file:///etc/secrets/my%20secret.json",
 			wantType: "file",
