@@ -6,6 +6,7 @@
 *.dll
 *.so
 *.dylib
+bin/
 
 # Test binary, built with `go test -c`
 *.test
@@ -30,4 +31,3 @@ go.work.sum
 
 # File-based project format
 *.iws
-

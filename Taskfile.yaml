@@ -1,6 +1,9 @@
 # See: https://taskfile.dev/docs/getting-started
 version: '3'
 
+env:
+  GOBIN: '{{.TASKFILE_DIR}}/bin'
+
 tasks:
   generate:
     cmd: go generate ./...
@@ -37,3 +40,10 @@ tasks:
 
   readme:
     cmd: glow -t README.md
+
+  doc.serve:
+    cmds:
+      - go install golang.org/x/pkgsite/cmd/pkgsite@latest
+      - echo "Opening http://localhost:8080/github.com/detro/spelunk"
+      - sleep 2 && open http://localhost:8080/github.com/detro/spelunk &
+      - bin/pkgsite
