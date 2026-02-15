@@ -1,6 +1,7 @@
 package spelunk
 
 import (
+	"github.com/detro/spelunk/builtin/source/base64"
 	"github.com/detro/spelunk/builtin/source/env"
 	"github.com/detro/spelunk/builtin/source/file"
 	"github.com/detro/spelunk/builtin/source/plain"
@@ -26,6 +27,7 @@ func defaultOptions() []SpelunkerOption {
 		WithSource(&plain.SecretSourcePlain{}),
 		WithSource(&file.SecretSourceFile{}),
 		WithSource(&env.SecretSourceEnv{}),
+		WithSource(&base64.SecretSourceBase64{}),
 	}
 }
 

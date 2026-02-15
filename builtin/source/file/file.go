@@ -33,7 +33,7 @@ func (s *SecretSourceFile) Type() string {
 
 func (s *SecretSourceFile) DigUp(_ context.Context, coord types.SecretCoord) (string, error) {
 	if _, err := os.Stat(coord.Location); os.IsNotExist(err) {
-		return "", fmt.Errorf("%w: %q", ErrSecretSourceFileDoesNotExist, coord.Location)
+		return "", fmt.Errorf("%w (%q)", ErrSecretSourceFileDoesNotExist, coord.Location)
 	}
 
 	f, err := os.Open(coord.Location)

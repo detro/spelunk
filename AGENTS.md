@@ -43,6 +43,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
     - **`source/plain/`**: `plain://` source implementation.
     - **`source/file/`**: `file://` source implementation.
     - **`source/env/`**: `env://` source implementation.
+    - **`source/base64/`**: `base64://` source implementation.
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
 - **`pkg/`**: Public library code.
