@@ -39,11 +39,14 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 - **`types/`**: Core types and interfaces.
     - **`coordinates.go`**: `SecretCoord` type and parsing logic.
     - **`source.go`**: `SecretSource` interface definition.
+    - **`errors.go`**: Common error definitions (`ErrSecretNotFound`, etc.).
 - **`builtin/`**: Built-in secret source implementations.
     - **`source/plain/`**: `plain://` source implementation.
     - **`source/file/`**: `file://` source implementation.
     - **`source/env/`**: `env://` source implementation.
     - **`source/base64/`**: `base64://` source implementation.
+- **`plugin/`**: External plugins (opt-in).
+    - **`kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
 - **`pkg/`**: Public library code.
@@ -54,9 +57,10 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 
 - **Framework**: Use [testify](https://github.com/stretchr/testify) (`require`, `assert`) for all tests.
 - **Scope**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
+- **Integration Tests**: Use [Testcontainers for Go](https://golang.testcontainers.org/) for integration tests (e.g., Kubernetes). Use `testcontainers.CleanupContainer` for resource management.
 - **Execution**: Run tests with `task test`.
 - **Linting**: Ensure code passes `task lint` before finishing.
-- **Test Data**: Use `testdata/` directories for file-based tests (e.g., `builtin/source/file/testdata/`).
+- **Test Data**: Use `testdata/` directories for file-based tests.
 
 ## 📝 Conventions & Style
 
