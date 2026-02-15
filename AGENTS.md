@@ -15,6 +15,7 @@ The project uses the following tools for development and maintenance:
 - **GolangCI-Lint**: Linter
 - **Glow**: Markdown renderer (for README)
 - **ASDF**: Version manager (see `.tool-versions`)
+- **Pkgsite**: For local documentation preview
 
 ## ⚡️ Common Commands
 
@@ -30,35 +31,44 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task run -- <args>` | Run the project (passes args to `go run .`) |
 | `task update-dependencies` | Update and tidy Go modules |
 | `task readme` | Render README.md in terminal |
+| `task docs` | Run local godoc server (`pkgsite`) and open in browser |
 
 ## 📂 Project Structure
 
 - **`spelunker.go`**: Core logic for the `Spelunker` struct and `DigUp` method.
-- **`coordinates.go`**: `SecretCoord` type and parsing logic.
-- **`source.go`**: `SecretSource` interface definition.
+- **`types/`**: Core types and interfaces.
+    - **`coordinates.go`**: `SecretCoord` type and parsing logic.
+    - **`source.go`**: `SecretSource` interface definition.
+- **`builtin/`**: Built-in secret source implementations.
+    - **`source/plain/`**: `plain://` source implementation.
+    - **`source/file/`**: `file://` source implementation.
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
-- **`internal/`**: Internal implementation details.
 - **`pkg/`**: Public library code.
 - **`Taskfile.yaml`**: Task definitions.
 - **`.tool-versions`**: ASDF tool versions.
 
 ## 🧪 Testing & Quality
 
-- **Tests**: Use `spelunk_test` package for black-box testing.
+- **Tests**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
 - Run tests with `task test`.
 - Ensure code passes `task lint` before finishing.
+- **Test Data**: Use `testdata/` directories for file-based tests (e.g., `builtin/source/file/testdata/`).
 
 ## 📝 Conventions & Style
 
 - **Naming**: Follow standard Go conventions (CamelCase, short variable names where appropriate).
 - **Error Handling**: Wrap errors with context using `fmt.Errorf("...: %w", err)`.
 - **Imports**: Group standard library imports separately from third-party imports.
-- **Interfaces**: Define interfaces where they are used (consumer-side), but `SecretSource` is defined in `source.go` for clarity.
+- **Interfaces**: Define interfaces where they are used (consumer-side), but `SecretSource` is defined in `types/source.go` for clarity.
+- **Type Safety**: Ensure types implement expected interfaces with compile-time checks (e.g., `var _ types.SecretSource = (*SecretSourceFile)(nil)`).
 
 ## ⚠️ Gotchas
 
 - **Whitespace Trimming**: By default, `Spelunker` trims whitespace from retrieved secrets. This can be disabled via `WithoutTrimValue()` option.
+- **SecretCoord Parsing**: 
+    - `SecretCoord.Location` includes both Authority (userinfo/host) and Path.
+    - If a URI contains userinfo (e.g., `plain://user:pass@host`), it is correctly preserved in `Location`.
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
-- **Modifiers**: Support for URI modifiers (e.g., `?jsonpath=...`) is planned but implementation is currently partial (TODO in `DigUp`).
+- **Modifiers**: Support for URI modifiers (e.g., `?jsonpath=...`) is planned but implementation is currently partial.
 - **Dependencies**: Ensure you have the correct Go version (1.26) as specified in `go.mod`.
