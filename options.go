@@ -16,6 +16,7 @@ func (o *options) apply(opts ...SpelunkerOption) {
 func defaultOptions() []SpelunkerOption {
 	return []SpelunkerOption{
 		WithTrimValue(),
+		WithSource(&SecretSourcePlain{}),
 	}
 }
 
