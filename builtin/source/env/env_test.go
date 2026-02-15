@@ -22,9 +22,9 @@ func TestSecretSourceEnv_DigUp(t *testing.T) {
 	require.NoError(t, os.Setenv("TEST_EMPTY_KEY", ""))
 	require.NoError(t, os.Setenv("TEST_SECRET_KEY_WITH_WHITESPACES", "\nsecret\tword\r"))
 	t.Cleanup(func() {
-		os.Unsetenv("TEST_SECRET_KEY")
-		os.Unsetenv("TEST_EMPTY_KEY")
-		os.Unsetenv("TEST_SECRET_KEY_WITH_WHITESPACES")
+		_ = os.Unsetenv("TEST_SECRET_KEY")
+		_ = os.Unsetenv("TEST_EMPTY_KEY")
+		_ = os.Unsetenv("TEST_SECRET_KEY_WITH_WHITESPACES")
 	})
 
 	tests := []struct {
@@ -51,7 +51,7 @@ func TestSecretSourceEnv_DigUp(t *testing.T) {
 		{
 			name:     "missing variable",
 			coordStr: "env://NON_EXISTENT_VAR",
-			errMatch: env.ErrSecretSourceEnvDoesNotExist,
+			errMatch: types.ErrSecretNotFound,
 		},
 	}
 

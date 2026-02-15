@@ -10,9 +10,8 @@ import (
 )
 
 var (
-	ErrSecretSourceFileDoesNotExist = fmt.Errorf("secret file does not exist")
-	ErrSecretSourceFileFailedOpen   = fmt.Errorf("failed to open secret file")
-	ErrSecretSourceFileFailedRead   = fmt.Errorf("failed to read secret file")
+	ErrSecretSourceFileFailedOpen = fmt.Errorf("failed to open secret file")
+	ErrSecretSourceFileFailedRead = fmt.Errorf("failed to read secret file")
 )
 
 // SecretSourceFile digs up secrets from local files.
@@ -33,14 +32,14 @@ func (s *SecretSourceFile) Type() string {
 
 func (s *SecretSourceFile) DigUp(_ context.Context, coord types.SecretCoord) (string, error) {
 	if _, err := os.Stat(coord.Location); os.IsNotExist(err) {
-		return "", fmt.Errorf("%w (%q)", ErrSecretSourceFileDoesNotExist, coord.Location)
+		return "", fmt.Errorf("%w: file %q does not exist", types.ErrSecretNotFound, coord.Location)
 	}
 
 	f, err := os.Open(coord.Location)
 	if err != nil {
 		return "", fmt.Errorf("%w (%q): %w", ErrSecretSourceFileFailedOpen, coord.Location, err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	content, err := io.ReadAll(f)
 	if err != nil {

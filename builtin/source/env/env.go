@@ -8,10 +8,6 @@ import (
 	"github.com/detro/spelunk/types"
 )
 
-var (
-	ErrSecretSourceEnvDoesNotExist = fmt.Errorf("environment variable does not exist")
-)
-
 // SecretSourceEnv digs up secrets from environment variables.
 // The URI scheme for this source is "env".
 //
@@ -29,7 +25,7 @@ func (s *SecretSourceEnv) Type() string {
 func (s *SecretSourceEnv) DigUp(_ context.Context, coord types.SecretCoord) (string, error) {
 	val, exists := os.LookupEnv(coord.Location)
 	if !exists {
-		return "", fmt.Errorf("%w (%q)", ErrSecretSourceEnvDoesNotExist, coord.Location)
+		return "", fmt.Errorf("%w: environment variable %q does not exist", types.ErrSecretNotFound, coord.Location)
 	}
 
 	return val, nil

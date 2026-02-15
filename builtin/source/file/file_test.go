@@ -24,8 +24,8 @@ func TestSecretSourceFile_DigUp(t *testing.T) {
 	require.NoError(t, err)
 
 	nonReadable, _ := os.CreateTemp("", "non-readable")
-	defer os.Remove(nonReadable.Name())
-	os.Chmod(nonReadable.Name(), 0200)
+	defer func() { _ = os.Remove(nonReadable.Name()) }()
+	_ = os.Chmod(nonReadable.Name(), 0200)
 
 	tests := []struct {
 		name     string
@@ -51,7 +51,7 @@ func TestSecretSourceFile_DigUp(t *testing.T) {
 		{
 			name:     "non-existent file",
 			coordStr: "file:///path/to/non/existent/file",
-			errMatch: file.ErrSecretSourceFileDoesNotExist,
+			errMatch: types.ErrSecretNotFound,
 		},
 		{
 			name:     "non-readable file",
