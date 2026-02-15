@@ -7,11 +7,13 @@ using a unified URI-based coordinate system (e.g.,  `k8s://ns/secret/key`).
 It simplifies accessing secrets by abstracting a consistent API for "digging up" configuration
 values in cloud-native tools and apps.
 
-Its primary application (but... you do you) is **command line tools**. Users point at a secret from any _source_:
-your tool will adapt based on the `/plugin`s installed.
+Its primary application is **command line tools**, but you do you!
+Users point at a secret from any _source_: your tool/service/software
+will adapt based on the `/plugin`s enabled via the `spelunk.SpelunkerOption`s
+provided.
 
-With a single library, the source of secrets is flexible and adapts to the
-environment and the situation.
+**With a single library, the source of secrets is flexible and adapts to the
+environment, your situation and your needs.**
 
 It (aims to) support(s) the following sources of secret:
 
