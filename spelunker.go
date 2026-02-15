@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"strings"
+
+	"github.com/detro/spelunk/types"
 )
 
 var (
@@ -21,7 +23,7 @@ type Spelunker struct {
 func NewSpelunker(opts ...SpelunkerOption) *Spelunker {
 	s := &Spelunker{
 		opts: options{
-			sources: make(map[string]SecretSource),
+			sources: make(map[string]types.SecretSource),
 		},
 	}
 
@@ -32,7 +34,7 @@ func NewSpelunker(opts ...SpelunkerOption) *Spelunker {
 }
 
 // DigUp digs up a secret using the given *SecretCoord.
-func (s *Spelunker) DigUp(ctx context.Context, coord *SecretCoord) (string, error) {
+func (s *Spelunker) DigUp(ctx context.Context, coord *types.SecretCoord) (string, error) {
 	source, found := s.opts.sources[coord.Type]
 	if !found {
 		return "", fmt.Errorf("%w: %q", ErrUnsupportedSecretSourceType, coord.Type)

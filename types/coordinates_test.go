@@ -1,11 +1,11 @@
-package spelunk_test
+package types_test
 
 import (
 	"encoding/json"
 	"errors"
 	"testing"
 
-	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/types"
 )
 
 func TestNewSecretCoord(t *testing.T) {
@@ -83,28 +83,28 @@ func TestNewSecretCoord(t *testing.T) {
 		{
 			name:     "invalid empty string",
 			input:    "",
-			errMatch: spelunk.ErrSecretCoordHaveNoType,
+			errMatch: types.ErrSecretCoordHaveNoType,
 		},
 		{
 			name:     "invalid no scheme",
 			input:    "just/a/path",
-			errMatch: spelunk.ErrSecretCoordHaveNoType,
+			errMatch: types.ErrSecretCoordHaveNoType,
 		},
 		{
 			name:     "invalid no location",
 			input:    "scheme://",
-			errMatch: spelunk.ErrSecretCoordHaveNoLocation,
+			errMatch: types.ErrSecretCoordHaveNoLocation,
 		},
 		{
 			name:     "invalid modifier with percent causing unescape error",
 			input:    "scheme://loc?key=100%25", // decodes to "100%", then fails 2nd unescape
-			errMatch: spelunk.ErrSecretCoordFailedParsingModifiers,
+			errMatch: types.ErrSecretCoordFailedParsingModifiers,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := spelunk.NewSecretCoord(tt.input)
+			got, err := types.NewSecretCoord(tt.input)
 			if (err != nil) != (tt.errMatch != nil) {
 				t.Errorf("NewSecretCoord() error = %v, wantErr %v", err, tt.errMatch != nil)
 				return
@@ -135,7 +135,7 @@ func TestNewSecretCoord(t *testing.T) {
 
 func TestNewSecretCoord_FromJson(t *testing.T) {
 	type Config struct {
-		Secret spelunk.SecretCoord `json:"secret"`
+		Secret types.SecretCoord `json:"secret"`
 	}
 
 	tests := []struct {

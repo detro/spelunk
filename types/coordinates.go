@@ -1,4 +1,4 @@
-package spelunk
+package types
 
 import (
 	"encoding"

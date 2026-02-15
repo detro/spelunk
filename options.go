@@ -1,10 +1,15 @@
 package spelunk
 
+import (
+	"github.com/detro/spelunk/builtin/source/plain"
+	"github.com/detro/spelunk/types"
+)
+
 // options are the internal configuration used by an instance of Spelunker.
 // They are set by client code using implementations of SpelunkerOption.
 type options struct {
 	trimValue bool
-	sources   map[string]SecretSource
+	sources   map[string]types.SecretSource
 }
 
 func (o *options) apply(opts ...SpelunkerOption) {
@@ -16,7 +21,7 @@ func (o *options) apply(opts ...SpelunkerOption) {
 func defaultOptions() []SpelunkerOption {
 	return []SpelunkerOption{
 		WithTrimValue(),
-		WithSource(&SecretSourcePlain{}),
+		WithSource(&plain.SecretSourcePlain{}),
 	}
 }
 
@@ -42,7 +47,7 @@ func WithoutTrimValue() SpelunkerOption {
 
 // WithSource adds the given SecretSource to the set of sources
 // a Spelunker can use to dig-up secrets.
-func WithSource(source SecretSource) SpelunkerOption {
+func WithSource(source types.SecretSource) SpelunkerOption {
 	return func(o *options) {
 		o.sources[source.Type()] = source
 	}

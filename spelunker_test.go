@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/types"
 )
 
 // mockSource implements spelunk.SecretSource for testing
@@ -20,7 +21,7 @@ func (m *mockSource) Type() string {
 	return m.typ
 }
 
-func (m *mockSource) DigUp(_ context.Context, _ spelunk.SecretCoord) (string, error) {
+func (m *mockSource) DigUp(_ context.Context, _ types.SecretCoord) (string, error) {
 	return m.val, m.err
 }
 
@@ -74,11 +75,11 @@ func TestSpelunker_DigUp(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "unsupported source type",
-			opts:     []spelunk.SpelunkerOption{}, // No sources
-			coordStr: "unknown://loc",
-			want:     "",
-			wantErr:  true,
+			name:      "unsupported source type",
+			opts:      []spelunk.SpelunkerOption{}, // No sources
+			coordStr:  "unknown://loc",
+			want:      "",
+			wantErr:   true,
 			errTarget: spelunk.ErrUnsupportedSecretSourceType,
 		},
 		{
@@ -86,9 +87,9 @@ func TestSpelunker_DigUp(t *testing.T) {
 			opts: []spelunk.SpelunkerOption{
 				spelunk.WithSource(&mockSource{typ: "fail", err: errors.New("boom")}),
 			},
-			coordStr: "fail://loc",
-			want:     "",
-			wantErr:  true,
+			coordStr:  "fail://loc",
+			want:      "",
+			wantErr:   true,
 			errTarget: spelunk.ErrFailedToDigUpSecret,
 		},
 	}
@@ -96,7 +97,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Helper to create valid coordinates for testing
-			coord, err := spelunk.NewSecretCoord(tt.coordStr)
+			coord, err := types.NewSecretCoord(tt.coordStr)
 			if err != nil {
 				t.Fatalf("failed to create coord from %q: %v", tt.coordStr, err)
 			}
@@ -115,7 +116,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 				t.Errorf("Spelunker.DigUp() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			
+
 			if tt.wantErr {
 				if tt.errTarget != nil && !errors.Is(err, tt.errTarget) {
 					t.Errorf("Spelunker.DigUp() error = %v, want target %v", err, tt.errTarget)
