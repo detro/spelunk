@@ -1,4 +1,4 @@
-### See: https://github.com/github/gitignore/blob/main/Go.gitignore
+### Golang - See: https://github.com/github/gitignore/blob/main/Go.gitignore
 
 # Binaries for programs and plugins
 *.exe
@@ -31,3 +31,31 @@ go.work.sum
 
 # File-based project format
 *.iws
+
+### macOS - See: https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
+
+# General
+.DS_Store
+__MACOSX/
+.AppleDouble
+.LSOverride
+Icon[]
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
