@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/detro/spelunk/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewSecretCoord(t *testing.T) {
@@ -178,23 +179,15 @@ func TestNewSecretCoord_FromJson(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var cfg Config
 			err := json.Unmarshal([]byte(tt.jsonInput), &cfg)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("json.Unmarshal() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantErr {
+				require.Error(t, err)
 				return
 			}
-			if !tt.wantErr {
-				if cfg.Secret.Type != tt.wantType {
-					t.Errorf("Secret.Type = %v, want %v", cfg.Secret.Type, tt.wantType)
-				}
-				if cfg.Secret.Location != tt.wantLoc {
-					t.Errorf("Secret.Location = %v, want %v", cfg.Secret.Location, tt.wantLoc)
-				}
-				for k, v := range tt.wantMods {
-					if gotVal, ok := cfg.Secret.Modifiers[k]; !ok || gotVal != v {
-						t.Errorf("Secret.Modifiers[%q] = %v, want %v", k, gotVal, v)
-					}
-				}
-			}
+			require.NoError(t, err)
+
+			require.Equal(t, tt.wantType, cfg.Secret.Type)
+			require.Equal(t, tt.wantLoc, cfg.Secret.Location)
+			require.Equal(t, tt.wantMods, cfg.Secret.Modifiers)
 		})
 	}
 }

@@ -3,11 +3,11 @@ package spelunk_test
 import (
 	"context"
 	"errors"
-	"strings"
 	"testing"
 
 	"github.com/detro/spelunk"
 	"github.com/detro/spelunk/types"
+	"github.com/stretchr/testify/require"
 )
 
 // mockSource implements spelunk.SecretSource for testing
@@ -29,12 +29,11 @@ func TestSpelunker_DigUp(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name      string
-		opts      []spelunk.SpelunkerOption
-		coordStr  string
-		want      string
-		wantErr   bool
-		errTarget error
+		name     string
+		opts     []spelunk.SpelunkerOption
+		coordStr string
+		want     string
+		errMatch error
 	}{
 		{
 			name: "success with single source",
@@ -43,7 +42,6 @@ func TestSpelunker_DigUp(t *testing.T) {
 			},
 			coordStr: "test://loc",
 			want:     "secret-value",
-			wantErr:  false,
 		},
 		{
 			name: "success with multiple sources",
@@ -53,7 +51,6 @@ func TestSpelunker_DigUp(t *testing.T) {
 			},
 			coordStr: "src2://loc",
 			want:     "val2",
-			wantErr:  false,
 		},
 		{
 			name: "trim value by default",
@@ -62,7 +59,6 @@ func TestSpelunker_DigUp(t *testing.T) {
 			},
 			coordStr: "test://loc",
 			want:     "secret",
-			wantErr:  false,
 		},
 		{
 			name: "disable trim value",
@@ -72,64 +68,43 @@ func TestSpelunker_DigUp(t *testing.T) {
 			},
 			coordStr: "test://loc",
 			want:     "  secret  \n",
-			wantErr:  false,
 		},
 		{
-			name:      "unsupported source type",
-			opts:      []spelunk.SpelunkerOption{}, // No sources
-			coordStr:  "unknown://loc",
-			want:      "",
-			wantErr:   true,
-			errTarget: spelunk.ErrUnsupportedSecretSourceType,
+			name:     "unsupported source type",
+			opts:     []spelunk.SpelunkerOption{},
+			coordStr: "unknown://loc",
+			want:     "",
+			errMatch: spelunk.ErrUnsupportedSecretSourceType,
 		},
 		{
 			name: "source returns error",
 			opts: []spelunk.SpelunkerOption{
 				spelunk.WithSource(&mockSource{typ: "fail", err: errors.New("boom")}),
 			},
-			coordStr:  "fail://loc",
-			want:      "",
-			wantErr:   true,
-			errTarget: spelunk.ErrFailedToDigUpSecret,
+			coordStr: "fail://loc",
+			want:     "",
+			errMatch: spelunk.ErrFailedToDigUpSecret,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Helper to create valid coordinates for testing
 			coord, err := types.NewSecretCoord(tt.coordStr)
-			if err != nil {
-				t.Fatalf("failed to create coord from %q: %v", tt.coordStr, err)
-			}
+			require.NoError(t, err)
 
-			// Capture panic if WithSource fails due to uninitialized map
-			defer func() {
-				if r := recover(); r != nil {
-					t.Fatalf("panic during test: %v", r)
+			spelunker := spelunk.NewSpelunker(tt.opts...)
+			got, err := spelunker.DigUp(ctx, coord)
+
+			if tt.errMatch != nil {
+				require.ErrorIs(t, err, tt.errMatch)
+				if tt.name == "source returns error" {
+					require.ErrorContains(t, err, "boom")
 				}
-			}()
-
-			s := spelunk.NewSpelunker(tt.opts...)
-			got, err := s.DigUp(ctx, coord)
-
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Spelunker.DigUp() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+			require.NoError(t, err)
 
-			if tt.wantErr {
-				if tt.errTarget != nil && !errors.Is(err, tt.errTarget) {
-					t.Errorf("Spelunker.DigUp() error = %v, want target %v", err, tt.errTarget)
-				}
-				// Also check if error string contains the wrapped error
-				if tt.name == "source returns error" && !strings.Contains(err.Error(), "boom") {
-					t.Errorf("Spelunker.DigUp() error %v does not contain 'boom'", err)
-				}
-			} else {
-				if got != tt.want {
-					t.Errorf("Spelunker.DigUp() = %q, want %q", got, tt.want)
-				}
-			}
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

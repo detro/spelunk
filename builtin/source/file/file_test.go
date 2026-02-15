@@ -72,8 +72,8 @@ func TestSecretSourceFile_DigUp(t *testing.T) {
 				require.ErrorIs(t, err, tt.errMatch)
 				return
 			}
-
 			require.NoError(t, err)
+
 			require.Equal(t, tt.want, got)
 		})
 	}
