@@ -1,5 +1,7 @@
 package spelunk
 
+// options are the internal configuration used by an instance of Spelunker.
+// They are set by client code using implementations of SpelunkerOption.
 type options struct {
 	trimValue bool
 	sources   map[string]SecretSource

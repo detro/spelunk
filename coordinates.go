@@ -9,7 +9,7 @@ import (
 var (
 	ErrSecretCoordFailedParsing          = fmt.Errorf("failed to parse coordinates")
 	ErrSecretCoordHaveNoType             = fmt.Errorf("coordinates have no type (URI scheme)")
-	ErrSecretCoordHaveNoLocation         = fmt.Errorf("coordinates point to no location (URI host/path)")
+	ErrSecretCoordHaveNoLocation         = fmt.Errorf("coordinates point to no location (URI authority+path)")
 	ErrSecretCoordFailedParsingModifiers = fmt.Errorf("failed to parse modifiers")
 )
 
@@ -26,13 +26,17 @@ type SecretCoord struct {
 	Modifiers map[string]string
 }
 
-// NewSecretCoord creates a new SecretCoord from a URI string.
-// Splunker will later be able to dig-up the correct Secret Source based on the SecretCoord.Type (scheme),
-// the SecretCoord.Location and the SecretCoord.Modifiers.
-func NewSecretCoord(secretCoordStr string) (*SecretCoord, error) {
-	u, err := url.Parse(secretCoordStr)
+// NewSecretCoord creates a new SecretCoord from a URI-based coordinates string.
+//
+// Splunker will then dig-up the secret using the correct SecretSource, identified using the SecretCoord.Type (scheme).
+// The specific SecretSource will then use the SecretCoord.Location (authority + path)
+// and the SecretCoord.Modifiers (query) to finish the dig-up.
+//
+// Each SecretSource defines the URI format it supports.
+func NewSecretCoord(secretCoordURI string) (*SecretCoord, error) {
+	u, err := url.Parse(secretCoordURI)
 	if err != nil {
-		return nil, fmt.Errorf("%w (%q): %w", ErrSecretCoordFailedParsing, secretCoordStr, err)
+		return nil, fmt.Errorf("%w (%q): %w", ErrSecretCoordFailedParsing, secretCoordURI, err)
 	}
 
 	coord := &SecretCoord{
@@ -41,10 +45,10 @@ func NewSecretCoord(secretCoordStr string) (*SecretCoord, error) {
 		Modifiers: make(map[string]string),
 	}
 	if len(coord.Type) == 0 {
-		return nil, fmt.Errorf("%w: %q", ErrSecretCoordHaveNoType, secretCoordStr)
+		return nil, fmt.Errorf("%w: %q", ErrSecretCoordHaveNoType, secretCoordURI)
 	}
 	if len(coord.Location) == 0 {
-		return nil, fmt.Errorf("%w: %q", ErrSecretCoordHaveNoLocation, secretCoordStr)
+		return nil, fmt.Errorf("%w: %q", ErrSecretCoordHaveNoLocation, secretCoordURI)
 	}
 
 	// Aggregate and URL-unescape modifiers
