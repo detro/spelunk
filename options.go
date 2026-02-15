@@ -1,6 +1,7 @@
 package spelunk
 
 import (
+	"github.com/detro/spelunk/builtin/source/env"
 	"github.com/detro/spelunk/builtin/source/file"
 	"github.com/detro/spelunk/builtin/source/plain"
 	"github.com/detro/spelunk/types"
@@ -24,6 +25,7 @@ func defaultOptions() []SpelunkerOption {
 		WithTrimValue(),
 		WithSource(&plain.SecretSourcePlain{}),
 		WithSource(&file.SecretSourceFile{}),
+		WithSource(&env.SecretSourceEnv{}),
 	}
 }
 

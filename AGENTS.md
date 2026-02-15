@@ -42,6 +42,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 - **`builtin/`**: Built-in secret source implementations.
     - **`source/plain/`**: `plain://` source implementation.
     - **`source/file/`**: `file://` source implementation.
+    - **`source/env/`**: `env://` source implementation.
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
 - **`pkg/`**: Public library code.
@@ -50,9 +51,10 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 
 ## 🧪 Testing & Quality
 
-- **Tests**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
-- Run tests with `task test`.
-- Ensure code passes `task lint` before finishing.
+- **Framework**: Use [testify](https://github.com/stretchr/testify) (`require`, `assert`) for all tests.
+- **Scope**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
+- **Execution**: Run tests with `task test`.
+- **Linting**: Ensure code passes `task lint` before finishing.
 - **Test Data**: Use `testdata/` directories for file-based tests (e.g., `builtin/source/file/testdata/`).
 
 ## 📝 Conventions & Style

@@ -20,8 +20,8 @@ It (aims to) support(s) the following sources of secret:
 | Environment Variables                 | `env`    |   built-in   |      ✅      |
 | File                                  | `file`   |   built-in   |      ✅      |
 | Plaintext                             | `plain`  |   built-in   |      ✅      |
-| Base64 encoded                        | `base64` |   built-in   |      ⏳      |
-| Kubernetes Secrets                    | `k8s`    |   plug-in    |      ✅      |
+| Base64 encoded                        | `base64` |   built-in   |     👷      |
+| Kubernetes Secrets                    | `k8s`    |   plug-in    |     👷      |
 | Vault                                 | `vault`  |   plug-in    |      ⏳      |
 | AWS/GCP/Azure Secrets Manager         | ?        |   plug-in    |      ⏳      |
 | AWS/GCP/Azure Keys Management Service | ?        |   plug-in    |      ⏳      |
