@@ -1,5 +1,3 @@
-module github.com/detro/golang-template
+module github.com/detro/spelunk
 
-go 1.25
-
-toolchain go1.25.3
+go 1.26
