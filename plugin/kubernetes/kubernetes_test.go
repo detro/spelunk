@@ -35,7 +35,8 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	err, k8sClient := setupK3STestContainer(t, ctx)
+	k8sClient, err := setupK3STestContainer(t, ctx)
+	require.NoError(t, err)
 
 	// Create namespace
 	_, err = k8sClient.Namespaces().Create(ctx, &corev1.Namespace{
@@ -126,7 +127,7 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	}
 }
 
-func setupK3STestContainer(t *testing.T, ctx context.Context) (error, *typedcorev1.CoreV1Client) {
+func setupK3STestContainer(t *testing.T, ctx context.Context) (*typedcorev1.CoreV1Client, error) {
 	k3sContainer, err := k3s.Run(ctx, "rancher/k3s:v1.30.2-k3s1")
 	testcontainers.CleanupContainer(t, k3sContainer)
 	require.NoError(t, err)
@@ -140,5 +141,5 @@ func setupK3STestContainer(t *testing.T, ctx context.Context) (error, *typedcore
 	k8sClient, err := typedcorev1.NewForConfig(restConfig)
 	require.NoError(t, err)
 
-	return err, k8sClient
+	return k8sClient, err
 }

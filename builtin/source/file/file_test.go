@@ -60,7 +60,9 @@ func TestSecretSourceFile_DigUp(t *testing.T) {
 		},
 	}
 
-	spelunker := spelunk.NewSpelunker()
+	spelunker := spelunk.NewSpelunker(
+		spelunk.WithSource(&file.SecretSourceFile{}),
+	)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
