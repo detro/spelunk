@@ -12,38 +12,51 @@ Users point at a secret from any _source_: your tool/service/software
 will adapt based on the `/plugin`s enabled via the `spelunk.SpelunkerOption`s
 provided.
 
-**With a single library, the source of secrets is flexible and adapts to the
-environment, your situation and your needs.**
+**With a single library, the source of secrets is flexible and adapts to your
+environment, situation and/or needs.**
 
-It (aims to) support(s) the following sources of secret:
+## Sources
 
-| Source of Secrets                     | Type     | Available as | Implemented |
-|---------------------------------------|----------|:------------:|:-----------:|
-| Environment Variables                 | `env`    |   built-in   |      ✅      |
-| File                                  | `file`   |   built-in   |      ✅      |
-| Plaintext                             | `plain`  |   built-in   |      ✅      |
-| Base64 encoded                        | `base64` |   built-in   |      ✅      |
-| Kubernetes Secrets                    | `k8s`    |   plug-in    |      ✅      |
-| Vault                                 | `vault`  |   plug-in    |      ⏳      |
-| AWS/GCP/Azure Secrets Manager         | ?        |   plug-in    |      ⏳      |
-| AWS/GCP/Azure Keys Management Service | ?        |   plug-in    |      ⏳      |
+Sources are places out of which a secret can be "dug-up".
+
+Some are _built-in_ to `spelunk.Spelunker`, others need to be configured as `spelunk.SpelunkerOption` at creation time:
+
+```go
+package main
+
+import (
+	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/plugin/kubernetes"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+)
+
+// Initialize Spelunker with Kubernetes plugin
+k8sClient, err := typedcorev1.NewForConfig(restConfig)
+// ...
+spelunker := spelunk.NewSpelunker(
+	kubernetes.WithKubernetes(k8sClient),
+)
+```
+
+| Source (of Secrets)                   | Type (scheme) |    Is    | Done | Doc           |
+|---------------------------------------|---------------|:--------:|:----:|---------------|
+| Environment Variables                 | `env://`      | built-in |  ✅   | add link here |
+| File                                  | `file://`     | built-in |  ✅   | add link here |
+| Plaintext                             | `plain://`    | built-in |  ✅   | add link here |
+| Base64 encoded                        | `base64://`   | built-in |  ✅   | add link here |
+| Kubernetes Secrets                    | `k8s://`      | plug-in  |  ✅   | add link here |
+| Vault                                 | `vault://`    | plug-in  |  ⏳   | ⏳             |
+| AWS/GCP/Azure Secrets Manager         | ?             | plug-in  |  ⏳   | ⏳             |
+| AWS/GCP/Azure Keys Management Service | ?             | plug-in  |  ⏳   | ⏳             |
 
 ## Modifiers
 
 Modifiers are _optional behaviour_ applied to a secret after it has been dug-up by Spelunk.
 
-### JSONPath
-
-> [JSONPath] ([RFC 9535]) defines a string syntax for selecting and extracting
-> JSON (RFC 8259) values from within a given JSON value.
-
-The [JSONPath] modifier can be used with secrets that are in JSON format.
-After parsing, the modifier digs further at the provided path, and returns
-the value found there.
-
-> [!WARNING]
-> The given [JSONPath] is assumed to be referring to a single element.
-> Otherwise, returns the first matching.
+| Modifier (of Secrets) | Type (query)     |    Is    | Done | Doc           |
+|-----------------------|------------------|:--------:|:----:|---------------|
+| JSONPath              | `?jp=<JSONPath>` | built-in |  ✅   | add link here |
+| XPath                 | `?xp=<XPath>`    | plug-in  |  ⏳   | ⏳             |
 
 ## License
 
