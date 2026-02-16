@@ -39,12 +39,14 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 - **`types/`**: Core types and interfaces.
     - **`coordinates.go`**: `SecretCoord` type and parsing logic.
     - **`source.go`**: `SecretSource` interface definition.
+    - **`modifier.go`**: `SecretModifier` interface definition.
     - **`errors.go`**: Common error definitions (`ErrSecretNotFound`, etc.).
-- **`builtin/`**: Built-in secret source implementations.
+- **`builtin/`**: Built-in implementations.
     - **`source/plain/`**: `plain://` source implementation.
     - **`source/file/`**: `file://` source implementation.
     - **`source/env/`**: `env://` source implementation.
     - **`source/base64/`**: `base64://` source implementation.
+    - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
 - **`plugin/`**: External plugins (opt-in).
     - **`kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
 - **`options.go`**: Functional options for configuring `Spelunker`.
@@ -67,7 +69,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 - **Naming**: Follow standard Go conventions (CamelCase, short variable names where appropriate).
 - **Error Handling**: Wrap errors with context using `fmt.Errorf("...: %w", err)`.
 - **Imports**: Group standard library imports separately from third-party imports.
-- **Interfaces**: Define interfaces where they are used (consumer-side), but `SecretSource` is defined in `types/source.go` for clarity.
+- **Interfaces**: Define interfaces where they are used (consumer-side), but `SecretSource` and `SecretModifier` are defined in `types/` for clarity and reuse.
 - **Type Safety**: Ensure types implement expected interfaces with compile-time checks (e.g., `var _ types.SecretSource = (*SecretSourceFile)(nil)`).
 
 ## ⚠️ Gotchas
@@ -77,5 +79,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
     - `SecretCoord.Location` includes both Authority (userinfo/host) and Path.
     - If a URI contains userinfo (e.g., `plain://user:pass@host`), it is correctly preserved in `Location`.
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
-- **Modifiers**: Support for URI modifiers (e.g., `?jsonpath=...`) is planned but implementation is currently partial.
+- **Modifiers**: 
+    - Support for URI modifiers (e.g., `?jp=...`) allows processing secrets after retrieval.
+    - Currently supports JSONPath via `jp` modifier (e.g., `k8s://NAMESPACE/NAME/KEY?jp=$.kafka.brokers`).
 - **Dependencies**: Ensure you have the correct Go version (1.26) as specified in `go.mod`.
