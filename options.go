@@ -13,12 +13,22 @@ import (
 type options struct {
 	trimValue bool
 	sources   map[string]types.SecretSource
+	modifiers map[string]types.SecretModifier
 }
 
-func (o *options) apply(opts ...SpelunkerOption) {
+func (o *options) apply(opts ...SpelunkerOption) *options {
+	if o.sources == nil {
+		o.sources = make(map[string]types.SecretSource)
+	}
+	if o.modifiers == nil {
+		o.modifiers = make(map[string]types.SecretModifier)
+	}
+
 	for _, opt := range opts {
 		opt(o)
 	}
+
+	return o
 }
 
 func defaultOptions() []SpelunkerOption {
@@ -51,10 +61,18 @@ func WithoutTrimValue() SpelunkerOption {
 	}
 }
 
-// WithSource adds the given SecretSource to the set of sources
+// WithSource adds the given types.SecretSource to the set of sources
 // a Spelunker can use to dig-up secrets.
 func WithSource(source types.SecretSource) SpelunkerOption {
 	return func(o *options) {
 		o.sources[source.Type()] = source
+	}
+}
+
+// WithModifier adds the given types.SecretModifier to the set of modifiers
+// a Spelunker can apply to the value of secrets.
+func WithModifier(modifier types.SecretModifier) SpelunkerOption {
+	return func(o *options) {
+		o.modifiers[modifier.Type()] = modifier
 	}
 }
