@@ -13,6 +13,12 @@ tasks:
     cmd: go build .
 
   test:
+    deps: [test.full]
+
+  test.short:
+    cmd: go test -v -race -cover -short ./...
+
+  test.full:
     cmd: go test -v -race -cover ./...
 
   lint:
