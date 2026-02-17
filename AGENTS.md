@@ -24,7 +24,9 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | Command | Description |
 |---------|-------------|
 | `task build` | Build the project |
-| `task test` | Run all tests with race detection and coverage |
+| `task test` | Run all tests (alias for `test.full`) |
+| `task test.full` | Run all tests with race detection and coverage |
+| `task test.short` | Run short tests (skips integration tests) |
 | `task lint` | Run linter |
 | `task lint-fix` | Run linter and automatically fix issues |
 | `task fmt` | Format code |
@@ -48,10 +50,10 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
     - **`source/base64/`**: `base64://` source implementation.
     - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
 - **`plugin/`**: External plugins (opt-in).
-    - **`kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
+    - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
+- **`docs/`**: Documentation assets (images, logos).
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
-- **`pkg/`**: Public library code.
 - **`Taskfile.yaml`**: Task definitions.
 - **`.tool-versions`**: ASDF tool versions.
 
@@ -71,15 +73,29 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 - **Imports**: Group standard library imports separately from third-party imports.
 - **Interfaces**: Define interfaces where they are used (consumer-side), but `SecretSource` and `SecretModifier` are defined in `types/` for clarity and reuse.
 - **Type Safety**: Ensure types implement expected interfaces with compile-time checks (e.g., `var _ types.SecretSource = (*SecretSourceFile)(nil)`).
+- **JSON Marshaling**: `SecretCoord` implements `encoding.TextUnmarshaler`, allowing direct use in `json.Unmarshal`.
+- **Markdown**:
+  - **Heading**: always have an empty line before and after each heading
+  - **Lists**: Always use only one space between the number/dot and the text
+  - **Code and quote blocks**: Always place an empty line before and after each code or quote block
+
+## 🤖 AI Contribution Guidelines
+
+Based on `CONTRIBUTING.md`:
+1. **Small and Steady**: Keep changes small and focused.
+2. **Sole Responsibility**: You are responsible for every line of code.
+3. **Know Your Code**: Understand every design decision.
 
 ## ⚠️ Gotchas
 
-- **Whitespace Trimming**: By default, `Spelunker` trims whitespace from retrieved secrets. This can be disabled via `WithoutTrimValue()` option.
+- **Modifiers Application Order**: `SecretCoord.Modifiers` is a slice of key-value pairs (`[][2]string`). Modifiers are applied in the exact order they appear in the connection string URI. Duplicate keys are allowed and preserved.
+- **JSONPath Behavior**:
+    - The `jp` modifier returns the **first element** if the JSONPath matches a list.
+    - **Floats**: Converted to string without scientific notation and with minimal necessary precision (e.g. `1.50000` -> `1.5`).
+    - **Nulls**: Returns an error if the result is explicitly `null`.
+- **Whitespace Trimming**: By default, `Spelunker` trims whitespace from retrieved secrets *after* applying modifiers. This can be disabled via `WithoutTrimValue()` option.
 - **SecretCoord Parsing**: 
     - `SecretCoord.Location` includes both Authority (userinfo/host) and Path.
     - If a URI contains userinfo (e.g., `plain://user:pass@host`), it is correctly preserved in `Location`.
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
-- **Modifiers**: 
-    - Support for URI modifiers (e.g., `?jp=...`) allows processing secrets after retrieval.
-    - Currently supports JSONPath via `jp` modifier (e.g., `k8s://NAMESPACE/NAME/KEY?jp=$.kafka.brokers`).
 - **Dependencies**: Ensure you have the correct Go version (1.26) as specified in `go.mod`.
