@@ -21,6 +21,9 @@ tasks:
   test.full:
     cmd: go test -v -race -cover ./...
 
+  test.ci:
+    cmd: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+
   lint:
     cmd: golangci-lint run --allow-parallel-runners --verbose
 

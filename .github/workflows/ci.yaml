@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Build + Test + Lint + Fmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v4
+
+      - name: Build
+        run: task build
+
+      - name: Test with Coverage report
+        run: |
+          task test.ci
+          go tool cover -func=coverage.out > coverage.txt
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat coverage.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Check for Linting or Formatting issues
+        run: |
+          task lint-fix
+          task fmt
+          git diff --exit-code
