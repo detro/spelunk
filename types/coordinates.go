@@ -8,9 +8,11 @@ import (
 )
 
 var (
-	ErrSecretCoordFailedParsing          = fmt.Errorf("failed to parse coordinates")
-	ErrSecretCoordHaveNoType             = fmt.Errorf("coordinates have no type (URI scheme)")
-	ErrSecretCoordHaveNoLocation         = fmt.Errorf("coordinates point to no location (URI authority+path)")
+	ErrSecretCoordFailedParsing  = fmt.Errorf("failed to parse coordinates")
+	ErrSecretCoordHaveNoType     = fmt.Errorf("coordinates have no type (URI scheme)")
+	ErrSecretCoordHaveNoLocation = fmt.Errorf(
+		"coordinates point to no location (URI authority+path)",
+	)
 	ErrSecretCoordFailedParsingModifiers = fmt.Errorf("failed to parse modifiers")
 )
 

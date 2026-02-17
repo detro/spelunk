@@ -135,7 +135,13 @@ func TestNewSecretCoord(t *testing.T) {
 			got, err := types.NewSecretCoord(tt.input)
 			if tt.errMatch != nil {
 				require.Error(t, err)
-				require.True(t, errors.Is(err, tt.errMatch), "expected error %v, got %v", tt.errMatch, err)
+				require.True(
+					t,
+					errors.Is(err, tt.errMatch),
+					"expected error %v, got %v",
+					tt.errMatch,
+					err,
+				)
 				return
 			}
 			require.NoError(t, err)

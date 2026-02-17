@@ -14,8 +14,10 @@ import (
 )
 
 var (
-	ErrSecretSourceKubernetesInvalidLocation = fmt.Errorf("invalid kubernetes secret location format")
-	ErrSecretSourceKubernetesInvalidName     = fmt.Errorf("invalid kubernetes name")
+	ErrSecretSourceKubernetesInvalidLocation = fmt.Errorf(
+		"invalid kubernetes secret location format",
+	)
+	ErrSecretSourceKubernetesInvalidName = fmt.Errorf("invalid kubernetes name")
 
 	// dnsSubdomainRegex Matches DNS subdomain names as defined
 	// in RFC-1123 (https://datatracker.ietf.org/doc/html/rfc1123).
@@ -51,7 +53,10 @@ func (s *SecretSourceKubernetes) Type() string {
 	return "k8s"
 }
 
-func (s *SecretSourceKubernetes) DigUp(ctx context.Context, coord types.SecretCoord) (string, error) {
+func (s *SecretSourceKubernetes) DigUp(
+	ctx context.Context,
+	coord types.SecretCoord,
+) (string, error) {
 	parts := strings.Split(coord.Location, "/")
 
 	// Take Location apart
@@ -66,15 +71,27 @@ func (s *SecretSourceKubernetes) DigUp(ctx context.Context, coord types.SecretCo
 		name = parts[1]
 		key = parts[2]
 	default:
-		return "", fmt.Errorf("%w: expected NAMESPACE/NAME/KEY or NAME/KEY, got %q", ErrSecretSourceKubernetesInvalidLocation, coord.Location)
+		return "", fmt.Errorf(
+			"%w: expected NAMESPACE/NAME/KEY or NAME/KEY, got %q",
+			ErrSecretSourceKubernetesInvalidLocation,
+			coord.Location,
+		)
 	}
 
 	// Validate
 	if !isValidDNSSubdomain(namespace) {
-		return "", fmt.Errorf("%w: invalid namespace %q", ErrSecretSourceKubernetesInvalidName, namespace)
+		return "", fmt.Errorf(
+			"%w: invalid namespace %q",
+			ErrSecretSourceKubernetesInvalidName,
+			namespace,
+		)
 	}
 	if !isValidDNSSubdomain(name) {
-		return "", fmt.Errorf("%w: invalid secret name %q", ErrSecretSourceKubernetesInvalidName, name)
+		return "", fmt.Errorf(
+			"%w: invalid secret name %q",
+			ErrSecretSourceKubernetesInvalidName,
+			name,
+		)
 	}
 	if len(key) == 0 {
 		return "", fmt.Errorf("%w: key cannot be empty", ErrSecretSourceKubernetesInvalidLocation)

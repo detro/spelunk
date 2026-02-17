@@ -25,7 +25,7 @@ func TestSecretSourceFile_DigUp(t *testing.T) {
 
 	nonReadable, _ := os.CreateTemp("", "non-readable")
 	defer func() { _ = os.Remove(nonReadable.Name()) }()
-	_ = os.Chmod(nonReadable.Name(), 0200)
+	_ = os.Chmod(nonReadable.Name(), 0o200)
 
 	tests := []struct {
 		name     string

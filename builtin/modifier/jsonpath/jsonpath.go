@@ -40,7 +40,11 @@ func (s *SecretModifierJSONPath) Type() string {
 	return "jp"
 }
 
-func (s *SecretModifierJSONPath) Modify(_ context.Context, secretValue string, mod string) (string, error) {
+func (s *SecretModifierJSONPath) Modify(
+	_ context.Context,
+	secretValue string,
+	mod string,
+) (string, error) {
 	var data interface{}
 	if err := json.Unmarshal([]byte(secretValue), &data); err != nil {
 		return "", fmt.Errorf("%w: %w", ErrSecretNotJSON, err)
@@ -76,7 +80,11 @@ func (s *SecretModifierJSONPath) Modify(_ context.Context, secretValue string, m
 	default:
 		b, err := json.Marshal(v)
 		if err != nil {
-			return "", fmt.Errorf("%w: failed to marshal result: %w", ErrJSONPathMatchingFailed, err)
+			return "", fmt.Errorf(
+				"%w: failed to marshal result: %w",
+				ErrJSONPathMatchingFailed,
+				err,
+			)
 		}
 		return string(b), nil
 	}
