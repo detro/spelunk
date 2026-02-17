@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 
 	"github.com/detro/spelunk"
 	"github.com/detro/spelunk/types"
@@ -24,7 +23,7 @@ func main() {
 	// 1. Create a dummy config file for demonstration
 	configFile := "config.yaml"
 	configContent := []byte(`api_token: "plain://my-secret-api-token"`)
-	if err := os.WriteFile(configFile, configContent, 0644); err != nil {
+	if err := os.WriteFile(configFile, configContent, 0o644); err != nil {
 		log.Fatal(err)
 	}
 	defer os.Remove(configFile) // Cleanup

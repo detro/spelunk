@@ -14,6 +14,11 @@ Before diving into the code, read **[ARCHITECTURE.md](./ARCHITECTURE.md)**. It d
 - **Execution Flow**: How `DigUp` orchestrates fetching and modifying secrets.
 - **Extensibility**: How to implement new Sources and Modifiers.
 
+## 🗒 Changelog
+
+Track the evolution of the project in **[CHANGELOG.md](./CHANGELOG.md)**.
+It follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## 🛠 Toolchain
 
 The project uses the following tools for development and maintenance:

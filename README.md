@@ -173,3 +173,4 @@ This project is shared under the [MIT](./LICENSE) license.
 * [Architecture documentation](./ARCHITECTURE.md): understand how Spelunk works internally
 * [Contribution guidelines](./CONTRIBUTING.md): setting some ground rules
 * [Agents documentation](./AGENTS.md): helps LLM-agent augmented developers in their contribution journey
+* [Changelog](./CHANGELOG.md): track the evolution of the project
