@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/plugin/kubernetes"
+	"github.com/detro/spelunk/plugin/source/kubernetes"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
