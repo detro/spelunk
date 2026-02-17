@@ -12,7 +12,7 @@ The project uses the following tools for development and maintenance:
 
 - **Go**: Language (v1.26+)
 - **Task**: Task runner (replaces Makefiles)
-- **GolangCI-Lint**: Linter
+- **GolangCI-Lint**: Linter (configured with `gci`, `gofmt`, `gofumpt`, `goimports`, `golines`, `swaggo`)
 - **Glow**: Markdown renderer (for README)
 - **ASDF**: Version manager (see `.tool-versions`)
 - **Pkgsite**: For local documentation preview
@@ -27,6 +27,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task test` | Run all tests (alias for `test.full`) |
 | `task test.full` | Run all tests with race detection and coverage |
 | `task test.short` | Run short tests (skips integration tests) |
+| `task test.ci` | Run tests with coverage profile for CI |
 | `task lint` | Run linter |
 | `task lint-fix` | Run linter and automatically fix issues |
 | `task fmt` | Format code |
@@ -34,6 +35,14 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task update-dependencies` | Update and tidy Go modules |
 | `task readme` | Render README.md in terminal |
 | `task docs` | Run local godoc server (`pkgsite`) and open in browser |
+
+## ⚙️ CI/CD
+
+The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `task` commands. This ensures that what you run locally matches what runs in CI.
+
+- **Build**: `task build`
+- **Test**: `task test.ci`
+- **Lint & Format**: `task lint-fix` && `task fmt`
 
 ## 📂 Project Structure
 
@@ -51,6 +60,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
     - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
 - **`plugin/`**: External plugins (opt-in).
     - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
+- **`examples/`**: Example implementations (e.g., `kong/`, `viper/`, `basic/`).
 - **`docs/`**: Documentation assets (images, logos).
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
