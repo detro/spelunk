@@ -2,6 +2,8 @@
 
 <img align="right" width="300" src="docs/images/spelunk-logo-transparent.png">
 
+[![CI](https://github.com/detro/spelunk/actions/workflows/ci.yaml/badge.svg)](https://github.com/detro/spelunk/actions/workflows/ci.yaml)
+
 **Spelunk** is a Golang library for extracting secrets from various sources
 (Kubernetes, Vault, env vars, files) using a unified URI-based string we are calling
 **Secret Coordinates**. Here are some example of coordinates:
