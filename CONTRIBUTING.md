@@ -3,7 +3,10 @@
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change.
 
-Please note we have a [code of conduct](#code-of-conduct), please follow it in all your interactions with the project.
+Please make sure you have read the [Architecture documentation](./ARCHITECTURE.md), so that you
+are aware of the principles and idea around which the project is designed and built.
+
+Also note we have a [code of conduct](#code-of-conduct): please follow it in all your interactions with the project.
 
 ## AI-Generated Contributions
 

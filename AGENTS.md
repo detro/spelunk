@@ -6,6 +6,14 @@ This document provides essential information for AI agents working on the `spelu
 
 `spelunk` is a Go library designed to extract secrets from various storage backends (Kubernetes, local files, environment variables, etc.).
 
+## 🏗 Architecture
+
+Before diving into the code, read **[ARCHITECTURE.md](./ARCHITECTURE.md)**. It details:
+
+- **Core Concepts**: `Spelunker`, `SecretCoord`, `SecretSource`, and `SecretModifier`.
+- **Execution Flow**: How `DigUp` orchestrates fetching and modifying secrets.
+- **Extensibility**: How to implement new Sources and Modifiers.
+
 ## 🛠 Toolchain
 
 The project uses the following tools for development and maintenance:
