@@ -3,6 +3,10 @@
 <img align="right" width="300" src="docs/images/spelunk-logo-transparent.png">
 
 [![CI](https://github.com/detro/spelunk/actions/workflows/ci.yaml/badge.svg)](https://github.com/detro/spelunk/actions/workflows/ci.yaml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/detro/spelunk.svg)](https://pkg.go.dev/github.com/detro/spelunk)
+[![Go Report Card](https://goreportcard.com/badge/github.com/detro/spelunk)](https://goreportcard.com/report/github.com/detro/spelunk)
+[![License](https://img.shields.io/github/license/detro/spelunk)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/detro/spelunk)](https://github.com/detro/spelunk/releases)
 
 **Spelunk** is a Golang library for extracting secrets from various sources
 (Kubernetes, Vault, env vars, files) using a unified URI-based string we are calling
