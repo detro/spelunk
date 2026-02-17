@@ -7,64 +7,88 @@ using a unified URI-based coordinate system (e.g.,  `k8s://ns/secret/key`).
 It simplifies accessing secrets by abstracting a consistent API for "digging up" configuration
 values in cloud-native tools and apps.
 
-Its primary application is **command line tools**, but you do you!
+Its primary application is **command line tools**, but... _you do you!_
 Users point at a secret from any _source_: your tool/service/software
-will adapt based on the `/plugin`s enabled via the `spelunk.SpelunkerOption`s
+will adapt based on the _plugins_ enabled via the `spelunk.SpelunkerOption`s
 provided.
 
 **With a single library, the source of secrets is flexible and adapts to your
 environment, situation and/or needs.**
 
-## Sources
+## Get started
 
-Sources are places out of which a secret can be "dug-up".
+Get the library:
 
-Some are _built-in_ to `spelunk.Spelunker`, others need to be configured as `spelunk.SpelunkerOption` at creation time:
+```shell
+# Pull the main library
+go get github.com/detro/spelunk
+# Pull optional plugins
+go get github.com/detro/spelunk/plugin/source/kubernetes
+```
 
-```go
+Setup a new `spelunk.Spelunker` and start digging up secrets:
+
+```golang
 package main
 
 import (
 	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/plugin/kubernetes"
-	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"github.com/detro/spelunk/plugin/source/kubernetes"
+	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
-// Initialize Spelunker with Kubernetes plugin
-k8sClient, err := typedcorev1.NewForConfig(restConfig)
-// ...
+// Initialize the Kubernetes client...
+k8sClient, err := v1.NewForConfig(restConfig)
+
+// Create a Spelunker
 spelunker := spelunk.NewSpelunker(
 	kubernetes.WithKubernetes(k8sClient),
 )
+
+// Get coordinates to a secret from one of many supported sources:
+// from Kubernetes... 
+coord, err := types.NewSecretCoord("k8s://my-namespace/my-secret/my-data-key")
+// ... or from plain text (please don't!)
+coord, err := types.NewSecretCoord("plain://MY_PLAINTEXT_SECRET")
+// ... or from a local file
+coord, err := types.NewSecretCoord("file://secrets.json?jp=$.kafka.password")
+// ... or from environment variable
+coord, err := types.NewSecretCoord("env://GITHUB_PRIVATE_TOKEN")
+
+// Dig-up secrets!
+secret, _ := spelunker.DigUp(ctx, coord)
 ```
 
-| Source (of Secrets)                   | Type (scheme) |    Is    | Done | Doc           |
-|---------------------------------------|---------------|:--------:|:----:|---------------|
-| Environment Variables                 | `env://`      | built-in |  ✅   | add link here |
-| File                                  | `file://`     | built-in |  ✅   | add link here |
-| Plaintext                             | `plain://`    | built-in |  ✅   | add link here |
-| Base64 encoded                        | `base64://`   | built-in |  ✅   | add link here |
-| Kubernetes Secrets                    | `k8s://`      | plug-in  |  ✅   | add link here |
-| Vault                                 | `vault://`    | plug-in  |  ⏳   | ⏳             |
-| AWS/GCP/Azure Secrets Manager         | ?             | plug-in  |  ⏳   | ⏳             |
-| AWS/GCP/Azure Keys Management Service | ?             | plug-in  |  ⏳   | ⏳             |
+## Sources
+
+Sources are places out of which a secret can be "dug-up".
+Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be enabled.
+
+| Source (of Secrets)                   | Type (scheme) |    Is    | Done | Doc                                 |
+|---------------------------------------|---------------|:--------:|:----:|-------------------------------------|
+| Environment Variables                 | `env://`      | built-in |  ✅   | [`/builtin/source/env`](TODO)       |
+| File                                  | `file://`     | built-in |  ✅   | [`/builtin/source/file`](TODO)      |
+| Plaintext                             | `plain://`    | built-in |  ✅   | [`/builtin/source/plain`](TODO)     |
+| Base64 encoded                        | `base64://`   | built-in |  ✅   | [`/builtin/source/base64`](TODO)    |
+| Kubernetes Secrets                    | `k8s://`      | plug-in  |  ✅   | [`/plugin/source/kubernetes`](TODO) |
+| Vault                                 | `vault://`    | plug-in  |  ⏳   | ⏳                                   |
+| AWS/GCP/Azure Secrets Manager         | ?             | plug-in  |  ⏳   | ⏳                                   |
+| AWS/GCP/Azure Keys Management Service | ?             | plug-in  |  ⏳   | ⏳                                   |
 
 ## Modifiers
 
 Modifiers are _optional behaviour_ applied to a secret after it has been dug-up by Spelunk.
 
-| Modifier (of Secrets) | Type (query)     |    Is    | Done | Doc           |
-|-----------------------|------------------|:--------:|:----:|---------------|
-| JSONPath              | `?jp=<JSONPath>` | built-in |  ✅   | add link here |
-| XPath                 | `?xp=<XPath>`    | plug-in  |  ⏳   | ⏳             |
+| Modifier (of Secrets) | Type (query)     |    Is    | Done | Doc                                  |
+|-----------------------|------------------|:--------:|:----:|--------------------------------------|
+| JSONPath              | `?jp=<JSONPath>` | built-in |  ✅   | [`/builtin/modifier/jsonpath`](TODO) |
+| XPath                 | `?xp=<XPath>`    | plug-in  |  ⏳   | ⏳                                    |
+
+## Contributing
+
+If you are interested in contributing (for example, you have a brilliant idea for a plug-in),
+we have some [contribution guidelines](./CONTRIBUTING.md).
 
 ## License
 
 This project is shared under the [MIT](./LICENSE) license.
-
-[asdf]: https://asdf-vm.com/
-[asdf plugins]: https://asdf-vm.com/manage/plugins.html
-[task]: https://taskfile.dev/
-[task completion]: https://taskfile.dev/docs/installation#setup-completions
-[JSONPath]: https://goessner.net/articles/JsonPath/
-[RFC 9535]: https://www.rfc-editor.org/rfc/rfc9535
