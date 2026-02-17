@@ -78,6 +78,11 @@ coord, err := types.NewSecretCoord("env://GITHUB_PRIVATE_TOKEN")
 secret, _ := spelunker.DigUp(ctx, coord)
 ```
 
+### Examples
+
+Find some useful [`/examples`](./examples) directory for how to use `spelunk` with various
+libraries for configuration or command line arguments parsing.
+
 ## Key Types
 
 `spelunk.Spelunker` is the entry point type, and it does its job using
