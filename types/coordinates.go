@@ -4,6 +4,7 @@ import (
 	"encoding"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 type SecretCoord struct {
 	Type      string
 	Location  string
-	Modifiers map[string]string
+	Modifiers [][2]string
 }
 
 // NewSecretCoord creates a new SecretCoord from a URI-based coordinates string.
@@ -47,7 +48,7 @@ func NewSecretCoord(secretCoordURI string) (*SecretCoord, error) {
 	coord := &SecretCoord{
 		Type:      u.Scheme,
 		Location:  loc,
-		Modifiers: make(map[string]string),
+		Modifiers: make([][2]string, 0),
 	}
 	if len(coord.Type) == 0 {
 		return nil, fmt.Errorf("%w: %q", ErrSecretCoordHaveNoType, secretCoordURI)
@@ -57,15 +58,37 @@ func NewSecretCoord(secretCoordURI string) (*SecretCoord, error) {
 	}
 
 	// Aggregate and URL-unescape modifiers
-	for qk, qv := range u.Query() {
-		// Ignore empty-value modifiers
-		if len(qv) == 0 {
-			continue
-		}
+	// We parse RawQuery manually to preserve order and allow for modifiers
+	// to be applied more than once
+	if len(u.RawQuery) > 0 {
+		for _, pair := range strings.Split(u.RawQuery, "&") {
+			if len(pair) == 0 {
+				continue
+			}
 
-		coord.Modifiers[qk], err = url.QueryUnescape(qv[0])
-		if err != nil {
-			return nil, fmt.Errorf("%w (%q): %w", ErrSecretCoordFailedParsingModifiers, qv[0], err)
+			var key, value string
+			splitPair := strings.SplitN(pair, "=", 2)
+			key, err = url.QueryUnescape(splitPair[0])
+			if err != nil {
+				return nil, fmt.Errorf("%w (pair: %q / key: %q): %w",
+					ErrSecretCoordFailedParsingModifiers,
+					pair, splitPair[0],
+					err,
+				)
+			}
+
+			if len(splitPair) > 1 {
+				value, err = url.QueryUnescape(splitPair[1])
+				if err != nil {
+					return nil, fmt.Errorf("%w (pair: %q / val: %q): %w",
+						ErrSecretCoordFailedParsingModifiers,
+						pair, splitPair[1],
+						err,
+					)
+				}
+			}
+
+			coord.Modifiers = append(coord.Modifiers, [2]string{key, value})
 		}
 	}
 

@@ -47,13 +47,13 @@ func (s *Spelunker) DigUp(ctx context.Context, coord *types.SecretCoord) (string
 	}
 
 	// Apply modifiers, if any
-	for modK, modV := range coord.Modifiers {
-		modifier, found := s.opts.modifiers[modK]
+	for _, mod := range coord.Modifiers {
+		modifier, found := s.opts.modifiers[mod[0]]
 		if !found {
-			return "", fmt.Errorf("%w: %q", ErrUnsupportedSecretModifierType, modK)
+			return "", fmt.Errorf("%w: %q", ErrUnsupportedSecretModifierType, mod[0])
 		}
 
-		val, err = modifier.Modify(ctx, val, modV)
+		val, err = modifier.Modify(ctx, val, mod[1])
 		if err != nil {
 			return "", fmt.Errorf("%w: %w", ErrFailedToApplyModifier, err)
 		}

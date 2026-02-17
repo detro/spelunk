@@ -25,6 +25,20 @@ func (m *mockSource) DigUp(_ context.Context, _ types.SecretCoord) (string, erro
 	return m.val, m.err
 }
 
+// mockModifier implements types.SecretModifier for testing.
+// It takes the given mod string and appends it as `_<mod>` to the resulting secret.
+type mockModifier struct {
+	typ string
+}
+
+func (m *mockModifier) Type() string {
+	return m.typ
+}
+
+func (m *mockModifier) Modify(_ context.Context, secretValue string, mod string) (string, error) {
+	return secretValue + "_" + mod, nil
+}
+
 func TestSpelunker_DigUp(t *testing.T) {
 	ctx := context.Background()
 
@@ -51,6 +65,16 @@ func TestSpelunker_DigUp(t *testing.T) {
 			},
 			coordStr: "src2://loc",
 			want:     "val2",
+		},
+		{
+			name: "modifiers applied in order",
+			opts: []spelunk.SpelunkerOption{
+				spelunk.WithSource(&mockSource{typ: "src", val: "val"}),
+				spelunk.WithModifier(&mockModifier{typ: "mod1"}),
+				spelunk.WithModifier(&mockModifier{typ: "mod2"}),
+			},
+			coordStr: "src://loc?mod1=a&mod2=b&mod1=c",
+			want:     "val_a_b_c",
 		},
 		{
 			name: "trim value by default",

@@ -15,7 +15,7 @@ func TestNewSecretCoord(t *testing.T) {
 		input    string
 		wantType string
 		wantLoc  string
-		wantMods map[string]string
+		wantMods [][2]string
 		errMatch error
 	}{
 		{
@@ -23,63 +23,90 @@ func TestNewSecretCoord(t *testing.T) {
 			input:    "vault://secret/data/myapp/config",
 			wantType: "vault",
 			wantLoc:  "secret/data/myapp/config",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with jsonpath modifier",
 			input:    "k8s://mynamespace/mysecret/mycredentials?jsonpath=.kafka.password",
 			wantType: "k8s",
 			wantLoc:  "mynamespace/mysecret/mycredentials",
-			wantMods: map[string]string{"jsonpath": ".kafka.password"},
+			wantMods: [][2]string{
+				{"jsonpath", ".kafka.password"},
+			},
 		},
 		{
 			name:     "valid coordinate with simple location",
 			input:    "env://JUVE_MERDA",
 			wantType: "env",
 			wantLoc:  "JUVE_MERDA",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with userinfo in the URI",
 			input:    "env://JUVE@MERDA",
 			wantType: "env",
 			wantLoc:  "JUVE@MERDA",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with userinfo in the URI",
 			input:    "env://JUVE:MERDA@TORINO:1897",
 			wantType: "env",
 			wantLoc:  "JUVE:MERDA@TORINO:1897",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with encoded characters in path",
 			input:    "file:///etc/secrets/my%20secret.json",
 			wantType: "file",
 			wantLoc:  "/etc/secrets/my secret.json",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with local file in in path",
 			input:    "file://local/file.json",
 			wantType: "file",
 			wantLoc:  "local/file.json",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with relative file in in path",
 			input:    "file://./local/file.json",
 			wantType: "file",
 			wantLoc:  "./local/file.json",
-			wantMods: map[string]string{},
+			wantMods: [][2]string{},
 		},
 		{
 			name:     "valid coordinate with encoded characters in modifiers",
 			input:    "dummy://loc?jsonpath=%24.phoneNumbers%5B0%5D.type",
 			wantType: "dummy",
 			wantLoc:  "loc",
-			wantMods: map[string]string{"jsonpath": "$.phoneNumbers[0].type"},
+			wantMods: [][2]string{
+				{"jsonpath", "$.phoneNumbers[0].type"},
+			},
+		},
+		{
+			name:     "valid coordinate with multiple ordered modifiers",
+			input:    "k8s://ns/name/key?first=1&second=2&first=3",
+			wantType: "k8s",
+			wantLoc:  "ns/name/key",
+			wantMods: [][2]string{
+				{"first", "1"},
+				{"second", "2"},
+				{"first", "3"},
+			},
+		},
+		{
+			name:     "valid coordinate with modifier without value",
+			input:    "k8s://ns/name/key?m1&m2=v&m3=&m4=v",
+			wantType: "k8s",
+			wantLoc:  "ns/name/key",
+			wantMods: [][2]string{
+				{"m1", ""},
+				{"m2", "v"},
+				{"m3", ""},
+				{"m4", "v"},
+			},
 		},
 		{
 			name:     "invalid empty string",
@@ -98,7 +125,7 @@ func TestNewSecretCoord(t *testing.T) {
 		},
 		{
 			name:     "invalid modifier with percent causing unescape error",
-			input:    "scheme://loc?key=100%25", // decodes to "100%", then fails 2nd unescape
+			input:    "scheme://loc?key=100%",
 			errMatch: types.ErrSecretCoordFailedParsingModifiers,
 		},
 	}
@@ -106,29 +133,19 @@ func TestNewSecretCoord(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := types.NewSecretCoord(tt.input)
-			if (err != nil) != (tt.errMatch != nil) {
-				t.Errorf("NewSecretCoord() error = %v, wantErr %v", err, tt.errMatch != nil)
-				return
-			}
 			if tt.errMatch != nil {
-				if !errors.Is(err, tt.errMatch) {
-					t.Errorf("NewSecretCoord() error = %v, want error to contain %v", err, tt.errMatch)
-				}
+				require.Error(t, err)
+				require.True(t, errors.Is(err, tt.errMatch), "expected error %v, got %v", tt.errMatch, err)
 				return
 			}
-			if got.Type != tt.wantType {
-				t.Errorf("NewSecretCoord() Type = %v, want %v", got.Type, tt.wantType)
-			}
-			if got.Location != tt.wantLoc {
-				t.Errorf("NewSecretCoord() Location = %v, want %v", got.Location, tt.wantLoc)
-			}
-			if len(got.Modifiers) != len(tt.wantMods) {
-				t.Errorf("NewSecretCoord() Modifiers length = %v, want %v", len(got.Modifiers), len(tt.wantMods))
-			}
-			for k, v := range tt.wantMods {
-				if gotVal, ok := got.Modifiers[k]; !ok || gotVal != v {
-					t.Errorf("NewSecretCoord() Modifier[%q] = %v, want %v", k, gotVal, v)
-				}
+			require.NoError(t, err)
+			require.Equal(t, tt.wantType, got.Type)
+			require.Equal(t, tt.wantLoc, got.Location)
+
+			if len(tt.wantMods) == 0 {
+				require.Empty(t, got.Modifiers)
+			} else {
+				require.Equal(t, tt.wantMods, got.Modifiers)
 			}
 		})
 	}
@@ -144,7 +161,7 @@ func TestNewSecretCoord_FromJson(t *testing.T) {
 		jsonInput string
 		wantType  string
 		wantLoc   string
-		wantMods  map[string]string
+		wantMods  [][2]string
 		wantErr   bool
 	}{
 		{
@@ -152,7 +169,7 @@ func TestNewSecretCoord_FromJson(t *testing.T) {
 			jsonInput: `{"secret": "vault://secret/data/myapp/config"}`,
 			wantType:  "vault",
 			wantLoc:   "secret/data/myapp/config",
-			wantMods:  map[string]string{},
+			wantMods:  [][2]string{},
 			wantErr:   false,
 		},
 		{
@@ -160,8 +177,33 @@ func TestNewSecretCoord_FromJson(t *testing.T) {
 			jsonInput: `{"secret": "k8s://ns/secret?key=value"}`,
 			wantType:  "k8s",
 			wantLoc:   "ns/secret",
-			wantMods:  map[string]string{"key": "value"},
-			wantErr:   false,
+			wantMods: [][2]string{
+				{"key", "value"},
+			},
+			wantErr: false,
+		},
+		{
+			name:      "valid json with multiple modifiers",
+			jsonInput: `{"secret": "k8s://ns/secret?k1=v1&k2=v2"}`,
+			wantType:  "k8s",
+			wantLoc:   "ns/secret",
+			wantMods: [][2]string{
+				{"k1", "v1"},
+				{"k2", "v2"},
+			},
+			wantErr: false,
+		},
+		{
+			name:      "valid json with multiple modifiers that repeat",
+			jsonInput: `{"secret": "k8s://ns/secret?k1=v1&k2=v2&k1=v3"}`,
+			wantType:  "k8s",
+			wantLoc:   "ns/secret",
+			wantMods: [][2]string{
+				{"k1", "v1"},
+				{"k2", "v2"},
+				{"k1", "v3"},
+			},
+			wantErr: false,
 		},
 		{
 			name:      "invalid json format",
@@ -187,7 +229,12 @@ func TestNewSecretCoord_FromJson(t *testing.T) {
 
 			require.Equal(t, tt.wantType, cfg.Secret.Type)
 			require.Equal(t, tt.wantLoc, cfg.Secret.Location)
-			require.Equal(t, tt.wantMods, cfg.Secret.Modifiers)
+
+			if len(tt.wantMods) == 0 {
+				require.Empty(t, cfg.Secret.Modifiers)
+			} else {
+				require.Equal(t, tt.wantMods, cfg.Secret.Modifiers)
+			}
 		})
 	}
 }
