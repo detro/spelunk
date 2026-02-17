@@ -3,7 +3,7 @@ module github.com/detro/spelunk/examples/viper
 go 1.26
 
 require (
-	github.com/detro/spelunk v0.0.0-20260217201340-008a8ec4ac08
+	github.com/detro/spelunk v1.0.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/viper v1.21.0
 )
