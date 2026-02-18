@@ -125,16 +125,22 @@ type CLI struct {
 Sources are places out of which a secret can be "dug-up".
 Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be enabled.
 
-| Source (of Secrets)                   | Type (scheme) |    Is    | Done |
-|---------------------------------------|---------------|:--------:|:----:|
-| Environment Variables                 | `env://`      | built-in |  ✅   |
-| File                                  | `file://`     | built-in |  ✅   |
-| Plaintext                             | `plain://`    | built-in |  ✅   |
-| Base64 encoded                        | `base64://`   | built-in |  ✅   |
-| Kubernetes Secrets                    | `k8s://`      | plug-in  |  ✅   |
-| Vault                                 | `vault://`    | plug-in  |  ⏳   |
-| AWS/GCP/Azure Secrets Manager         | ?             | plug-in  |  ⏳   |
-| AWS/GCP/Azure Keys Management Service | ?             | plug-in  |  ⏳   |
+| Source (of Secrets)                                                              | Type (scheme) |    Is    | Status |
+|----------------------------------------------------------------------------------|---------------|:--------:|:------:|
+| Environment Variables                                                            | `env://`      | built-in |   ✅    |
+| File                                                                             | `file://`     | built-in |   ✅    |
+| Plaintext                                                                        | `plain://`    | built-in |   ✅    |
+| Base64 encoded                                                                   | `base64://`   | built-in |   ✅    |
+| [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`      | plug-in  |   ✅    |
+| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    | plug-in  |   ⏳    |
+| [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`      | plug-in  |   ⏳    |
+| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      | plug-in  |   ⏳    |
+| [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       | plug-in  |   ⏳    |
+| [1Password](https://developer.1password.com/docs/cli/)                           | `opass://`    | plug-in  |   ⏳    |
+| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    | plug-in  |   ⏳    |
+| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       | plug-in  |   ⏳    |
+| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `keeper://`   | plug-in  |   ⏳    |
+| [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://` | plug-in  |   ⏳    |
 
 ## Modifiers (`SecretModifier`)
 
@@ -159,11 +165,13 @@ will result in this sequence:
 * `mod1` takes the `<value_A_B>` and applies `mod1(<value_A_B>, C) = <value_A_B_C>`
 * client code is returned the final `<value_A_B_C>`
 
-| Modifier (of Secrets) | Type (query)     |    Is    | Done |
-|-----------------------|------------------|:--------:|:----:|
-| JSONPath extractor    | `?jp=<JSONPath>` | built-in |  ✅   |
-| XPath extractor       | `?xp=<XPath>`    | plug-in  |  ⏳   |
-| Base64 encoder        | `?base64`        | built-in |  ⏳   |
+| Modifier (of Secrets)   | Type (query)     |    Is    | Status |
+|-------------------------|------------------|:--------:|:------:|
+| JSONPath extractor      | `?jp=<JSONPath>` | built-in |   ✅    |
+| Base64 encoder          | `?base64`        | built-in |   ⏳    |
+| XPath extractor         | `?xp=<XPath>`    | plug-in  |   ⏳    |
+| YAML JSONPath extractor | `?yp=<JSONPath>` | plug-in  |   ⏳    |
+| TOML JSONPath extractor | `?tp=<JSONPath>` | plug-in  |   ⏳    |
 
 ## Contributing
 
