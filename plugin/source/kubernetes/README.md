@@ -9,6 +9,7 @@ The **Kubernetes** secret source retrieves secrets directly from the Kubernetes 
 ## Dependencies
 
 This plugin requires the Kubernetes client libraries:
+
 - `k8s.io/client-go`
 - `k8s.io/apimachinery`
 - `k8s.io/api`
@@ -20,25 +21,30 @@ To use the Kubernetes source, use the `k8s://` scheme followed by the namespace 
 ### Syntax
 
 **Format 1: With Namespace**
-```
+
+```text
 k8s://<NAMESPACE>/<SECRET_NAME>/<KEY>
 ```
 
 **Format 2: Default Namespace**
-```
+
+```text
 k8s://<SECRET_NAME>/<KEY>
 ```
+
 *(Defaults to namespace `default`)*
 
 ### Examples
 
 Retrieve key `password` from secret `db-creds` in namespace `prod`:
-```
+
+```text
 k8s://prod/db-creds/password
 ```
 
 Retrieve key `token` from secret `api-access` in namespace `default`:
-```
+
+```text
 k8s://api-access/token
 ```
 

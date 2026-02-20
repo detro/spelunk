@@ -36,7 +36,7 @@ $ cut -d' ' -f1 .tool-versions | \
   	  asdf plugin add $PLUGIN || true
   done
 $ asdf install
-````
+```
 
 ### `task` toolchain
 
