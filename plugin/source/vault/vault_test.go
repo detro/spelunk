@@ -90,6 +90,11 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 			coordStr: fmt.Sprintf("vault://%s/", v2SecPath),
 			wantJson: secData,
 		},
+		{
+			name:     "key from v1 secret via JSONPath modifier",
+			coordStr: fmt.Sprintf("vault://%s/?jp=$.%s", v1SecPath, "string_value"),
+			want:     "one",
+		},
 	}
 
 	for _, tt := range tests {

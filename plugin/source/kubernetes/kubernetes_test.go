@@ -84,6 +84,21 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 			want:     secretValue,
 		},
 		{
+			name:     "whole secret as JSON",
+			coordStr: fmt.Sprintf("k8s://%s/%s/", secretNamespace, secretName),
+			want:     fmt.Sprintf(`{"%s":"%s"}`, secretKey, secretValue),
+		},
+		{
+			name:     "whole secret as JSON in default namespace",
+			coordStr: fmt.Sprintf("k8s://%s/", secretName),
+			want:     fmt.Sprintf(`{"%s":"%s"}`, secretKey, secretValue),
+		},
+		{
+			name:     "valid secret but via jp modifier",
+			coordStr: fmt.Sprintf(`k8s://%s/%s/?jp=$.%s`, secretNamespace, secretName, secretKey),
+			want:     secretValue,
+		},
+		{
 			name:     "secret not found",
 			coordStr: fmt.Sprintf("k8s://%s/missing-secret/%s", secretNamespace, secretKey),
 			errMatch: types.ErrSecretNotFound,
@@ -104,8 +119,8 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 			errMatch: kubernetes.ErrSecretSourceKubernetesInvalidName,
 		},
 		{
-			name:     "invalid location (missing key)",
-			coordStr: "k8s://ns/secret/",
+			name:     "invalid location (too many parts)",
+			coordStr: "k8s://ns/secret/key/extra",
 			errMatch: kubernetes.ErrSecretSourceKubernetesInvalidLocation,
 		},
 	}

@@ -16,7 +16,7 @@ This plugin requires the Kubernetes client libraries:
 
 ## Usage
 
-To use the Kubernetes source, use the `k8s://` scheme followed by the namespace (optional), secret name, and key.
+To use the Kubernetes source, use the `k8s://` scheme followed by the namespace (optional) and secret name. You can either specify a key to retrieve a single value, or end the path with a `/` to retrieve the entire secret data map as JSON.
 
 ### Syntax
 
@@ -25,21 +25,29 @@ To use the Kubernetes source, use the `k8s://` scheme followed by the namespace 
 ```text
 k8s://<NAMESPACE>/<SECRET_NAME>/<KEY>
 ```
+Or to get the entire secret as JSON:
+```text
+k8s://<NAMESPACE>/<SECRET_NAME>/
+```
 
 **Format 2: Default Namespace**
 
 ```text
 k8s://<SECRET_NAME>/<KEY>
 ```
+Or to get the entire secret as JSON:
+```text
+k8s://<SECRET_NAME>/
+```
 
 *(Defaults to namespace `default`)*
 
 ### Examples
 
-Retrieve key `password` from secret `db-creds` in namespace `prod`:
+Retrieve the entire secret `db-creds` as JSON in namespace `prod`:
 
 ```text
-k8s://prod/db-creds/password
+k8s://prod/db-creds/
 ```
 
 Retrieve key `token` from secret `api-access` in namespace `default`:
@@ -80,7 +88,7 @@ func main() {
 1. **Parsing**: Splits the location into Namespace, Name, and Key.
 2. **Validation**: Checks if Namespace and Name are valid DNS subdomains (RFC 1123).
 3. **Retrieval**: Uses `k8sClient.Secrets(namespace).Get()` to fetch the secret resource.
-4. **Extraction**: Looks up the specific `Key` in the secret's `Data` map.
+4. **Extraction**: If a `Key` was provided, it looks up the specific `Key` in the secret's `Data` map. If the path ends with `/` (no key), it marshals the entire `Data` map into a JSON string and returns it.
 5. **Errors**:
     - Returns `ErrSecretNotFound` if the Secret resource doesn't exist.
     - Returns `ErrSecretKeyNotFound` if the Secret exists but the Key does not.

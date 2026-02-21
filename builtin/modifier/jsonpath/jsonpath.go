@@ -52,7 +52,7 @@ func (s *SecretModifierJSONPath) Modify(
 
 	res, err := jp.JsonPathLookup(data, mod)
 	if err != nil {
-		return "", fmt.Errorf("%w: %w", ErrJSONPathFailed, err)
+		return "", fmt.Errorf("%w (%q): %w", ErrJSONPathFailed, mod, err)
 	}
 
 	// If the JSONPath matches multiple values, focus on the first one.

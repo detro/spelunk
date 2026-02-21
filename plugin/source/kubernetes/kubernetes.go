@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -33,6 +34,11 @@ const (
 //
 //	k8s://NAMESPACE/NAME/KEY
 //	k8s://NAME/KEY (where NAMESPACE is "default")
+//	k8s://NAMESPACE/NAME/
+//	k8s://NAME/ (where NAMESPACE is "default")
+//
+// When `/KEY` is appended, Spelunk extracts the specific value in the secret's data map.
+// Otherwise, if it ends with `/`, it returns the whole secret's data key-value map as JSON.
 //
 // This types.SecretSource is a plug-in to spelunker.Spelunker and must be enabled explicitly.
 type SecretSourceKubernetes struct {
@@ -72,7 +78,7 @@ func (s *SecretSourceKubernetes) DigUp(
 		key = parts[2]
 	default:
 		return "", fmt.Errorf(
-			"%w: expected NAMESPACE/NAME/KEY or NAME/KEY, got %q",
+			"%w: expected NAMESPACE/NAME/KEY, NAME/KEY, NAMESPACE/NAME/ or NAME/, got %q",
 			ErrSecretSourceKubernetesInvalidLocation,
 			coord.Location,
 		)
@@ -93,10 +99,6 @@ func (s *SecretSourceKubernetes) DigUp(
 			name,
 		)
 	}
-	if len(key) == 0 {
-		return "", fmt.Errorf("%w: key cannot be empty", ErrSecretSourceKubernetesInvalidLocation)
-	}
-
 	// Retrieve
 	secret, err := s.k8sClient.Secrets(namespace).Get(ctx, name, metav1.GetOptions{})
 	if err != nil {
@@ -105,6 +107,21 @@ func (s *SecretSourceKubernetes) DigUp(
 		}
 		return "", fmt.Errorf("%w (%q): %w", types.ErrCouldNotFetchSecret, coord.Location, err)
 	}
+
+	// No key requested: return the whole `Data` map
+	if len(key) == 0 {
+		// Convert map[string][]byte to map[string]string for JSON serialization
+		stringData := make(map[string]string, len(secret.Data))
+		for k, v := range secret.Data {
+			stringData[k] = string(v)
+		}
+		dataJsonBytes, err := json.Marshal(stringData)
+		if err != nil {
+			return "", err
+		}
+		return string(dataJsonBytes), nil
+	}
+
 	if val, found := secret.Data[key]; found {
 		return string(val), nil
 	}
