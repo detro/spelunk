@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    name: Build + Test + Lint + Fmt
+    name: Build + Lint + Fmt + Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,6 +26,12 @@ jobs:
       - name: Build
         run: task build
 
+      - name: Check for Linting or Formatting issues
+        run: |
+          task lint-fix
+          task fmt
+          git diff --exit-code
+
       - name: Test with Coverage report
         run: |
           task test.ci
@@ -34,9 +40,3 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat coverage.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-
-      - name: Check for Linting or Formatting issues
-        run: |
-          task lint-fix
-          task fmt
-          git diff --exit-code
