@@ -15,9 +15,9 @@ import (
 
 var (
 	ErrSecretSourceKubernetesInvalidLocation = fmt.Errorf(
-		"invalid kubernetes secret location format",
+		"invalid Kubernetes secret location format",
 	)
-	ErrSecretSourceKubernetesInvalidName = fmt.Errorf("invalid kubernetes name")
+	ErrSecretSourceKubernetesInvalidName = fmt.Errorf("invalid Kubernetes name")
 
 	// dnsSubdomainRegex Matches DNS subdomain names as defined
 	// in RFC-1123 (https://datatracker.ietf.org/doc/html/rfc1123).

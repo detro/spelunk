@@ -132,7 +132,7 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 | Plaintext                                                                        | `plain://`    | built-in |   ✅    |
 | Base64 encoded                                                                   | `base64://`   | built-in |   ✅    |
 | [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`      | plug-in  |   ✅    |
-| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    | plug-in  |   ⏳    |
+| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    | plug-in  |   ✅    |
 | [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`      | plug-in  |   ⏳    |
 | [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      | plug-in  |   ⏳    |
 | [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       | plug-in  |   ⏳    |
