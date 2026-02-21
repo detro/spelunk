@@ -20,10 +20,14 @@ The architecture revolves around four main components:
 ```mermaid
 classDiagram
     class Spelunker {
+        -opts options
+        +DigUp(context.Context, *SecretCoord) (string, error)
+    }
+
+    class options {
+        -trimValue bool
         -sources map[string]SecretSource
         -modifiers map[string]SecretModifier
-        -options options
-        +DigUp(context.Context, *SecretCoord) (string, error)
     }
 
     class SecretCoord {
@@ -44,8 +48,9 @@ classDiagram
         +Modify(context.Context, string, string) (string, error)
     }
 
-    Spelunker "1" o-- "*" SecretSource : contains
-    Spelunker "1" o-- "*" SecretModifier : contains
+    Spelunker "1" *-- "1" options : contains
+    options "1" o-- "*" SecretSource : contains
+    options "1" o-- "*" SecretModifier : contains
     Spelunker ..> SecretCoord : uses
     SecretSource ..> SecretCoord : uses
 ```
@@ -60,7 +65,7 @@ Its primary method is `DigUp(ctx context.Context, coord *types.SecretCoord) (str
 
 ### 2. SecretCoord (`types/coordinates.go`)
 
-`SecretCoord` represents a parsed URI. It is created via `NewSecretCoord(uri string)`. It breaks down a string like `file:///config.json?jp=$.database.password` into:
+`SecretCoord` represents a parsed URI. It is created via `types.NewSecretCoord(uri string)`. It breaks down a string like `file:///config.json?jp=$.database.password` into:
 
 *   **Type**: `file` (determines the Source)
 *   **Location**: `/config.json` (passed to the Source)
@@ -68,7 +73,7 @@ Its primary method is `DigUp(ctx context.Context, coord *types.SecretCoord) (str
 
 ### 3. SecretSource (`types/source.go`)
 
-The `SecretSource` interface abstracts the retrieval mechanism. Each implementation handles a specific URI scheme (e.g., `env://`, `file://`, `k8s://`).
+The `SecretSource` interface abstracts the retrieval mechanism. Each implementation handles a specific URI scheme (e.g., `env://`, `file://`, `k8s://`, `vault://`).
 
 *   **Responsibility**: Fetch raw data using the `Location` from `SecretCoord`.
 *   **Input**: `SecretCoord`
@@ -86,7 +91,7 @@ The `SecretModifier` interface abstracts data transformation. Modifiers are appl
 
 The `DigUp` process follows a linear pipeline:
 
-1.  **Parse**: The user parses the input string into a `SecretCoord` (e.g. using `NewSecretCoord`).
+1.  **Parse**: The user parses the input string into a `SecretCoord` (e.g. using `types.NewSecretCoord`).
 2.  **Fetch**: The `Spelunker` receives the `SecretCoord`, finds the `SecretSource` matching `SecretCoord.Type`, and calls `DigUp`.
 3.  **Transform**: For each modifier in `SecretCoord.Modifiers`, the `Spelunker` finds the matching `SecretModifier` and calls `Modify`.
 4.  **Finalize**: The result is optionally trimmed of whitespace (default behavior) and returned.
@@ -103,7 +108,7 @@ sequenceDiagram
     participant Modifier Registry
     participant SecretModifier
 
-    User->>SecretCoord: NewSecretCoord("scheme://path?mod=arg")
+    User->>SecretCoord: types.NewSecretCoord("scheme://path?mod=arg")
     activate SecretCoord
     SecretCoord-->>User: Returns coord object
     deactivate SecretCoord
@@ -153,7 +158,7 @@ func (s *MySource) DigUp(ctx context.Context, c types.SecretCoord) (string, erro
 }
 
 // Usage
-s := spelunker.New(spelunker.WithSource(&MySource{}))
+s := spelunk.NewSpelunker(spelunk.WithSource(&MySource{}))
 ```
 
 ### Adding a Modifier
@@ -169,6 +174,6 @@ func (m *MyModifier) Modify(ctx context.Context, val, arg string) (string, error
 }
 
 // Usage
-s := spelunker.New(spelunker.WithModifier(&MyModifier{}))
+s := spelunk.NewSpelunker(spelunk.WithModifier(&MyModifier{}))
 // URI: ...?upper=true
 ```

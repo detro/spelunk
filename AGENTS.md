@@ -6,6 +6,10 @@ This document provides essential information for AI agents working on the `spelu
 
 `spelunk` is a Go library designed to extract secrets from various storage backends (Kubernetes, local files, environment variables, etc.).
 
+## Behaviour
+
+* **Never git commit**: unless explicitly instructed (and only contextual to that instruction), never automatically execute a `git commit`.
+
 ## 🏗 Architecture
 
 Before diving into the code, read **[ARCHITECTURE.md](./ARCHITECTURE.md)**. It details:
@@ -73,7 +77,8 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
 - **`plugin/`**: External plugins (opt-in).
     - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
-- **`examples/`**: Example implementations (e.g., `kong/`, `viper/`, `basic/`).
+    - **`source/vault/`**: `vault://` source implementation (HashiCorp Vault KV).
+- **`examples/`**: Example implementations (e.g., `kong/`, `viper/`, `urfave-cli/`, `basic/`).
 - **`docs/`**: Documentation assets (images, logos).
 - **`options.go`**: Functional options for configuring `Spelunker`.
 - **`doc.go`**: Package-level documentation.
@@ -84,7 +89,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
 
 - **Framework**: Use [testify](https://github.com/stretchr/testify) (`require`, `assert`) for all tests.
 - **Scope**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
-- **Integration Tests**: Use [Testcontainers for Go](https://golang.testcontainers.org/) for integration tests (e.g., Kubernetes). Use `testcontainers.CleanupContainer` for resource management.
+- **Integration Tests**: Use [Testcontainers for Go](https://golang.testcontainers.org/) for integration tests (e.g., Kubernetes, Vault). Use `testcontainers.CleanupContainer` for resource management. Use `if testing.Short() { t.Skip("...") }` to skip integration tests in short mode.
 - **Execution**: Run tests with `task test`.
 - **Linting**: Ensure code passes `task lint` before finishing.
 - **Test Data**: Use `testdata/` directories for file-based tests.
