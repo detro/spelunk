@@ -4,7 +4,7 @@ This document provides essential information for AI agents working on the `spelu
 
 ## Project Overview
 
-`spelunk` is a Go library designed to extract secrets from various storage backends (Kubernetes, local files, environment variables, etc.).
+`spelunk` is a Go library designed to extract secrets from various storage backends (Kubernetes, HashiCorp Vault, local files, environment variables, etc.).
 
 ## Behaviour
 
@@ -51,14 +51,14 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task run -- <args>` | Run the project (passes args to `go run .`) |
 | `task update-dependencies` | Update and tidy Go modules |
 | `task readme` | Render README.md in terminal |
-| `task docs` | Run local godoc server (`pkgsite`) and open in browser |
+| `task doc.serve` | Run local godoc server (`pkgsite`) and open in browser |
 
 ## ⚙️ CI/CD
 
 The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `task` commands. This ensures that what you run locally matches what runs in CI.
 
 - **Build**: `task build`
-- **Test**: `task test.ci`
+- **Test**: `task test.ci` (generates `coverage.out` used for step summary)
 - **Lint & Format**: `task lint-fix` && `task fmt`
 
 ## 📂 Project Structure
@@ -75,6 +75,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/env/`**: `env://` source implementation.
     - **`source/base64/`**: `base64://` source implementation.
     - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
+    - **`modifier/base64/`**: `b64` modifier implementation (Base64 encoding).
 - **`plugin/`**: External plugins (opt-in).
     - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
     - **`source/vault/`**: `vault://` source implementation (HashiCorp Vault KV).
@@ -84,6 +85,8 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
 - **`doc.go`**: Package-level documentation.
 - **`Taskfile.yaml`**: Task definitions.
 - **`.tool-versions`**: ASDF tool versions.
+- **`.golangci.yaml`**: Linter configuration.
+- **`.github/workflows/ci.yaml`**: CI configuration.
 
 ## 🧪 Testing & Quality
 
