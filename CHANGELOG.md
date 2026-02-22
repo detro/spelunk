@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Built-in Modifiers**:
+    - `?b64`: Encode secret value to a base64 string.
+- **Documentation**:
+    - Added direct links to the documentation for each built-in Secret Source and Secret Modifier in the README.
+
 ## [1.1.0] - 2026-02-21
 
 ### Added
