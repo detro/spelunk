@@ -89,6 +89,29 @@ secret, _ := spelunker.DigUp(ctx, coord)
 Find some useful [`/examples`](./examples) directory for how to use `spelunk` with various
 libraries for configuration or command line arguments parsing.
 
+### `built-in` vs `plug-in`
+
+Spelunk comes with a bunch of features: [Sources](#sources-secretsource)
+and [Modifiers](#modifiers-secretmodifier), the role of which is explained below.
+Some are _built-in_, and a new `spelunk.Spelunker` instance comes with those enabled;
+others are _plug-in_, and you will have to enable them as `SpelunkerOption`
+provided at construction time:
+
+```go
+package main
+
+import (
+	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/plugin/source/kubernetes"
+	"github.com/detro/spelunk/plugin/source/vault"
+)
+
+_ = spelunk.NewSpelunker(
+	kubernetes.WithKubernetes(k8sClient),
+	vault.WithVault(vaultClient),
+)
+```
+
 ## Key Types
 
 `spelunk.Spelunker` is the entry point type, and it does its job using
