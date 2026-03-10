@@ -157,8 +157,8 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 | [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`      |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/kubernetes) |
 | [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/vault)    |
 | [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`      |   plug-in    |   ⏳    |                                                                                   |
-| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ⏳    |                                                                                   |
 | [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ⏳    |                                                                                   |
+| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/gcp)     |
 | [1Password](https://developer.1password.com/docs/cli/)                           | `opass://`    |   plug-in    |   ⏳    |                                                                                   |
 | [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    |   ⏳    |                                                                                   |
 | [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    |   ⏳    |                                                                                   |
