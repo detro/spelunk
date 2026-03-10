@@ -41,7 +41,7 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 	ctx := context.Background()
 	client, err := setupGCPTestContainer(t, ctx)
 	require.NoError(t, err)
-	createTestSecrets(t, err, client, ctx)
+	createTestSecrets(t, client, ctx)
 
 	// Initialize Spelunker with GCP plugin
 	spelunker := spelunk.NewSpelunker(gcp.WithGCP(client))
@@ -96,13 +96,19 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
 		},
 		{
-			name:     "invalid latest version",
-			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/missing-secret/versions/latesttypo", projectID),
+			name: "invalid latest version",
+			coordStr: fmt.Sprintf(
+				"gcp://projects/%s/secrets/missing-secret/versions/latesttypo",
+				projectID,
+			),
 			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
 		},
 		{
-			name:     "invalid version",
-			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/missing-secret/versions/123b", projectID),
+			name: "invalid version",
+			coordStr: fmt.Sprintf(
+				"gcp://projects/%s/secrets/missing-secret/versions/123b",
+				projectID,
+			),
 			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
 		},
 		{
@@ -129,7 +135,7 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 	}
 }
 
-func createTestSecrets(t *testing.T, err error, client *secretmanager.Client, ctx context.Context) {
+func createTestSecrets(t *testing.T, client *secretmanager.Client, ctx context.Context) {
 	// Create secret in GCP Secret Manager Emulator
 	parent := fmt.Sprintf("projects/%s", projectID)
 	createSecretReq := &secretmanagerpb.CreateSecretRequest{

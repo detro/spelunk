@@ -38,7 +38,7 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	ctx := context.Background()
 	k8sClient, err := setupK3STestContainer(t, ctx)
 	require.NoError(t, err)
-	createTestSecrets(t, err, k8sClient, ctx)
+	createTestSecrets(t, k8sClient, ctx)
 
 	// Initialize Spelunker with Kubernetes plugin
 	spelunker := spelunk.NewSpelunker(kubernetes.WithKubernetes(k8sClient))
@@ -118,9 +118,13 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	}
 }
 
-func createTestSecrets(t *testing.T, err error, k8sClient *typedcorev1.CoreV1Client, ctx context.Context) {
+func createTestSecrets(
+	t *testing.T,
+	k8sClient *typedcorev1.CoreV1Client,
+	ctx context.Context,
+) {
 	// Create namespace
-	_, err = k8sClient.Namespaces().Create(ctx, &corev1.Namespace{
+	_, err := k8sClient.Namespaces().Create(ctx, &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: secretNamespace,
 		},
