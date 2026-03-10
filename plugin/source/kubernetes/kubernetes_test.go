@@ -34,35 +34,11 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 		t.Skip("Skipping integration test in short mode")
 	}
 
+	// Setup test
 	ctx := context.Background()
 	k8sClient, err := setupK3STestContainer(t, ctx)
 	require.NoError(t, err)
-
-	// Create namespace
-	_, err = k8sClient.Namespaces().Create(ctx, &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: secretNamespace,
-		},
-	}, metav1.CreateOptions{})
-	require.NoError(t, err)
-
-	// Create secret
-	_, err = k8sClient.Secrets(secretNamespace).Create(ctx, &corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: secretName,
-		},
-		Data: map[string][]byte{
-			secretKey: []byte(secretValue),
-		},
-	}, metav1.CreateOptions{})
-	require.NoError(t, err)
-
-	// Create secret in default namespace
-	_, err = k8sClient.Secrets("default").Create(ctx, &corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{Name: secretName},
-		Data:       map[string][]byte{secretKey: []byte(secretValue)},
-	}, metav1.CreateOptions{})
-	require.NoError(t, err)
+	createTestSecrets(t, err, k8sClient, ctx)
 
 	// Initialize Spelunker with Kubernetes plugin
 	spelunker := spelunk.NewSpelunker(kubernetes.WithKubernetes(k8sClient))
@@ -142,8 +118,36 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	}
 }
 
+func createTestSecrets(t *testing.T, err error, k8sClient *typedcorev1.CoreV1Client, ctx context.Context) {
+	// Create namespace
+	_, err = k8sClient.Namespaces().Create(ctx, &corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: secretNamespace,
+		},
+	}, metav1.CreateOptions{})
+	require.NoError(t, err)
+
+	// Create secret
+	_, err = k8sClient.Secrets(secretNamespace).Create(ctx, &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: secretName,
+		},
+		Data: map[string][]byte{
+			secretKey: []byte(secretValue),
+		},
+	}, metav1.CreateOptions{})
+	require.NoError(t, err)
+
+	// Create secret in default namespace
+	_, err = k8sClient.Secrets("default").Create(ctx, &corev1.Secret{
+		ObjectMeta: metav1.ObjectMeta{Name: secretName},
+		Data:       map[string][]byte{secretKey: []byte(secretValue)},
+	}, metav1.CreateOptions{})
+	require.NoError(t, err)
+}
+
 func setupK3STestContainer(t *testing.T, ctx context.Context) (*typedcorev1.CoreV1Client, error) {
-	k3sContainer, err := k3s.Run(ctx, "rancher/k3s:v1.30.2-k3s1")
+	k3sContainer, err := k3s.Run(ctx, "rancher/k3s:v1.35.2-k3s1")
 	testcontainers.CleanupContainer(t, k3sContainer)
 	require.NoError(t, err)
 
