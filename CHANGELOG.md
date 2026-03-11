@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Plugins**:
+    - `aws://`: AWS Secrets Manager source implementation (available in `plugin/source/aws`).
     - `gcp://`: Google Cloud Secret Manager source implementation (available in `plugin/source/gcp`).
 - **Built-in Modifiers**:
     - `?b64`: Encode secret value to a base64 string.
