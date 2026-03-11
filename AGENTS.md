@@ -9,6 +9,9 @@ This document provides essential information for AI agents working on the `spelu
 ## Behaviour
 
 * **Never git commit**: unless explicitly instructed (and only contextual to that instruction), never automatically execute a `git commit`.
+* **Never leave this repository**:
+  * All your "read" and "write" operations and all your tools should only be ever applied to this repo and its subdirectories
+  * Never access any of the files on the rest of this system
 
 ## 🏗 Architecture
 
