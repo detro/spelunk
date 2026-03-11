@@ -1,7 +1,6 @@
 package kubernetes_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -35,10 +34,9 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	}
 
 	// Setup test
-	ctx := context.Background()
-	k8sClient, err := setupK3STestContainer(t, ctx)
+	k8sClient, err := setupK3STestContainer(t)
 	require.NoError(t, err)
-	createTestSecrets(t, k8sClient, ctx)
+	createTestSecrets(t, k8sClient)
 
 	// Initialize Spelunker with Kubernetes plugin
 	spelunker := spelunk.NewSpelunker(kubernetes.WithKubernetes(k8sClient))
@@ -106,7 +104,7 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
-			got, err := spelunker.DigUp(ctx, coord)
+			got, err := spelunker.DigUp(t.Context(), coord)
 			if tt.errMatch != nil {
 				require.ErrorIs(t, err, tt.errMatch)
 				return
@@ -121,10 +119,9 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 func createTestSecrets(
 	t *testing.T,
 	k8sClient *typedcorev1.CoreV1Client,
-	ctx context.Context,
 ) {
 	// Create namespace
-	_, err := k8sClient.Namespaces().Create(ctx, &corev1.Namespace{
+	_, err := k8sClient.Namespaces().Create(t.Context(), &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: secretNamespace,
 		},
@@ -132,7 +129,7 @@ func createTestSecrets(
 	require.NoError(t, err)
 
 	// Create secret
-	_, err = k8sClient.Secrets(secretNamespace).Create(ctx, &corev1.Secret{
+	_, err = k8sClient.Secrets(secretNamespace).Create(t.Context(), &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: secretName,
 		},
@@ -143,19 +140,20 @@ func createTestSecrets(
 	require.NoError(t, err)
 
 	// Create secret in default namespace
-	_, err = k8sClient.Secrets("default").Create(ctx, &corev1.Secret{
+	_, err = k8sClient.Secrets("default").Create(t.Context(), &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{Name: secretName},
 		Data:       map[string][]byte{secretKey: []byte(secretValue)},
 	}, metav1.CreateOptions{})
 	require.NoError(t, err)
 }
 
-func setupK3STestContainer(t *testing.T, ctx context.Context) (*typedcorev1.CoreV1Client, error) {
-	k3sContainer, err := k3s.Run(ctx, "rancher/k3s:v1.35.2-k3s1")
+func setupK3STestContainer(t *testing.T) (*typedcorev1.CoreV1Client, error) {
+	// See: https://hub.docker.com/r/rancher/k3s
+	k3sContainer, err := k3s.Run(t.Context(), "rancher/k3s:v1.35.2-k3s1")
 	testcontainers.CleanupContainer(t, k3sContainer)
 	require.NoError(t, err)
 
-	kubeConfigYaml, err := k3sContainer.GetKubeConfig(ctx)
+	kubeConfigYaml, err := k3sContainer.GetKubeConfig(t.Context())
 	require.NoError(t, err)
 
 	restConfig, err := clientcmd.RESTConfigFromKubeConfig(kubeConfigYaml)

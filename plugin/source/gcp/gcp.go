@@ -92,7 +92,7 @@ func (s *SecretSourceGCP) DigUp(ctx context.Context, coord types.SecretCoord) (s
 		return "", fmt.Errorf("%w (%q): %w", types.ErrCouldNotFetchSecret, coord.Location, err)
 	}
 
-	// Extract and return payload, or error fi missing
+	// Extract and return payload, or error if missing
 	if res.Payload == nil || res.Payload.Data == nil {
 		return "", fmt.Errorf(
 			"%w (%q): secret contains no data",

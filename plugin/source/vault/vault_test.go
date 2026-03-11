@@ -1,7 +1,6 @@
 package vault_test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -14,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	testcontainersvault "github.com/testcontainers/testcontainers-go/modules/vault"
+	"k8s.io/apimachinery/pkg/util/rand"
 )
 
 func TestSecretSourceVault_Type(t *testing.T) {
@@ -21,14 +21,34 @@ func TestSecretSourceVault_Type(t *testing.T) {
 	require.Equal(t, "vault", s.Type())
 }
 
+const (
+	kvSecretEngineV1Mount = "kvSecretsV1"
+	kvSecretEngineV2Mount = "kvSecretsV2"
+
+	v1SecPath = kvSecretEngineV1Mount + "/my-app/secr3t"
+	v2SecPath = kvSecretEngineV2Mount + "/data" + "/my/Other/App/s3cret"
+)
+
+var secData = map[string]any{
+	"string_value": "one",
+	"intValue":     2,
+	"float-value":  0.23,
+	"map-value": map[string]any{
+		"k1": "v1",
+		"k2": "v2",
+		"k3": 3,
+	},
+	"array-value": []string{"forza", "napoli", "sempre"},
+}
+
 func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	ctx := context.Background()
-	vaultClient, err := setupVaultTestContainer(t, ctx)
+	vaultClient, err := setupVaultTestContainer(t)
 	require.NoError(t, err)
+	createTestSecrets(t, vaultClient)
 
 	// Initialize Spelunker with Vault plugin
 	spelunker := spelunk.NewSpelunker(vault.WithVault(vaultClient))
@@ -102,7 +122,7 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
-			got, err := spelunker.DigUp(ctx, coord)
+			got, err := spelunker.DigUp(t.Context(), coord)
 			if tt.errMatch != nil {
 				require.ErrorIs(t, err, tt.errMatch)
 				return
@@ -120,35 +140,21 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 	}
 }
 
-const (
-	// See: https://hub.docker.com/r/hashicorp/vault/tags
-	dockerImageVersion = "1.21"
-
-	rootToken = "test-root-token"
-
-	kvSecretEngineV1Mount = "kvSecretsV1"
-	kvSecretEngineV2Mount = "kvSecretsV2"
-
-	v1SecPath = kvSecretEngineV1Mount + "/my-app/secr3t"
-	v2SecPath = kvSecretEngineV2Mount + "/data" + "/my/Other/App/s3cret"
-)
-
-var secData = map[string]any{
-	"string_value": "one",
-	"intValue":     2,
-	"float-value":  0.23,
-	"map-value": map[string]any{
-		"k1": "v1",
-		"k2": "v2",
-		"k3": 3,
-	},
-	"array-value": []string{"forza", "napoli", "sempre"},
+func createTestSecrets(t *testing.T, client *api.Client) {
+	_, err := client.Logical().Write(v1SecPath, secData)
+	require.NoError(t, err)
+	_, err = client.Logical().Write(v2SecPath, map[string]interface{}{
+		"data": secData,
+	})
+	require.NoError(t, err)
 }
 
-func setupVaultTestContainer(t *testing.T, ctx context.Context) (*api.Client, error) {
+func setupVaultTestContainer(t *testing.T) (*api.Client, error) {
 	// Launch Vault container with 2 secrets engine: KV v1 and KV v2
-	vaultContainer, err := testcontainersvault.Run(ctx,
-		"hashicorp/vault:"+dockerImageVersion,
+	rootToken := rand.String(10)
+	vaultContainer, err := testcontainersvault.Run(t.Context(),
+		// See: https://hub.docker.com/r/hashicorp/vault.
+		"hashicorp/vault:1.21",
 		testcontainersvault.WithToken(rootToken),
 		testcontainersvault.WithInitCommand(
 			fmt.Sprintf("secrets enable -path %s -version=1 kv", kvSecretEngineV1Mount),
@@ -159,9 +165,9 @@ func setupVaultTestContainer(t *testing.T, ctx context.Context) (*api.Client, er
 	require.NoError(t, err)
 
 	// Work out mapped URL
-	hostIP, err := vaultContainer.Host(ctx)
+	hostIP, err := vaultContainer.Host(t.Context())
 	require.NoError(t, err)
-	mappedPort, err := vaultContainer.MappedPort(ctx, "8200/tcp")
+	mappedPort, err := vaultContainer.MappedPort(t.Context(), "8200/tcp")
 	require.NoError(t, err)
 	mappedURL := fmt.Sprintf("http://%s:%s", hostIP, mappedPort.Port())
 
@@ -172,14 +178,6 @@ func setupVaultTestContainer(t *testing.T, ctx context.Context) (*api.Client, er
 	client, err := api.NewClient(config)
 	require.NoError(t, err)
 	client.SetToken(rootToken)
-
-	// Populate secrets in both engines
-	_, err = client.Logical().Write(v1SecPath, secData)
-	require.NoError(t, err)
-	_, err = client.Logical().Write(v2SecPath, map[string]interface{}{
-		"data": secData,
-	})
-	require.NoError(t, err)
 
 	return client, nil
 }

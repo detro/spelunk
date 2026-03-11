@@ -1,7 +1,6 @@
 package gcp_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -38,10 +37,9 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 	}
 
 	// Setup test
-	ctx := context.Background()
-	client, err := setupGCPTestContainer(t, ctx)
+	client, err := setupGCPTestContainer(t)
 	require.NoError(t, err)
-	createTestSecrets(t, client, ctx)
+	createTestSecrets(t, client)
 
 	// Initialize Spelunker with GCP plugin
 	spelunker := spelunk.NewSpelunker(gcp.WithGCP(client))
@@ -123,7 +121,7 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
-			got, err := spelunker.DigUp(ctx, coord)
+			got, err := spelunker.DigUp(t.Context(), coord)
 			if tt.errMatch != nil {
 				require.ErrorIs(t, err, tt.errMatch)
 				return
@@ -135,7 +133,7 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 	}
 }
 
-func createTestSecrets(t *testing.T, client *secretmanager.Client, ctx context.Context) {
+func createTestSecrets(t *testing.T, client *secretmanager.Client) {
 	// Create secret in GCP Secret Manager Emulator
 	parent := fmt.Sprintf("projects/%s", projectID)
 	createSecretReq := &secretmanagerpb.CreateSecretRequest{
@@ -149,7 +147,7 @@ func createTestSecrets(t *testing.T, client *secretmanager.Client, ctx context.C
 			},
 		},
 	}
-	secret, err := client.CreateSecret(ctx, createSecretReq)
+	secret, err := client.CreateSecret(t.Context(), createSecretReq)
 	require.NoError(t, err)
 
 	addVersionReq := &secretmanagerpb.AddSecretVersionRequest{
@@ -158,7 +156,7 @@ func createTestSecrets(t *testing.T, client *secretmanager.Client, ctx context.C
 			Data: []byte(secretValue),
 		},
 	}
-	_, err = client.AddSecretVersion(ctx, addVersionReq)
+	_, err = client.AddSecretVersion(t.Context(), addVersionReq)
 	require.NoError(t, err)
 
 	createJsonSecretReq := &secretmanagerpb.CreateSecretRequest{
@@ -172,9 +170,9 @@ func createTestSecrets(t *testing.T, client *secretmanager.Client, ctx context.C
 			},
 		},
 	}
-	jsonSecret, err := client.CreateSecret(ctx, createJsonSecretReq)
+	jsonSecret, err := client.CreateSecret(t.Context(), createJsonSecretReq)
 	require.NoError(t, err)
-	_, err = client.AddSecretVersion(ctx, &secretmanagerpb.AddSecretVersionRequest{
+	_, err = client.AddSecretVersion(t.Context(), &secretmanagerpb.AddSecretVersionRequest{
 		Parent: jsonSecret.Name,
 		Payload: &secretmanagerpb.SecretPayload{
 			Data: []byte(jsonSecretValue),
@@ -183,22 +181,26 @@ func createTestSecrets(t *testing.T, client *secretmanager.Client, ctx context.C
 	require.NoError(t, err)
 }
 
-func setupGCPTestContainer(t *testing.T, ctx context.Context) (*secretmanager.Client, error) {
+func setupGCPTestContainer(t *testing.T) (*secretmanager.Client, error) {
 	req := testcontainers.ContainerRequest{
+		// See: https://github.com/blackwell-systems/gcp-secret-manager-emulator/pkgs/container/gcp-secret-manager-emulator
 		Image:        "ghcr.io/blackwell-systems/gcp-secret-manager-emulator:1.3.0",
 		ExposedPorts: []string{"9090/tcp"},
 		WaitingFor:   wait.ForListeningPort("9090/tcp"),
 	}
-	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
-	})
+	container, err := testcontainers.GenericContainer(
+		t.Context(),
+		testcontainers.GenericContainerRequest{
+			ContainerRequest: req,
+			Started:          true,
+		},
+	)
 	require.NoError(t, err)
 	testcontainers.CleanupContainer(t, container)
 
-	host, err := container.Host(ctx)
+	host, err := container.Host(t.Context())
 	require.NoError(t, err)
-	port, err := container.MappedPort(ctx, "9090")
+	port, err := container.MappedPort(t.Context(), "9090")
 	require.NoError(t, err)
 
 	addr := fmt.Sprintf("%s:%s", host, port.Port())
@@ -209,7 +211,7 @@ func setupGCPTestContainer(t *testing.T, ctx context.Context) (*secretmanager.Cl
 	)
 	require.NoError(t, err)
 
-	client, err := secretmanager.NewClient(ctx, option.WithGRPCConn(conn))
+	client, err := secretmanager.NewClient(t.Context(), option.WithGRPCConn(conn))
 	if err != nil {
 		return nil, err
 	}
