@@ -2,6 +2,8 @@ package spelunk
 
 import (
 	b64mod "github.com/detro/spelunk/builtin/modifier/base64"
+	b64dmod "github.com/detro/spelunk/builtin/modifier/base64_decoder"
+	b64emod "github.com/detro/spelunk/builtin/modifier/base64_encoder"
 	"github.com/detro/spelunk/builtin/modifier/jsonpath"
 	b64src "github.com/detro/spelunk/builtin/source/base64"
 	"github.com/detro/spelunk/builtin/source/env"
@@ -42,6 +44,8 @@ func defaultOptions() []SpelunkerOption {
 		WithSource(&b64src.SecretSourceBase64{}),
 		WithModifier(&jsonpath.SecretModifierJSONPath{}),
 		WithModifier(&b64mod.SecretModifierBase64{}),
+		WithModifier(&b64emod.SecretModifierBase64Encoder{}),
+		WithModifier(&b64dmod.SecretModifierBase64Decoder{}),
 	}
 }
 

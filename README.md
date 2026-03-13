@@ -188,14 +188,16 @@ will result in this sequence:
 * `mod1` takes the `<value_A_B>` and applies `mod1(<value_A_B>, C) = <value_A_B_C>`
 * client code is returned the final `<value_A_B_C>`
 
-| Modifier (of Secrets)            | Type (query)     | Available as | Status |                                        Doc                                         |
-|----------------------------------|------------------|:------------:|:------:|:----------------------------------------------------------------------------------:|
-| JSONPath extractor               | `?jp=<JSONPath>` |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/jsonpath) |
-| Base64 encoder                   | `?b64`           |   built-in   |   ✅    |  [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64)  |
-| XPath extractor                  | `?xp=<XPath>`    |   plug-in    |   ⏳    |                                                                                    |
-| YAML JSONPath extractor          | `?yp=<JSONPath>` |   plug-in    |   ⏳    |                                                                                    |
-| TOML JSONPath extractor          | `?tp=<JSONPath>` |   plug-in    |   ⏳    |                                                                                    |
-| SHA-2/3 / BLAKE-2/3 / ... hasher | TBD              |   plug-in    |   ⏳    |                                                                                    |
+| Modifier (of Secrets)             | Type (query)     | Available as | Status |                                           Doc                                            |
+|-----------------------------------|------------------|:------------:|:------:|:----------------------------------------------------------------------------------------:|
+| JSONPath extractor                | `?jp=<JSONPath>` |   built-in   |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/jsonpath)    |
+| Base64 encoder                    | `?b64`           |   built-in   |   ✅    |     [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64)     |
+| Base64 encoder (alias for `?b64`) | `?b64e`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_encoder) |
+| Base64 decoder                    | `?b64d`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_decoder) |
+| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ⏳    |                                                                                          |
+| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ⏳    |                                                                                          |
+| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ⏳    |                                                                                          |
+| SHA-2/3 / BLAKE-2/3 / ... hasher  | TBD              |   plug-in    |   ⏳    |                                                                                          |
 
 ## Contributing
 

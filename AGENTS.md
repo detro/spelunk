@@ -79,6 +79,8 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/base64/`**: `base64://` source implementation.
     - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
     - **`modifier/base64/`**: `b64` modifier implementation (Base64 encoding).
+    - **`modifier/base64_encoder/`**: `b64e` alias for `modifier/base64/`.
+    - **`modifier/base64_decoder/`**: `b64d` modifier implementation (Base64 decoding).
 - **`plugin/`**: External plugins (opt-in).
     - **`source/aws/`**: `aws://` source implementation (AWS Secrets Manager).
     - **`source/gcp/`**: `gcp://` source implementation (Google Cloud Secret Manager).

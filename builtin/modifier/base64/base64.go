@@ -12,6 +12,8 @@ import (
 // To use it, append the modifier `b64` to the given secret coordinates string:
 //
 //	plain://my-secret?b64
+//
+// NOTE: This is "aliased" as `?b64e` by base64_encoder.SecretModifierBase64Encoder.
 type SecretModifierBase64 struct{}
 
 var _ types.SecretModifier = (*SecretModifierBase64)(nil)

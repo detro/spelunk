@@ -1,6 +1,8 @@
-# Base64 Secret Modifier (`base64`)
+# Base64 Encoder Secret Modifier (`b64`)
 
 This modifier allows you to encode a dug-up secret value into a Base64 string.
+
+_Note: This modifier is also aliased as `?b64e`._
 
 ## Status
 
@@ -13,10 +15,10 @@ To use the Base64 modifier, append `?b64` to your secret coordinates URI.
 ### Syntax
 
 ```
-<type>://<location>?b64
+<scheme>://<location>?b64
 ```
 
-- **Modifier Key**: `b64`
+- **Modifier Key**: `b64` (or `b64e`)
 - **Value**: None required. Any value provided is ignored.
 
 ### Example
