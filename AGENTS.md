@@ -53,7 +53,6 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task fmt` | Format code |
 | `task run -- <args>` | Run the project (passes args to `go run .`) |
 | `task update-dependencies` | Update and tidy Go modules |
-| `task readme` | Render README.md in terminal |
 | `task doc.serve` | Run local godoc server (`pkgsite`) and open in browser |
 
 ## ⚙️ CI/CD

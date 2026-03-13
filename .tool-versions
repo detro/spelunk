@@ -1,4 +1,3 @@
 task 3.48.0
 golang 1.26.0
 golangci-lint 2.9.0
-glow 2.1.1

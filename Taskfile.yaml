@@ -47,9 +47,6 @@ tasks:
       - mod.update
       - mod.tidy
 
-  readme:
-    cmd: glow -t README.md
-
   doc.serve:
     cmds:
       - go install golang.org/x/pkgsite/cmd/pkgsite@latest
