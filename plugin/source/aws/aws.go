@@ -56,10 +56,9 @@ type SecretSourceAWS struct {
 
 // WithAWS enables the SecretSourceAWS.
 func WithAWS(client *secretsmanager.Client) spelunk.SpelunkerOption {
-	source := &SecretSourceAWS{
+	return spelunk.WithSource(&SecretSourceAWS{
 		client: client,
-	}
-	return spelunk.WithSource(source)
+	})
 }
 
 var _ types.SecretSource = (*SecretSourceAWS)(nil)

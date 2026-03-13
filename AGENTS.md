@@ -82,6 +82,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`modifier/base64_decoder/`**: `b64d` modifier implementation (Base64 decoding).
 - **`plugin/`**: External plugins (opt-in).
     - **`source/aws/`**: `aws://` source implementation (AWS Secrets Manager).
+    - **`source/azure/`**: `az://` source implementation (Azure Key Vault).
     - **`source/gcp/`**: `gcp://` source implementation (Google Cloud Secret Manager).
     - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
     - **`source/vault/`**: `vault://` source implementation (HashiCorp Vault KV).
@@ -98,7 +99,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
 
 - **Framework**: Use [testify](https://github.com/stretchr/testify) (`require`, `assert`) for all tests.
 - **Scope**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
-- **Integration Tests**: Use [Testcontainers for Go](https://golang.testcontainers.org/) for integration tests (e.g., Kubernetes, Vault). Use `testcontainers.CleanupContainer` for resource management. Use `if testing.Short() { t.Skip("...") }` to skip integration tests in short mode.
+- **Integration Tests**: Use [Testcontainers for Go](https://golang.testcontainers.org/) for integration tests (e.g., Kubernetes, Vault, AWS, Azure, GCP). Use `testcontainers.CleanupContainer` for resource management. Use `if testing.Short() { t.Skip("...") }` to skip integration tests in short mode.
 - **Execution**: Run tests with `task test`.
 - **Linting**: Ensure code passes `task lint` before finishing.
 - **Test Data**: Use `testdata/` directories for file-based tests.
@@ -134,5 +135,8 @@ Based on `CONTRIBUTING.md`:
 - **SecretCoord Parsing**: 
     - `SecretCoord.Location` includes both Authority (userinfo/host) and Path.
     - If a URI contains userinfo (e.g., `plain://user:pass@host`), it is correctly preserved in `Location`.
+- **Trailing Slashes in URIs**:
+    - For `k8s://` and `vault://`, a trailing slash in the path instructs the source to return the entire secret data map as a JSON object instead of a specific key.
+    - For `aws://`, `az://`, and `gcp://`, trailing slashes are automatically stripped and ignored.
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
 - **Dependencies**: Ensure you have the correct Go version (1.26) as specified in `go.mod`.

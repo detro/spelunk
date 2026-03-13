@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Plugins**:
     - `aws://`: AWS Secrets Manager source implementation (available in `plugin/source/aws`).
     - `gcp://`: Google Cloud Secret Manager source implementation (available in `plugin/source/gcp`).
+    - `az://`: Azure Key Vault source implementation (available in `plugin/source/azure`).
 - **Built-in Modifiers**:
     - `?b64d`: Decode base64 strings back to their original secret value.
         Useful to decode binary value returned by Sources like `aws://` and `gcp://`.
