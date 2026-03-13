@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-03-13
 
 ### Added
 
@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `?b64` and `?b64e`: Encode secret value to a base64 string.
 - **Documentation**:
     - Added direct links to the documentation for each built-in Secret Source and Secret Modifier in the README.
+    - Explicitly documented built-in vs plugin architecture.
+    - Updated `AGENTS.md` with extra safety measures and AI instructions.
+
+### Changed
+
+- **CI**: Restricted permissions of the auto-generated GITHUB_TOKEN in GitHub Actions.
+- **Testing**: Refactored Testcontainers spawning and secret creation utilities across tests.
 
 ## [1.1.0] - 2026-02-21
 
