@@ -40,10 +40,10 @@ Retrieve a secret using its full ARN:
 aws:///arn:aws:secretsmanager:us-east-1:123456789012:secret:my-database-credentials-1234
 ```
 
-Using modifiers (e.g., extracting JSON path) safely ignores trailing slashes in the path:
+Using modifiers (e.g., extracting JSON path) safely ignores trailing slashes in the path. Keep in mind that AWS Secrets Manager can store secrets as binary data, which are returned as Base64-encoded strings; you might need to decode them first before parsing:
 
 ```text
-aws://my-json-secret/?jp=$.password
+aws://my-binary-json-secret/?b64d&jp=$.password
 ```
 
 ## Configuration
@@ -89,7 +89,7 @@ func main() {
    - **ARNs**: Must match the standard Secrets Manager ARN format. The validation logic naturally supports alternative AWS partitions (e.g., `aws-cn`, `aws-us-gov`, `aws-iso`).
    - **Restriction**: As per [AWS documentation](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_CreateSecret.html), a secret name **must not** end with a hyphen followed by six alphanumeric characters (to avoid confusion with ARNs).
 3. **Retrieval**: Uses `awsClient.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{SecretId: ...})` to fetch the secret.
-4. **Extraction**: Returns either the `SecretString` or `SecretBinary` depending on how the secret is stored in AWS.
+4. **Extraction**: Returns either the `SecretString` or `SecretBinary` depending on how the secret is stored in AWS. If the secret is stored as `SecretBinary` (an array of bytes), AWS returns it as a **Base64-encoded string**. Spelunk leaves it encoded: it is up to the user to decode it using the `?b64d` modifier (or handle it in their application) if required.
 5. **Errors**:
     - Returns `ErrSecretSourceAWSInvalidLocation` if the location does not match either the valid Name or ARN format.
     - Returns `ErrSecretSourceAWSInvalidNameSuffix` if a secret name violates the "no hyphen + 6 characters suffix" rule.

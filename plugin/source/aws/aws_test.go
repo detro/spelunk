@@ -2,6 +2,7 @@ package aws_test
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"testing"
 
@@ -23,9 +24,17 @@ func TestSecretSourceAWS_Type(t *testing.T) {
 }
 
 const (
-	secretName  = "my-app/secret"
-	secretValue = `{"key":"value"}`
+	jsonSecretName  = "my-app/my-jsonsecret"
+	jsonSecretValue = `{"key":"value"}`
+
+	plainSecretName  = "my-app/my-plainsecret"
+	plainSecretValue = `
+		key=value
+		anotherkey=anothervalue
+	`
 )
+
+var plainSecretValueBase64 = base64.StdEncoding.EncodeToString([]byte(plainSecretValue))
 
 func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 	if testing.Short() {
@@ -35,10 +44,10 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 	ctx := context.Background()
 	awsClient, err := setupAWSTestContainer(t)
 	require.NoError(t, err)
-	secret := createTestSecrets(t, awsClient)
+	secrets := createTestSecrets(t, awsClient)
 
 	// Initialize Spelunker with AWS plugin
-	spelunker := spelunk.NewSpelunker(spelunkaws.WithAWS(awsClient))
+	spelunker := spelunk.NewSpelunker(spelunkaws.WithAWS(awsClient), spelunk.WithoutTrimValue())
 
 	tests := []struct {
 		name     string
@@ -47,14 +56,34 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		errMatch error
 	}{
 		{
-			name:     "secret by name",
-			coordStr: fmt.Sprintf("aws://%s", secretName),
-			want:     secretValue,
+			name:     "(json) secret by name",
+			coordStr: fmt.Sprintf("aws://%s", jsonSecretName),
+			want:     jsonSecretValue,
 		},
 		{
-			name:     "secret by exact ARN (with ///)",
-			coordStr: fmt.Sprintf("aws:///%s", *secret.ARN),
-			want:     secretValue,
+			name:     "(json) secret by exact ARN (with ///)",
+			coordStr: fmt.Sprintf("aws:///%s", *(secrets[jsonSecretName]).ARN),
+			want:     jsonSecretValue,
+		},
+		{
+			name:     "(plain) secret by name",
+			coordStr: fmt.Sprintf("aws://%s", plainSecretName),
+			want:     plainSecretValueBase64,
+		},
+		{
+			name:     "(plain) secret by exact ARN (with ///)",
+			coordStr: fmt.Sprintf("aws:///%s", *(secrets[plainSecretName]).ARN),
+			want:     plainSecretValueBase64,
+		},
+		{
+			name:     "(plain) secret by name, base64 decoded",
+			coordStr: fmt.Sprintf("aws://%s?b64d", plainSecretName),
+			want:     plainSecretValue,
+		},
+		{
+			name:     "(plain) secret by exact ARN (with ///), base64 decoded",
+			coordStr: fmt.Sprintf("aws:///%s?b64d", *(secrets[plainSecretName]).ARN),
+			want:     plainSecretValue,
 		},
 		{
 			name:     "secret that does not exist",
@@ -108,13 +137,24 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 func createTestSecrets(
 	t *testing.T,
 	client *secretsmanager.Client,
-) *secretsmanager.CreateSecretOutput {
-	out, err := client.CreateSecret(t.Context(), &secretsmanager.CreateSecretInput{
-		Name:         aws.String(secretName),
-		SecretString: aws.String(secretValue),
+) map[string]*secretsmanager.CreateSecretOutput {
+	res := make(map[string]*secretsmanager.CreateSecretOutput)
+
+	jsonSecret, err := client.CreateSecret(t.Context(), &secretsmanager.CreateSecretInput{
+		Name:         aws.String(jsonSecretName),
+		SecretString: aws.String(jsonSecretValue),
 	})
 	require.NoError(t, err)
-	return out
+	res[jsonSecretName] = jsonSecret
+
+	plainSecret, err := client.CreateSecret(t.Context(), &secretsmanager.CreateSecretInput{
+		Name:         aws.String(plainSecretName),
+		SecretBinary: []byte(plainSecretValue),
+	})
+	require.NoError(t, err)
+	res[plainSecretName] = plainSecret
+
+	return res
 }
 
 func setupAWSTestContainer(t *testing.T) (*secretsmanager.Client, error) {

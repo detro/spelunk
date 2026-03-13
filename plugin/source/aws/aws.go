@@ -40,6 +40,10 @@ var (
 //	aws://<SECRET_NAME>
 //	aws:///<SECRET_ARN>
 //
+// AWS Secrets Manager supports storing secrets either as a String, or as Binary (i.e. array of bytes).
+// In the case of the latter, the API returns the Base64-encoded version of the bytes. Spelunk respects
+// that and leaves it to you to either consume the secret in base64 form or decode it using the `?b64d` modifier.
+//
 // NOTE: When referring to a secret by ARN, it is important to use the prefix `aws:///` to ensure
 // we don't confuse the internal Spelunk parser, given the "peculiar" format of AWS ARNs containing the `:` character.
 //
@@ -103,11 +107,14 @@ func (s *SecretSourceAWS) DigUp(ctx context.Context, coord types.SecretCoord) (s
 		return "", fmt.Errorf("%w (%q): %w", types.ErrCouldNotFetchSecret, coord.Location, err)
 	}
 
-	// Extract and return secret (either as string, or as binary), or error if missing
+	// Extract and return secret, or error if missing
 	if res.SecretString != nil {
+		// Secret is a string
 		return *res.SecretString, nil
 	}
 	if res.SecretBinary != nil {
+		// Secret is a binary, and AWS Secret Manager returns it as Base64-encoded array of bytes.
+		// We return it as a string but leave it encoded: the user will decide how to handle it.
 		return string(res.SecretBinary), nil
 	}
 	return "", fmt.Errorf(
