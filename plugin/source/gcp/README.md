@@ -39,10 +39,10 @@ Retrieve a specific version of a secret:
 gcp://projects/1234567890/secrets/my-api-key/versions/2
 ```
 
-Using modifiers (e.g., extracting JSON path) safely ignores trailing slashes in the path:
+Using modifiers (e.g., extracting JSON path) safely ignores trailing slashes in the path, but keep in mind that since GCP Secret Manager payloads are returned as Base64 encoded strings, you might need to decode them first before parsing:
 
 ```text
-gcp://projects/my-project-123/secrets/my-json-secret/?jp=$.password
+gcp://projects/my-project-123/secrets/my-json-secret/?b64d&jp=$.password
 ```
 
 ## Configuration
@@ -80,7 +80,7 @@ func main() {
    - Any trailing slash (e.g., when the URI contains query parameters like `/?jp=$.password`) is stripped automatically.
    - If no `/versions/` suffix is present, `/versions/latest` is automatically appended to the request.
 2. **Retrieval**: Uses `gcpClient.AccessSecretVersion` to fetch the payload of the secret.
-3. **Extraction**: Returns the decoded payload data as a string.
+3. **Extraction**: Because GCP Secret Manager payloads are strictly binary (`[]byte`), the source converts and returns the payload data as a **Base64-encoded string**. It is up to the user to decode it using the `?b64d` modifier (or handle it in their application) if plain text or JSON is required.
 4. **Errors**:
     - Returns `ErrSecretSourceGCPInvalidLocation` if the location format is invalid.
     - Returns `ErrCouldNotFetchSecret` if the API call fails for other reasons.

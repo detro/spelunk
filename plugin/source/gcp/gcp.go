@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"regexp"
 
@@ -37,6 +38,11 @@ var (
 //	gcp://projects/<PROJECT_ID_OR_NUM>/secrets/<SECRET_NAME>/versions/<VERSION>
 //
 // If the version is omitted, a "/versions/latest" suffix is appended.
+//
+// Because GCP Secret Manager payloads are strictly binary (`[]byte`), this source explicitly
+// converts and returns the payload data as a base64-encoded string. It is up to the user
+// to decode it using the `?b64d` modifier (or handle it in their application) if plain text
+// or JSON parsing is required.
 //
 // Expected format of `<PROJECT_ID_OR_NUM>` is documented at: https://google.aip.dev/cloud/2510.
 // Expected format of `<SECRET_NAME>` is documented at: https://cloud.google.com/security/products/secret-manager.
@@ -92,7 +98,7 @@ func (s *SecretSourceGCP) DigUp(ctx context.Context, coord types.SecretCoord) (s
 		return "", fmt.Errorf("%w (%q): %w", types.ErrCouldNotFetchSecret, coord.Location, err)
 	}
 
-	// Extract and return payload, or error if missing
+	// Extract and return payload encoded in base64, or error if missing
 	if res.Payload == nil || res.Payload.Data == nil {
 		return "", fmt.Errorf(
 			"%w (%q): secret contains no data",
@@ -100,5 +106,5 @@ func (s *SecretSourceGCP) DigUp(ctx context.Context, coord types.SecretCoord) (s
 			coord.Location,
 		)
 	}
-	return string(res.Payload.Data), nil
+	return base64.StdEncoding.EncodeToString(res.Payload.Data), nil
 }

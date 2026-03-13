@@ -1,6 +1,7 @@
 package gcp_test
 
 import (
+	"encoding/base64"
 	"fmt"
 	"testing"
 
@@ -53,12 +54,12 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 		{
 			name:     "valid secret latest",
 			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/%s", projectID, secretName),
-			want:     secretValue,
+			want:     base64.StdEncoding.EncodeToString([]byte(secretValue)),
 		},
 		{
 			name:     "valid secret specific version",
 			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/%s/versions/1", projectID, secretName),
-			want:     secretValue,
+			want:     base64.StdEncoding.EncodeToString([]byte(secretValue)),
 		},
 		{
 			name: "valid secret specific latest version",
@@ -67,12 +68,12 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 				projectID,
 				secretName,
 			),
-			want: secretValue,
+			want: base64.StdEncoding.EncodeToString([]byte(secretValue)),
 		},
 		{
 			name: "valid secret via jp modifier",
 			coordStr: fmt.Sprintf(
-				"gcp://projects/%s/secrets/%s/?jp=$.password",
+				"gcp://projects/%s/secrets/%s/?b64d&jp=$.password",
 				projectID,
 				jsonSecretName,
 			),
