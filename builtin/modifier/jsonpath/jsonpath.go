@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
+	"github.com/detro/spelunk/internal/jsonpathutil"
 	"github.com/detro/spelunk/types"
 	jp "github.com/oliveagle/jsonpath"
 )
 
 var (
 	ErrSecretNotJSON          = fmt.Errorf("secret is not a valid JSON")
+	ErrJSONPathInvalid        = fmt.Errorf("invalid JSONPath expression")
 	ErrJSONPathFailed         = fmt.Errorf("failed to apply JSONPath")
 	ErrJSONPathMatchingFailed = fmt.Errorf("failed to match JSONPath")
 )
@@ -50,42 +51,20 @@ func (s *SecretModifierJSONPath) Modify(
 		return "", fmt.Errorf("%w: %w", ErrSecretNotJSON, err)
 	}
 
-	res, err := jp.JsonPathLookup(data, mod)
+	compiledPath, err := jp.Compile(mod)
+	if err != nil {
+		return "", fmt.Errorf("%w (%q): %w", ErrJSONPathInvalid, mod, err)
+	}
+
+	res, err := compiledPath.Lookup(data)
 	if err != nil {
 		return "", fmt.Errorf("%w (%q): %w", ErrJSONPathFailed, mod, err)
 	}
 
-	// If the JSONPath matches multiple values, focus on the first one.
-	// NOTE: user can always refine their JSONPath modifier if they need something else.
-	if list, ok := res.([]interface{}); ok {
-		if len(list) > 0 {
-			res = list[0]
-		}
+	strRes, err := jsonpathutil.PostProcessJSONPathResult(res)
+	if err != nil {
+		return "", fmt.Errorf("%w: %w", ErrJSONPathMatchingFailed, err)
 	}
 
-	switch v := res.(type) {
-	case string:
-		return v, nil
-	case float64:
-		// Convert float to string, removing trailing zeros
-		// (e.g. 1.500000 -> 1.5, 10.000000 -> 10).
-		//
-		// We use 'f' format to avoid scientific notation for large numbers,
-		// and -1 precision to use the smallest number of digits necessary.
-		return strconv.FormatFloat(v, 'f', -1, 64), nil
-	case bool:
-		return fmt.Sprintf("%v", v), nil
-	case nil:
-		return "", fmt.Errorf("%w: result is null", ErrJSONPathMatchingFailed)
-	default:
-		b, err := json.Marshal(v)
-		if err != nil {
-			return "", fmt.Errorf(
-				"%w: failed to marshal result: %w",
-				ErrJSONPathMatchingFailed,
-				err,
-			)
-		}
-		return string(b), nil
-	}
+	return strRes, nil
 }

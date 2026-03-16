@@ -1,4 +1,4 @@
-# JSONPath Secret Modifier (`jp`)
+# JSONPath Extractor Modifier (`jp`)
 
 This modifier allows you to extract specific values from a secret that contains JSON data. It uses [JSONPath](https://goessner.net/articles/JsonPath/) syntax to query the JSON structure.
 

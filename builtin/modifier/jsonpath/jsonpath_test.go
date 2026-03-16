@@ -79,6 +79,12 @@ func TestSecretModifier_JSONPath(t *testing.T) {
 			errMatch: jsonpath.ErrJSONPathFailed,
 		},
 		{
+			name:     "invalid jsonpath syntax",
+			val:      jsonSecret,
+			coordStr: "test://loc?jp=$.[invalid",
+			errMatch: jsonpath.ErrJSONPathInvalid,
+		},
+		{
 			name:     "multiple matches (return first)",
 			val:      jsonSecret,
 			coordStr: "test://loc?jp=$.users[*].name",
