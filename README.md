@@ -194,9 +194,9 @@ will result in this sequence:
 | Base64 encoder                    | `?b64`           |   built-in   |   ✅    |     [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64)     |
 | Base64 encoder (alias for `?b64`) | `?b64e`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_encoder) |
 | Base64 decoder                    | `?b64d`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_decoder) |
-| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ⏳    |                                                                                          |
-| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ⏳    |                                                                                          |
-| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ⏳    |                                                                                          |
+| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/xpath)    |
+| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/yamlpath)  |
+| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/tomlpath)  |
 | SHA-2/3 / BLAKE-2/3 / ... hasher  | TBD              |   plug-in    |   ⏳    |                                                                                          |
 
 ## Contributing

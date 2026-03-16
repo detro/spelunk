@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.0] - 2026-03-15
 
+### Added
+
+- **Plugins**:
+    - `?xp=`: XPath extractor modifier for XML secrets (available in `plugin/modifier/xpath`).
+    - `?yp=`: YAML JSONPath extractor modifier for YAML secrets (available in `plugin/modifier/yamlpath`).
+    - `?tp=`: TOML JSONPath extractor modifier for TOML secrets (available in `plugin/modifier/tomlpath`).
+
 ### Changed
 
 - **Refactoring**: Extracted JSONPath post-processing and test source mocking to internal utilities (`internal/jsonpathutil` and `internal/testutil`) to facilitate code reuse across extractors.
