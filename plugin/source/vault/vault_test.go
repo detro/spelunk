@@ -143,7 +143,7 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 func createTestSecrets(t *testing.T, client *api.Client) {
 	_, err := client.Logical().Write(v1SecPath, secData)
 	require.NoError(t, err)
-	_, err = client.Logical().Write(v2SecPath, map[string]interface{}{
+	_, err = client.Logical().Write(v2SecPath, map[string]any{
 		"data": secData,
 	})
 	require.NoError(t, err)

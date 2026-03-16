@@ -45,7 +45,7 @@ func (s *SecretModifierJSONPath) Modify(
 	secretValue string,
 	mod string,
 ) (string, error) {
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(secretValue), &data); err != nil {
 		return "", fmt.Errorf("%w: %w", ErrSecretNotJSON, err)
 	}

@@ -86,8 +86,8 @@ func (s *SecretSourceVault) DigUp(
 	}
 
 	// Vault KV v2 wraps data in a "data" field
-	var data map[string]interface{}
-	if v2Data, ok := secret.Data["data"].(map[string]interface{}); ok {
+	var data map[string]any
+	if v2Data, ok := secret.Data["data"].(map[string]any); ok {
 		data = v2Data
 	} else {
 		// KV v1 or other logical paths
