@@ -8,24 +8,10 @@ import (
 	"github.com/detro/spelunk"
 	"github.com/detro/spelunk/builtin/modifier/base64_decoder"
 	"github.com/detro/spelunk/builtin/modifier/jsonpath"
+	"github.com/detro/spelunk/internal/testutil"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
 )
-
-// mockSource implements spelunk.SecretSource for testing
-type mockSource struct {
-	typ string
-	val string
-	err error
-}
-
-func (m *mockSource) Type() string {
-	return m.typ
-}
-
-func (m *mockSource) DigUp(_ context.Context, _ types.SecretCoord) (string, error) {
-	return m.val, m.err
-}
 
 func TestSecretModifierBase64Decoder_Type(t *testing.T) {
 	s := &base64_decoder.SecretModifierBase64Decoder{}
@@ -80,7 +66,7 @@ func TestSecretModifierBase64Decoder_Modify(t *testing.T) {
 			require.NoError(t, err)
 
 			spelunker := spelunk.NewSpelunker(
-				spelunk.WithSource(&mockSource{typ: "test", val: tt.val}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.val}),
 				spelunk.WithModifier(&jsonpath.SecretModifierJSONPath{}),
 				spelunk.WithModifier(&base64_decoder.SecretModifierBase64Decoder{}),
 			)

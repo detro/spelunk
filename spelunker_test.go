@@ -6,24 +6,10 @@ import (
 	"testing"
 
 	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/internal/testutil"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
 )
-
-// mockSource implements spelunk.SecretSource for testing
-type mockSource struct {
-	typ string
-	val string
-	err error
-}
-
-func (m *mockSource) Type() string {
-	return m.typ
-}
-
-func (m *mockSource) DigUp(_ context.Context, _ types.SecretCoord) (string, error) {
-	return m.val, m.err
-}
 
 // mockModifier implements types.SecretModifier for testing.
 // It takes the given mod string and appends it as `_<mod>` to the resulting secret.
@@ -52,7 +38,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 		{
 			name: "success with single source",
 			opts: []spelunk.SpelunkerOption{
-				spelunk.WithSource(&mockSource{typ: "test", val: "secret-value"}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: "secret-value"}),
 			},
 			coordStr: "test://loc",
 			want:     "secret-value",
@@ -60,8 +46,8 @@ func TestSpelunker_DigUp(t *testing.T) {
 		{
 			name: "success with multiple sources",
 			opts: []spelunk.SpelunkerOption{
-				spelunk.WithSource(&mockSource{typ: "src1", val: "val1"}),
-				spelunk.WithSource(&mockSource{typ: "src2", val: "val2"}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "src1", Val: "val1"}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "src2", Val: "val2"}),
 			},
 			coordStr: "src2://loc",
 			want:     "val2",
@@ -69,7 +55,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 		{
 			name: "modifiers applied in order",
 			opts: []spelunk.SpelunkerOption{
-				spelunk.WithSource(&mockSource{typ: "src", val: "val"}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "src", Val: "val"}),
 				spelunk.WithModifier(&mockModifier{typ: "mod1"}),
 				spelunk.WithModifier(&mockModifier{typ: "mod2"}),
 			},
@@ -79,7 +65,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 		{
 			name: "trim value by default",
 			opts: []spelunk.SpelunkerOption{
-				spelunk.WithSource(&mockSource{typ: "test", val: "  secret  \n"}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: "  secret  \n"}),
 			},
 			coordStr: "test://loc",
 			want:     "secret",
@@ -87,7 +73,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 		{
 			name: "disable trim value",
 			opts: []spelunk.SpelunkerOption{
-				spelunk.WithSource(&mockSource{typ: "test", val: "  secret  \n"}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: "  secret  \n"}),
 				spelunk.WithoutTrimValue(),
 			},
 			coordStr: "test://loc",
@@ -103,7 +89,7 @@ func TestSpelunker_DigUp(t *testing.T) {
 		{
 			name: "source returns error",
 			opts: []spelunk.SpelunkerOption{
-				spelunk.WithSource(&mockSource{typ: "fail", err: errors.New("boom")}),
+				spelunk.WithSource(&testutil.MockSource{Typ: "fail", Err: errors.New("boom")}),
 			},
 			coordStr: "fail://loc",
 			want:     "",
