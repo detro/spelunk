@@ -81,6 +81,9 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`modifier/base64_encoder/`**: `b64e` alias for `modifier/base64/`.
     - **`modifier/base64_decoder/`**: `b64d` modifier implementation (Base64 decoding).
 - **`plugin/`**: External plugins (opt-in).
+    - **`modifier/tomlpath/`**: `tp` modifier implementation (TOML JSONPath extraction).
+    - **`modifier/xpath/`**: `xp` modifier implementation (XPath extraction).
+    - **`modifier/yamlpath/`**: `yp` modifier implementation (YAML JSONPath extraction).
     - **`source/aws/`**: `aws://` source implementation (AWS Secrets Manager).
     - **`source/azure/`**: `az://` source implementation (Azure Key Vault).
     - **`source/gcp/`**: `gcp://` source implementation (Google Cloud Secret Manager).
@@ -103,6 +106,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
 - **Execution**: Run tests with `task test`.
 - **Linting**: Ensure code passes `task lint` before finishing.
 - **Test Data**: Use `testdata/` directories for file-based tests.
+- **Test Utilities**: Use `internal/testutil` for reusable test mocks like `MockSource`.
 
 ## 📝 Conventions & Style
 
@@ -127,9 +131,10 @@ Based on `CONTRIBUTING.md`:
 ## ⚠️ Gotchas
 
 - **Modifiers Application Order**: `SecretCoord.Modifiers` is a slice of key-value pairs (`[][2]string`). Modifiers are applied in the exact order they appear in the connection string URI. Duplicate keys are allowed and preserved.
-- **JSONPath Behavior**:
-    - The `jp` modifier returns the **first element** if the JSONPath matches a list.
-    - **Floats**: Converted to string without scientific notation and with minimal necessary precision (e.g. `1.50000` -> `1.5`).
+- **Path Extractor Behaviors** (`jp`, `yp`, `tp`, `xp`):
+    - These modifiers return the **first element** if the path matches a list.
+    - Expressions are compiled *before* querying to separate syntax errors from match errors.
+    - **Floats** (JSON/YAML/TOML): Converted to string without scientific notation and minimal necessary precision (e.g. `1.50000` -> `1.5`).
     - **Nulls**: Returns an error if the result is explicitly `null`.
 - **Whitespace Trimming**: By default, `Spelunker` trims whitespace from retrieved secrets *after* applying modifiers. This can be disabled via `WithoutTrimValue()` option.
 - **SecretCoord Parsing**: 
@@ -140,3 +145,4 @@ Based on `CONTRIBUTING.md`:
     - For `aws://`, `az://`, and `gcp://`, trailing slashes are automatically stripped and ignored.
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
 - **Dependencies**: Ensure you have the correct Go version (1.26) as specified in `go.mod`.
+- **Integration Tests with Testcontainers**: In case of integration test hangs, check for orphaned Docker containers. Use `testcontainers.CleanupContainer` effectively to ensure resources are managed.

@@ -4,7 +4,7 @@ This document describes the high-level architecture of `spelunk`, its core compo
 
 ## Overview
 
-`spelunk` is a library designed to abstract the retrieval of secrets from various sources (environment variables, files, Kubernetes secrets, etc.) using a unified URI-based syntax. It allows developers to define *where* a secret is and *how* to process it (e.g., extracting a JSON field) without changing the application logic.
+`spelunk` is a library designed to abstract the retrieval of secrets from various sources (environment variables, files, Kubernetes secrets, etc.) using a unified URI-based syntax. It allows developers to define *where* a secret is and *how* to process it (e.g., extracting a JSON/YAML/TOML/XML field) without changing the application logic.
 
 ## Core Concepts
 
@@ -126,7 +126,7 @@ sequenceDiagram
 
     loop For each modifier in coord.Modifiers
         Spelunker->>Modifier Registry: Get Modifier for mod.Key
-        Modifier Registry-->>Spelunker: Returns SecretModifier (e.g., JSONPath)
+        Modifier Registry-->>Spelunker: Returns SecretModifier (e.g., JSONPath/XPath)
         
         Spelunker->>SecretModifier: Modify(ctx, currentValue, mod.Value)
         activate SecretModifier
