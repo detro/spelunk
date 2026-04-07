@@ -19,7 +19,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/k3s v0.41.0
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.41.0
 	github.com/testcontainers/testcontainers-go/modules/vault v0.41.0
-	google.golang.org/api v0.274.0
+	google.golang.org/api v0.275.0
 	google.golang.org/grpc v1.80.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.35.3
