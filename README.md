@@ -148,9 +148,6 @@ type CLI struct {
 Sources are places out of which a secret can be "dug-up".
 Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be enabled.
 
-| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    |   ⏳    |                                                                                   |
-| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    |   ⏳    |                                                                                   |
-| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `keeper://`   |   plug-in    |   ⏳    |                                                                                   |
 | Source (of Secrets)                                                              | Type (scheme)  | Available as | Status |                                        Doc                                        |
 |----------------------------------------------------------------------------------|----------------|:------------:|:------:|:---------------------------------------------------------------------------------:|
 | Environment Variables                                                            | `env://`       |   built-in   |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/env)    |
@@ -163,6 +160,9 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 | [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`       |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/gcp)     |
 | [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`        |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/azure)    |
 | [1Password](https://developer.1password.com/docs/cli/)                           | `op://`        |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/1password)  |
+| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    |   ⏳    |                                                                                   |
+| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    |   ⏳    |                                                                                   |
+| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `keeper://`   |   plug-in    |   ⏳    |                                                                                   |
 | [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://`  |   plug-in    | ❌ [^1] |                                                                                   |
 
 [^1]: Dashlane is not implemented due to the lack of an official or community Go SDK, and no suitable REST API or local Testcontainer for extraction.
