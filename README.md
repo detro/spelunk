@@ -148,22 +148,24 @@ type CLI struct {
 Sources are places out of which a secret can be "dug-up".
 Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be enabled.
 
-| Source (of Secrets)                                                              | Type (scheme) | Available as | Status |                                        Doc                                        |
-|----------------------------------------------------------------------------------|---------------|:------------:|:------:|:---------------------------------------------------------------------------------:|
-| Environment Variables                                                            | `env://`      |   built-in   |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/env)    |
-| File                                                                             | `file://`     |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/file)    |
-| Plaintext                                                                        | `plain://`    |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/plain)   |
-| Base64 encoded                                                                   | `base64://`   |   built-in   |   ✅    |  [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/base64)   |
-| [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`      |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/kubernetes) |
-| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/vault)    |
-| [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/aws)     |
-| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/gcp)     |
-| [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/azure)    |
-| [1Password](https://developer.1password.com/docs/cli/)                           | `opass://`    |   plug-in    |   ⏳    |                                                                                   |
 | [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    |   ⏳    |                                                                                   |
 | [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    |   ⏳    |                                                                                   |
 | [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `keeper://`   |   plug-in    |   ⏳    |                                                                                   |
-| [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://` |   plug-in    |   ⏳    |                                                                                   |
+| Source (of Secrets)                                                              | Type (scheme)  | Available as | Status |                                        Doc                                        |
+|----------------------------------------------------------------------------------|----------------|:------------:|:------:|:---------------------------------------------------------------------------------:|
+| Environment Variables                                                            | `env://`       |   built-in   |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/env)    |
+| File                                                                             | `file://`      |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/file)    |
+| Plaintext                                                                        | `plain://`     |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/plain)   |
+| Base64 encoded                                                                   | `base64://`    |   built-in   |   ✅    |  [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/base64)   |
+| [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`       |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/kubernetes) |
+| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`     |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/vault)    |
+| [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`       |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/aws)     |
+| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`       |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/gcp)     |
+| [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`        |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/azure)    |
+| [1Password](https://developer.1password.com/docs/cli/)                           | `op://`        |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/1password)  |
+| [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://`  |   plug-in    | ❌ [^1] |                                                                                   |
+
+[^1]: Dashlane is not implemented due to the lack of an official or community Go SDK, and no suitable REST API or local Testcontainer for extraction.
 
 ## Modifiers (`SecretModifier`)
 
@@ -194,9 +196,9 @@ will result in this sequence:
 | Base64 encoder                    | `?b64`           |   built-in   |   ✅    |     [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64)     |
 | Base64 encoder (alias for `?b64`) | `?b64e`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_encoder) |
 | Base64 decoder                    | `?b64d`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_decoder) |
-| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/xpath)    |
-| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/yamlpath)  |
-| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/tomlpath)  |
+| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ✅    |      [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/xpath)      |
+| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/yamlpath)     |
+| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/tomlpath)     |
 | SHA-2/3 / BLAKE-2/3 / ... hasher  | TBD              |   plug-in    |   ⏳    |                                                                                          |
 
 ## Contributing

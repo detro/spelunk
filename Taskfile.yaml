@@ -16,13 +16,13 @@ tasks:
     deps: [test.full]
 
   test.short:
-    cmd: go test -v -race -cover -short ./...
+    cmd: go test -v -race -cover -short {{.CLI_ARGS | default "./..."}}
 
   test.full:
-    cmd: go test -v -race -cover ./...
+    cmd: go test -v -race -cover {{.CLI_ARGS | default "./..."}}
 
   test.ci:
-    cmd: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+    cmd: go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS | default "./..."}}
 
   lint:
     cmd: golangci-lint run --allow-parallel-runners --verbose

@@ -8,7 +8,7 @@ This document provides essential information for AI agents working on the `spelu
 
 ## Behaviour
 
-* **Never git commit**: unless explicitly instructed (and only contextual to that instruction), never automatically execute a `git commit`.
+* **CRITICAL: Never git commit**: unless explicitly instructed by the user, you must NEVER execute a `git commit` autonomously. If you are unsure, ask the user.
 * **Never leave this repository**:
   * All your "read" and "write" operations and all your tools should only be ever applied to this repo and its subdirectories
   * Never access any of the files on the rest of this system
@@ -44,10 +44,10 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | Command | Description |
 |---------|-------------|
 | `task build` | Build the project |
-| `task test` | Run all tests (alias for `test.full`) |
-| `task test.full` | Run all tests with race detection and coverage |
-| `task test.short` | Run short tests (skips integration tests) |
-| `task test.ci` | Run tests with coverage profile for CI |
+| `task test` | Run all tests (alias for `test.full`). Supports `-- <path>` to test specific directories |
+| `task test.full` | Run all tests with race detection and coverage. Supports `-- <path>` |
+| `task test.short` | Run short tests (skips integration tests). Supports `-- <path>` |
+| `task test.ci` | Run tests with coverage profile for CI. Supports `-- <path>` |
 | `task lint` | Run linter |
 | `task lint-fix` | Run linter and automatically fix issues |
 | `task fmt` | Format code |
@@ -89,6 +89,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/gcp/`**: `gcp://` source implementation (Google Cloud Secret Manager).
     - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
     - **`source/vault/`**: `vault://` source implementation (HashiCorp Vault KV).
+    - **`source/1password/`**: `op://` source implementation (1Password).
 - **`examples/`**: Example implementations (e.g., `kong/`, `viper/`, `urfave-cli/`, `basic/`).
 - **`docs/`**: Documentation assets (images, logos).
 - **`options.go`**: Functional options for configuring `Spelunker`.
@@ -103,7 +104,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
 - **Framework**: Use [testify](https://github.com/stretchr/testify) (`require`, `assert`) for all tests.
 - **Scope**: Use `spelunk_test` package for black-box testing (e.g., `spelunker_test.go`, `types/coordinates_test.go`).
 - **Integration Tests**: Use [Testcontainers for Go](https://golang.testcontainers.org/) for integration tests (e.g., Kubernetes, Vault, AWS, Azure, GCP). Use `testcontainers.CleanupContainer` for resource management. Use `if testing.Short() { t.Skip("...") }` to skip integration tests in short mode.
-- **Execution**: Run tests with `task test`.
+- **Execution**: Run tests with `task test`. You can test a specific directory by passing its path after `--` (e.g., `task test -- ./plugin/source/1password`).
 - **Linting**: Ensure code passes `task lint` before finishing.
 - **Test Data**: Use `testdata/` directories for file-based tests.
 - **Test Utilities**: Use `internal/testutil` for reusable test mocks like `MockSource`.
