@@ -19,16 +19,16 @@ func TestSecretSource1Password_Type(t *testing.T) {
 
 // TestSecretSource1Password_DigUp_Integration because there is no way to simulate locally a 1Password installation,
 // tests here are designed to be executed by maintainers with access to a specific 1Password vault and with the
-// environment variable `OP_SERVICE_ACCOUNT_TOKEN` set.
+// environment variable `SPELUNK_1PASSWORD_TEST_SATOKEN` set.
 // These tests will not be executed in CI, unfortunately.
 func TestSecretSource1Password_DigUp_Integration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
 
-	saToken, found := os.LookupEnv("OP_SERVICE_ACCOUNT_TOKEN")
+	saToken, found := os.LookupEnv("SPELUNK_1PASSWORD_TEST_SATOKEN")
 	if !found {
-		t.Skip("Skipping 1Password integration test: OP_SERVICE_ACCOUNT_TOKEN not set")
+		t.Skip("Skipping 1Password integration test: SPELUNK_1PASSWORD_TEST_SATOKEN not set")
 	}
 
 	client, err := onepassword.NewClient(
@@ -68,12 +68,12 @@ func TestSecretSource1Password_DigUp_Integration(t *testing.T) {
 		},
 		{
 			name:     "valid secret (standard field)",
-			coordStr: "op://spelunk-integration-tests/Integrations Tests Account/password",
+			coordStr: "op://w634j622awr7pd4pqr7so4gtgm/Integrations Tests Account/password",
 			expected: "spelunker-test-password",
 		},
 		{
 			name:     "valid secret (field inside section)",
-			coordStr: "op://spelunk-integration-tests/Integrations Tests Account/test-section/test-email",
+			coordStr: "op://w634j622awr7pd4pqr7so4gtgm/Integrations Tests Account/test-section/test-email",
 			expected: "spelunker-integration-test@test.com",
 		},
 	}
