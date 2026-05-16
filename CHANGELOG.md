@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Plugins**:
+    - `op://`: 1Password source implementation (available in `plugin/source/1password`).
+    - `lpass://`: For now, giving up LastPass source implementation - see [README](./README.md) for details.
+- **Tooling**:
+    - Test tasks in `Taskfile.yaml` (`test`, `test.full`, `test.short`, `test.ci`) now support passing a specific directory path using `-- <path>`.
+
 ### Changed
 
 - **Dependencies**: Bumped `task`, `golang`, `golangci-lint` and various Go module dependencies.

@@ -6,7 +6,8 @@ The **1Password** secret source retrieves secrets directly from 1Password using 
 
 **Plugin**: This source is **opt-in**. It is not enabled by default and requires explicit configuration using `With1Password()`.
 
-**Testing**: Because the 1Password SDK relies on a Rust core to communicate directly with production servers, it does not support local mocking or Testcontainers. Integration tests require a valid 1Password Service Account and are thus skipped in standard CI environments without the `OP_SERVICE_ACCOUNT_TOKEN` environment variable set.
+**Testing**: Because the 1Password SDK relies on a Rust core to communicate directly with production servers, it does not support local mocking or Testcontainers.
+Integration tests require a valid 1Password Service Account and are thus skipped in standard CI environments without the `SPELUNK_1PASSWORD_TEST_SATOKEN` environment variable set.
 
 ## Dependencies
 
@@ -43,7 +44,7 @@ op://Shared/Stripe/API/token
 ## Configuration
 
 To use this source, you must initialize `spelunk` with a 1Password client. The [1Password Go SDK supports two authentication methods](https://github.com/1Password/onepassword-sdk-go/blob/main/README.md#authentication):
-1. **Service Account**: Uses a token (`OP_SERVICE_ACCOUNT_TOKEN`) to authenticate. Best for CI/CD, servers, and automated environments.
+1. **Service Account**: Uses a token to authenticate. Best for CI/CD, servers, and automated environments.
 2. **Local App**: Communicates with the 1Password desktop app running on the same machine. Best for local development.
 
 ### Example using a Service Account
@@ -59,7 +60,7 @@ import (
 
 func main() {
     // 1. Create 1Password client
-    token := os.Getenv("OP_SERVICE_ACCOUNT_TOKEN")
+    token := os.Getenv("SPELUNK_1PASSWORD_TEST_SATOKEN")
     client, _ := onepassword.NewClient(
         context.Background(),
         onepassword.WithServiceAccountToken(token), // Or use onepassword.WithDesktopAppIntegration("account-name") for Local App

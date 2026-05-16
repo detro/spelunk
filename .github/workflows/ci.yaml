@@ -37,7 +37,7 @@ jobs:
 
       - name: Test with Coverage report
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          SPELUNK_1PASSWORD_TEST_SATOKEN: ${{ secrets.SPELUNK_1PASSWORD_TEST_SATOKEN }}
         run: |
           task test.ci
           go tool cover -func=coverage.out > coverage.txt
