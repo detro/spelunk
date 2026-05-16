@@ -52,6 +52,24 @@ $ task <TAB><TAB>
 > [!NOTE]
 > Setup [task completion] for the best experience.
 
+### Running Tests
+
+To run the full test suite (including integration tests):
+```shell
+$ task test
+```
+
+To run only unit tests (skip integration tests):
+```shell
+$ task test.short
+```
+
+You can optionally pass a specific package path to any test task by appending `-- <path>`. This is very useful when working on a specific plugin:
+```shell
+$ task test -- ./plugin/source/1password
+$ task test.short -- ./types
+```
+
 ### Update tools
 
 ```shell
