@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Plugins**:
     - `op://`: 1Password source implementation (available in `plugin/source/1password`).
+    - `bw://`: Bitwarden Secrets Manager source implementation (available in `plugin/source/bitwarden`).
+      - WARNING: currently untested due to lack of test environment.
     - `lpass://`: For now, giving up LastPass source implementation - see [README](./README.md) for details.
 - **Tooling**:
     - Test tasks in `Taskfile.yaml` (`test`, `test.full`, `test.short`, `test.ci`) now support passing a specific directory path using `-- <path>`.

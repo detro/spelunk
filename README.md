@@ -160,13 +160,15 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 | [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/gcp)     |
 | [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/azure)    |
 | [1Password](https://developer.1password.com/docs/cli/)                           | `op://`       |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/1password)  |
-| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    | ❌ [^1] |                                                                                   |
-| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    |   ⏳    |                                                                                   |
-| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `keeper://`   |   plug-in    |   ⏳    |                                                                                   |
-| [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://` |   plug-in    | ❌ [^2] |                                                                                   |
+| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    | 👷[^1] |                                                                                   |
+| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `keeper://`   |   plug-in    | ⏳[^2]  |                                                                                   |
+| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    | ❌ [^3] |                                                                                   |
+| [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://` |   plug-in    | ❌ [^4] |                                                                                   |
 
-[^1]: **LastPass** is not implemented due to the lack of maintained Go SDK, no suitable REST API, nor local Testcontainer for simulation.
-[^2]: **Dashlane** is not implemented due to the lack of maintained Go SDK, no suitable REST API, nor local Testcontainer for simulation.
+[^1]: **Untested**: Looking for contributors with access to a test account/vault!
+[^2]: **Not Implemented**: Looking for contributors with access to a test account/vault!
+[^3]: **Not Implemented**: _LastPass_ is not implemented due to the lack of maintained Go SDK, no suitable REST API, nor local Testcontainers for simulation.
+[^4]: **Not Implemented**: _Dashlane_ is not implemented due to the lack of maintained Go SDK, no suitable REST API, nor local Testcontainers for simulation.
 
 ## Modifiers (`SecretModifier`)
 
