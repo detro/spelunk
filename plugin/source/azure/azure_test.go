@@ -68,7 +68,7 @@ func TestSecretSourceAzure_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid secret name format",
 			coordStr: "az://invalid_secret_name", // underscores not allowed
-			errMatch: azure.ErrSecretSourceAzureInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name: "invalid secret version format",
@@ -76,7 +76,7 @@ func TestSecretSourceAzure_DigUp_Integration(t *testing.T) {
 				"az://%s/invalid-version-format",
 				plainSecretName,
 			), // versions are 32 hex chars
-			errMatch: azure.ErrSecretSourceAzureInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 	}
 

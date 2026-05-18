@@ -91,7 +91,7 @@ func main() {
 3. **Retrieval**: Uses `awsClient.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{SecretId: ...})` to fetch the secret.
 4. **Extraction**: Returns either the `SecretString` or `SecretBinary` depending on how the secret is stored in AWS. If the secret is stored as `SecretBinary` (an array of bytes), AWS returns it as a **Base64-encoded string**. Spelunk leaves it encoded: it is up to the user to decode it using the `?b64d` modifier (or handle it in their application) if required.
 5. **Errors**:
-    - Returns `ErrSecretSourceAWSInvalidLocation` if the location does not match either the valid Name or ARN format.
+    - Returns `types.ErrInvalidLocation` if the location does not match either the valid Name or ARN format.
     - Returns `ErrSecretSourceAWSInvalidNameSuffix` if a secret name violates the "no hyphen + 6 characters suffix" rule.
     - Returns `ErrCouldNotFetchSecret` if the API call fails due to permissions or network issues.
     - Returns `ErrSecretNotFound` if the secret does not exist or has no payload.

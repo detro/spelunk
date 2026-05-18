@@ -10,8 +10,6 @@ import (
 	"github.com/detro/spelunk/types"
 )
 
-var ErrSecretSource1PasswordInvalidLocation = fmt.Errorf("invalid 1Password secret location format")
-
 // SecretSource1Password digs up secrets from 1Password.
 // The URI scheme for this source is "op".
 //
@@ -47,7 +45,7 @@ func (s *SecretSource1Password) DigUp(
 	if len(parts) < 3 || len(parts) > 4 {
 		return "", fmt.Errorf(
 			"%w: expected VAULT/ITEM/FIELD or VAULT/ITEM/SECTION/FIELD, got %q",
-			ErrSecretSource1PasswordInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

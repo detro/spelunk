@@ -83,7 +83,7 @@ func main() {
 1. **Parsing**: Validates the location strictly matches the format `VAULT/ITEM/FIELD` or `VAULT/ITEM/SECTION/FIELD`.
 2. **Retrieval**: Uses `client.Secrets().Resolve()` with the official `op://` reference syntax.
 3. **Errors**:
-    - Returns `ErrSecretSource1PasswordInvalidLocation` if the format is incorrect.
+    - Returns `types.ErrInvalidLocation` if the format is incorrect.
     - Returns `ErrCouldNotFetchSecret` if the API call fails, authentication is invalid, or the item/field doesn't exist (the SDK currently lacks strongly typed error differentiation for "not found").
 
 ## Use Cases

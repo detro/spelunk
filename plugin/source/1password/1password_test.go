@@ -49,12 +49,12 @@ func TestSecretSource1Password_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid location (not enough parts)",
 			coordStr: "op://my-vault/my-item",
-			errMatch: spelunkop.ErrSecretSource1PasswordInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (too many parts)",
 			coordStr: "op://my-vault/my-item/my-section/my-field/extra",
-			errMatch: spelunkop.ErrSecretSource1PasswordInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "secret that does not exist",

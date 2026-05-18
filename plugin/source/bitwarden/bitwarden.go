@@ -11,8 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-var ErrSecretSourceBitwardenInvalidLocation = fmt.Errorf("invalid Bitwarden secret location format")
-
 // SecretSourceBitwarden digs up secrets from Bitwarden Secrets Manager.
 // The URI scheme for this source is "bw".
 //
@@ -48,7 +46,7 @@ func (s *SecretSourceBitwarden) DigUp(
 	if err != nil || id.Version() != 4 {
 		return "", fmt.Errorf(
 			"%w: expected SECRET_ID to be a valid UUIDv4, got %q",
-			ErrSecretSourceBitwardenInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

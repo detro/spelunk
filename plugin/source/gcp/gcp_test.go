@@ -87,12 +87,12 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid location missing project",
 			coordStr: "gcp://secrets/secret-name",
-			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid project name",
 			coordStr: "gcp://projects/pr/secrets/secret-name",
-			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name: "invalid latest version",
@@ -100,7 +100,7 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 				"gcp://projects/%s/secrets/missing-secret/versions/latesttypo",
 				projectID,
 			),
-			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name: "invalid version",
@@ -108,12 +108,12 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 				"gcp://projects/%s/secrets/missing-secret/versions/123b",
 				projectID,
 			),
-			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "missing version",
 			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/missing-secret/versions/", projectID),
-			errMatch: gcp.ErrSecretSourceGCPInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 	}
 
