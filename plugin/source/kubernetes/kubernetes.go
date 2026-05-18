@@ -15,9 +15,6 @@ import (
 )
 
 var (
-	ErrSecretSourceKubernetesInvalidLocation = fmt.Errorf(
-		"invalid Kubernetes secret location format",
-	)
 	ErrSecretSourceKubernetesInvalidName = fmt.Errorf("invalid Kubernetes name")
 
 	// dnsSubdomainRegex Matches DNS subdomain names as defined
@@ -79,7 +76,7 @@ func (s *SecretSourceKubernetes) DigUp(
 	default:
 		return "", fmt.Errorf(
 			"%w: expected NAMESPACE/NAME/KEY, NAME/KEY, NAMESPACE/NAME/ or NAME/, got %q",
-			ErrSecretSourceKubernetesInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

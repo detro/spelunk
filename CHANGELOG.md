@@ -13,13 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `op://`: 1Password source implementation (available in `plugin/source/1password`).
     - `bw://`: Bitwarden Secrets Manager source implementation (available in `plugin/source/bitwarden`).
       - WARNING: currently untested due to lack of test environment.
-    - `lpass://`: For now, giving up LastPass source implementation - see [README](./README.md) for details.
+    - `kp://`: Keeper Secrets Manager source implementation (available in `plugin/source/keeper`).
+      - WARNING: currently untested due to lack of test environment.
 - **Tooling**:
     - Test tasks in `Taskfile.yaml` (`test`, `test.full`, `test.short`, `test.ci`) now support passing a specific directory path using `-- <path>`.
 
 ### Changed
 
+- **Refactoring**: Unified `InvalidLocation` errors across all plugins by introducing a global `types.ErrInvalidLocation`, replacing plugin-specific errors (e.g. `ErrSecretSourceAWSInvalidLocation`, `ErrSecretSourceVaultInvalidLocation`, etc.) to simplify error handling for consumers.
 - **Dependencies**: Bumped `task`, `golang`, `golangci-lint` and various Go module dependencies.
+- **Support**: Documented in [README](./README.md) that for now we are not going to support LastPass (`lp://`)
+  nor Dashlane (`dl://`) as a source. They both lack a Golang SDK and/or a REST API.
 
 ## [1.3.2] - 2026-04-07
 
