@@ -161,14 +161,12 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 | [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/azure)    |
 | [1Password](https://developer.1password.com/docs/cli/)                           | `op://`       |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/1password)  |
 | [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    | 👷[^1] | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/bitwarden)  |
-| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `kp://`       |   plug-in    | 👷[^1] | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/keeper)     |
-| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lpass://`    |   plug-in    | ❌ [^3] |                                                                                   |
-| [Dashlane](https://cli.dashlane.com/)                                            | `dashlane://` |   plug-in    | ❌ [^4] |                                                                                   |
+| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `kp://`       |   plug-in    | 👷[^1] |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/keeper)   |
+| [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lp://`       |   plug-in    | ❌ [^2] |                                                                                   |
+| [Dashlane](https://cli.dashlane.com/)                                            | `dl://`       |   plug-in    | ❌ [^2] |                                                                                   |
 
 [^1]: **Untested**: Looking for contributors with access to a test account/vault!
-[^2]: **Not Implemented**: Looking for contributors with access to a test account/vault!
-[^3]: **Not Implemented**: _LastPass_ is not implemented due to the lack of maintained Go SDK, no suitable REST API, nor local Testcontainers for simulation.
-[^4]: **Not Implemented**: _Dashlane_ is not implemented due to the lack of maintained Go SDK, no suitable REST API, nor local Testcontainers for simulation.
+[^2]: **Not Implemented**: Not implemented due to the lack of maintained Go SDK, no suitable REST API, and no local Testcontainers for simulation.
 
 ## Modifiers (`SecretModifier`)
 
