@@ -88,17 +88,17 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid location (just key)",
 			coordStr: "vault://key",
-			errMatch: vault.ErrSecretSourceVaultInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (mount and key, but no secret)",
 			coordStr: "vault://mount/key",
-			errMatch: vault.ErrSecretSourceVaultInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (just mount, no secret)",
 			coordStr: "vault://mount/",
-			errMatch: vault.ErrSecretSourceVaultInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "whole v1 secret",

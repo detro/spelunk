@@ -69,7 +69,7 @@ func main() {
 1. **Parsing**: Validates that the location is a valid UUIDv4 using `github.com/google/uuid`.
 2. **Retrieval**: Uses `client.Secrets().Get()` to fetch the specific Secret ID.
 3. **Errors**:
-    - Returns `ErrSecretSourceBitwardenInvalidLocation` if the format is incorrect (e.g., not a valid UUIDv4).
+    - Returns `types.ErrInvalidLocation` if the format is incorrect (e.g., not a valid UUIDv4).
     - Returns `ErrCouldNotFetchSecret` if the API call fails or the access token is invalid.
 
 ## Use Cases

@@ -82,7 +82,7 @@ func main() {
 2. **Retrieval**: Uses `gcpClient.AccessSecretVersion` to fetch the payload of the secret.
 3. **Extraction**: Because GCP Secret Manager payloads are strictly binary (`[]byte`), the source converts and returns the payload data as a **Base64-encoded string**. It is up to the user to decode it using the `?b64d` modifier (or handle it in their application) if plain text or JSON is required.
 4. **Errors**:
-    - Returns `ErrSecretSourceGCPInvalidLocation` if the location format is invalid.
+    - Returns `types.ErrInvalidLocation` if the location format is invalid.
     - Returns `ErrCouldNotFetchSecret` if the API call fails for other reasons.
     - Returns `ErrSecretNotFound` if the secret or version does not exist, or if the payload is empty.
 

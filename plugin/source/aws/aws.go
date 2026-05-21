@@ -13,10 +13,6 @@ import (
 )
 
 var (
-	ErrSecretSourceAWSInvalidLocation = fmt.Errorf(
-		"invalid AWS Secrets Manager secret location format",
-	)
-
 	ErrSecretSourceAWSInvalidNameSuffix = fmt.Errorf(
 		"secret name must not end with a hyphen followed by six characters",
 	)
@@ -89,7 +85,7 @@ func (s *SecretSourceAWS) DigUp(ctx context.Context, coord types.SecretCoord) (s
 	default:
 		return "", fmt.Errorf(
 			"%w: expected <SECRET_NAME> or <SECRET_ARN>, got %q",
-			ErrSecretSourceAWSInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

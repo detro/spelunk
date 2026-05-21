@@ -94,7 +94,7 @@ func main() {
 3. **Retrieval**: Uses `azClient.GetSecret(ctx, secretName, version, nil)` to fetch the secret.
 4. **Extraction**: Returns the underlying string value of the secret (`*result.Value`).
 5. **Errors**:
-    - Returns `ErrSecretSourceAzureInvalidLocation` if the location does not match either the valid `<SECRET_NAME>` or `<SECRET_NAME>/<VERSION>` format.
+    - Returns `types.ErrInvalidLocation` if the location does not match either the valid `<SECRET_NAME>` or `<SECRET_NAME>/<VERSION>` format.
     - Returns `ErrCouldNotFetchSecret` if the API call fails.
     - Returns `ErrSecretNotFound` if the secret does not exist (HTTP 404) or has a nil payload.
 

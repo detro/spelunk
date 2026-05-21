@@ -95,7 +95,7 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid location (too many parts)",
 			coordStr: "k8s://ns/secret/key/extra",
-			errMatch: kubernetes.ErrSecretSourceKubernetesInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 	}
 

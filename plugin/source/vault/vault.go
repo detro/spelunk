@@ -11,10 +11,6 @@ import (
 	"github.com/hashicorp/vault/api"
 )
 
-var ErrSecretSourceVaultInvalidLocation = fmt.Errorf(
-	"invalid Vault secret location format",
-)
-
 // SecretSourceVault digs up secrets from HashiCorp Vault KV Secrets Engine.
 // It supports both KV engine versions 1 and 2 (https://developer.hashicorp.com/vault/docs/secrets/kv),
 // and transparently handles the differences in the response format between the 2 engines.
@@ -61,7 +57,7 @@ func (s *SecretSourceVault) DigUp(
 	if len(parts) < 3 {
 		return "", fmt.Errorf(
 			"%w: expected <MOUNT>/<PATH/TO/SECRET>/<KEY> or <MOUNT>/<PATH/TO/SECRET>/, got %q",
-			ErrSecretSourceVaultInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

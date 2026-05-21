@@ -14,10 +14,6 @@ import (
 )
 
 var (
-	ErrSecretSourceAzureInvalidLocation = fmt.Errorf(
-		"invalid Azure Key Vault secret location format",
-	)
-
 	// secretVersionNameRegexp matches secret locations that include a specific version.
 	// Format: `<SECRET_NAME>/<VERSION>`.
 	//
@@ -91,7 +87,7 @@ func (s *SecretSourceAzure) DigUp(ctx context.Context, coord types.SecretCoord) 
 	default:
 		return "", fmt.Errorf(
 			"%w: expected <SECRET_NAME>[/<VERSION>], got %q",
-			ErrSecretSourceAzureInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

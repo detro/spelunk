@@ -15,10 +15,6 @@ import (
 )
 
 var (
-	ErrSecretSourceGCPInvalidLocation = fmt.Errorf(
-		"invalid GCP Secret Manager secret location format",
-	)
-
 	// fullSecretVersionNameRegexp matches secret version names that include a specific version indicator.
 	fullSecretVersionNameRegexp = regexp.MustCompile(
 		`^projects/(?:[a-z][-a-z0-9]{4,28}[a-z0-9]|\d{5,20})/secrets/([a-zA-Z0-9_-]{1,255})/versions/(?:\d+|latest)$`,
@@ -82,7 +78,7 @@ func (s *SecretSourceGCP) DigUp(ctx context.Context, coord types.SecretCoord) (s
 	default:
 		return "", fmt.Errorf(
 			"%w: expected 'projects/<PROJECT_ID_OR_NUM>/secrets/<SECRET_NAME>[/versions/<VERSION>]', got %q",
-			ErrSecretSourceGCPInvalidLocation,
+			types.ErrInvalidLocation,
 			coord.Location,
 		)
 	}

@@ -15,6 +15,7 @@ require (
 	github.com/bitwarden/sdk-go/v2 v2.0.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/vault/api v1.23.0
+	github.com/keeper-security/secrets-manager-go/core v1.7.0
 	github.com/oliveagle/jsonpath v0.1.4
 	github.com/pelletier/go-toml/v2 v2.3.1
 	github.com/stretchr/testify v1.11.1

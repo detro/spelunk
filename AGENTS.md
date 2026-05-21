@@ -91,6 +91,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/vault/`**: `vault://` source implementation (HashiCorp Vault KV).
     - **`source/1password/`**: `op://` source implementation (1Password).
     - **`source/bitwarden/`**: `bw://` source implementation (Bitwarden Secrets Manager). Note: currently untested due to lack of test environment.
+    - **`source/keeper/`**: `kp://` source implementation (Keeper Secrets Manager). Note: currently untested due to lack of test environment.
 - **`examples/`**: Example implementations (e.g., `kong/`, `viper/`, `urfave-cli/`, `basic/`).
 - **`docs/`**: Documentation assets (images, logos).
 - **`options.go`**: Functional options for configuring `Spelunker`.

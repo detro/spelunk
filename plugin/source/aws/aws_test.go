@@ -93,17 +93,17 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid location (empty)",
 			coordStr: "aws:///",
-			errMatch: spelunkaws.ErrSecretSourceAWSInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (spaces)",
 			coordStr: "aws:///invalid name",
-			errMatch: spelunkaws.ErrSecretSourceAWSInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (special chars)",
 			coordStr: "aws://invalid!name",
-			errMatch: spelunkaws.ErrSecretSourceAWSInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (name ends with hyphen and 6 characters)",
@@ -113,7 +113,7 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		{
 			name:     "invalid location (bad arn format)",
 			coordStr: "aws:///arn:aws:secretsmanager:us-east-1:123:secret:too-short-account-id",
-			errMatch: spelunkaws.ErrSecretSourceAWSInvalidLocation,
+			errMatch: types.ErrInvalidLocation,
 		},
 	}
 
