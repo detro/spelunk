@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `?jp=`: JSONPath extractor modifier for JSON secrets (available in `plugin/modifier/jsonpath`).
 - **Tooling**:
     - Test tasks in `Taskfile.yaml` (`test`, `test.full`, `test.short`, `test.ci`) now support passing a specific directory path using `-- <path>`.
+    - Added modular `tools.plugins`, `tools.update`, and `tools.install` tasks to `Taskfile.yaml` for robust `asdf`-based toolchain management.
+    - Integrated `govulncheck` (v1.3.0) into `.tool-versions` toolchain and added `task vuln` for local vulnerability scanning.
+    - Integrated `task vuln` check directly into the CI pipeline.
 
 ### Changed
 

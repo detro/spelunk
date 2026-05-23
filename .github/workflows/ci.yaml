@@ -26,6 +26,9 @@ jobs:
       - name: Install asdf & tools
         uses: asdf-vm/actions/install@v4
 
+      - name: Vulnerability Scan
+        run: task vuln
+
       - name: Build
         run: task build
 
