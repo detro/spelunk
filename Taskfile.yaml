@@ -54,10 +54,11 @@ tasks:
   tools.plugins:
     desc: Install all necessary asdf plugins
     cmd: |
+      # Install all plugins listed in .tool-versions (will fail but continue for out-of-registry ones)
       cut -d' ' -f1 .tool-versions | while read -r plugin; do
         asdf plugin add "$plugin" || true
       done
-      # Below: asdf plugins that don't are not part of asdf main repo (yet)
+      # Install out-of-registry plugins
       asdf plugin add govulncheck https://github.com/wizzardich/asdf-govulncheck.git
 
   tools.update:
@@ -72,7 +73,7 @@ tasks:
   tools.install:
     desc: Install all tools in .tool-versions via asdf
     deps:
-      - tools.update
+      - tools.plugins
     cmd: asdf install
 
   doc.serve:
