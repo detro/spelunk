@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/detro/spelunk"
 	"github.com/detro/spelunk/internal/jsonpathutil"
 	"github.com/detro/spelunk/types"
 	jp "github.com/oliveagle/jsonpath"
@@ -67,4 +68,9 @@ func (s *SecretModifierJSONPath) Modify(
 	}
 
 	return strRes, nil
+}
+
+// WithJSONPath adds the JSONPath modifier to a Spelunker.
+func WithJSONPath() spelunk.SpelunkerOption {
+	return spelunk.WithModifier(&SecretModifierJSONPath{})
 }

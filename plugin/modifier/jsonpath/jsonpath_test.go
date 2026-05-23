@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/builtin/modifier/jsonpath"
 	"github.com/detro/spelunk/internal/testutil"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -99,7 +99,7 @@ func TestSecretModifier_JSONPath(t *testing.T) {
 
 			spelunker := spelunk.NewSpelunker(
 				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.val}),
-				spelunk.WithModifier(&jsonpath.SecretModifierJSONPath{}),
+				jsonpath.WithJSONPath(),
 			)
 
 			got, err := spelunker.DigUp(ctx, coord)

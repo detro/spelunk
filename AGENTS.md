@@ -76,11 +76,11 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/file/`**: `file://` source implementation.
     - **`source/env/`**: `env://` source implementation.
     - **`source/base64/`**: `base64://` source implementation.
-    - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
     - **`modifier/base64/`**: `b64` modifier implementation (Base64 encoding).
     - **`modifier/base64_encoder/`**: `b64e` alias for `modifier/base64/`.
     - **`modifier/base64_decoder/`**: `b64d` modifier implementation (Base64 decoding).
 - **`plugin/`**: External plugins (opt-in).
+    - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
     - **`modifier/tomlpath/`**: `tp` modifier implementation (TOML JSONPath extraction).
     - **`modifier/xpath/`**: `xp` modifier implementation (XPath extraction).
     - **`modifier/yamlpath/`**: `yp` modifier implementation (YAML JSONPath extraction).

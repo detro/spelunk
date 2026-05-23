@@ -7,8 +7,8 @@ import (
 
 	"github.com/detro/spelunk"
 	b64mod "github.com/detro/spelunk/builtin/modifier/base64"
-	"github.com/detro/spelunk/builtin/modifier/jsonpath"
 	"github.com/detro/spelunk/internal/testutil"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -61,8 +61,8 @@ func TestSecretModifierBase64_Modify(t *testing.T) {
 
 			spelunker := spelunk.NewSpelunker(
 				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.val}),
-				spelunk.WithModifier(&jsonpath.SecretModifierJSONPath{}),
 				spelunk.WithModifier(&b64mod.SecretModifierBase64{}),
+				jsonpath.WithJSONPath(),
 			)
 
 			got, err := spelunker.DigUp(ctx, coord)

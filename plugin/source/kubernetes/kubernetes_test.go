@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath"
 	"github.com/detro/spelunk/plugin/source/kubernetes"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
@@ -39,7 +40,10 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 	createTestSecrets(t, k8sClient)
 
 	// Initialize Spelunker with Kubernetes plugin
-	spelunker := spelunk.NewSpelunker(kubernetes.WithKubernetes(k8sClient))
+	spelunker := spelunk.NewSpelunker(
+		kubernetes.WithKubernetes(k8sClient),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string

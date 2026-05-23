@@ -12,6 +12,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath"
 	"github.com/detro/spelunk/plugin/source/azure"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
@@ -42,7 +43,10 @@ func TestSecretSourceAzure_DigUp_Integration(t *testing.T) {
 	require.NoError(t, err)
 	createTestSecrets(t, azClient)
 
-	spelunker := spelunk.NewSpelunker(azure.WithAzure(azClient))
+	spelunker := spelunk.NewSpelunker(
+		azure.WithAzure(azClient),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string
