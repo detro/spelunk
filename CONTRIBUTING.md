@@ -26,16 +26,19 @@ the **human-scale nature of software review**:
 
 ### Install `asdf` and plugins
 
-This repository depends on [asdf]. Once installed, please
-install all the [asdf plugins] used in this repository, by running
-(or something similar):
+This repository depends on [asdf].
+
+Once asdf is installed, you can bootstrap the entire toolchain using the provided task commands:
 
 ```shell
-$ cut -d' ' -f1 .tool-versions | \
-  while read PLUGIN; do
-  	  asdf plugin add $PLUGIN || true
-  done
-$ asdf install
+# 1. Install necessary asdf plugins (including non-default ones)
+$ task tools.plugins
+
+# 2. Update and pin tools in .tool-versions to latest available versions (optional)
+$ task tools.update
+
+# 3. Install all tools pinned in .tool-versions
+$ task tools.install
 ```
 
 ### `task` toolchain

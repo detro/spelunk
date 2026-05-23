@@ -52,7 +52,11 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task lint-fix` | Run linter and automatically fix issues |
 | `task fmt` | Format code |
 | `task run -- <args>` | Run the project (passes args to `go run .`) |
-| `task update-dependencies` | Update and tidy Go modules |
+| `task dependencies.update` | Update and tidy Go modules |
+| `task tools.plugins` | Install all necessary asdf plugins |
+| `task tools.update` | Update all tools in `.tool-versions` to the latest available version via asdf |
+| `task tools.install` | Install all tools pinned in `.tool-versions` via asdf |
+| `task vuln` | Run govulncheck for vulnerability scanning |
 | `task doc.serve` | Run local godoc server (`pkgsite`) and open in browser |
 
 ## ⚙️ CI/CD
@@ -62,6 +66,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
 - **Build**: `task build`
 - **Test**: `task test.ci` (generates `coverage.out` used for step summary)
 - **Lint & Format**: `task lint-fix` && `task fmt`
+- **Security Check**: `task vuln`
 
 ## 📂 Project Structure
 
@@ -76,11 +81,11 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/file/`**: `file://` source implementation.
     - **`source/env/`**: `env://` source implementation.
     - **`source/base64/`**: `base64://` source implementation.
-    - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
     - **`modifier/base64/`**: `b64` modifier implementation (Base64 encoding).
     - **`modifier/base64_encoder/`**: `b64e` alias for `modifier/base64/`.
     - **`modifier/base64_decoder/`**: `b64d` modifier implementation (Base64 decoding).
 - **`plugin/`**: External plugins (opt-in).
+    - **`modifier/jsonpath/`**: `jp` modifier implementation (JSONPath extraction).
     - **`modifier/tomlpath/`**: `tp` modifier implementation (TOML JSONPath extraction).
     - **`modifier/xpath/`**: `xp` modifier implementation (XPath extraction).
     - **`modifier/yamlpath/`**: `yp` modifier implementation (YAML JSONPath extraction).

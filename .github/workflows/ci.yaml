@@ -23,8 +23,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install asdf & tools
-        uses: asdf-vm/actions/install@v4
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@v4
+
+      - name: Install Task
+        run: |
+          asdf plugin add task
+          asdf install task
+
+      - name: Install (rest of the) Tools
+        run: task tools.install
+
+      - name: Vulnerability Scan
+        run: task vuln
 
       - name: Build
         run: task build

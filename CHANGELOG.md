@@ -15,8 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       - WARNING: currently untested due to lack of test environment.
     - `kp://`: Keeper Secrets Manager source implementation (available in `plugin/source/keeper`).
       - WARNING: currently untested due to lack of test environment.
+    - `?jp=`: JSONPath extractor modifier for JSON secrets (available in `plugin/modifier/jsonpath`).
 - **Tooling**:
     - Test tasks in `Taskfile.yaml` (`test`, `test.full`, `test.short`, `test.ci`) now support passing a specific directory path using `-- <path>`.
+    - Added modular `tools.plugins`, `tools.update`, and `tools.install` tasks to `Taskfile.yaml` for robust `asdf`-based toolchain management.
+    - Integrated `govulncheck` (v1.3.0) into `.tool-versions` toolchain and added `task vuln` for local vulnerability scanning.
+    - Integrated `task vuln` check directly into the CI pipeline.
 
 ### Changed
 
@@ -24,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dependencies**: Bumped `task`, `golang`, `golangci-lint` and various Go module dependencies.
 - **Support**: Documented in [README](./README.md) that for now we are not going to support LastPass (`lp://`)
   nor Dashlane (`dl://`) as a source. They both lack a Golang SDK and/or a REST API.
+
+### Removed
+
+- **BREAKING CHANGE**: Removed `jp` (JSONPath) modifier from default built-in modifiers of `Spelunker` to completely free the core root module from any external production dependencies. It has been moved to a plugin under `plugin/modifier/jsonpath/` and must now be explicitly registered using `jsonpath.WithJSONPath()`.
+
 
 ## [1.3.2] - 2026-04-07
 

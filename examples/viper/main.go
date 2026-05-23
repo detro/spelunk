@@ -38,9 +38,9 @@ func main() {
 
 	// 3. Unmarshal with DecodeHook
 	// We need to tell Viper how to handle the types.SecretCoord (TextUnmarshaler).
-	// We use mapstructure.StringToTextUnmarshalerHookFunc() to bridge string -> SecretCoord.
+	// We use mapstructure.TextUnmarshallerHookFunc() to bridge string -> SecretCoord.
 	opts := viper.DecodeHook(mapstructure.ComposeDecodeHookFunc(
-		mapstructure.StringToTextUnmarshalerHookFunc(),
+		mapstructure.TextUnmarshallerHookFunc(),
 		mapstructure.StringToTimeDurationHookFunc(),
 		mapstructure.StringToSliceHookFunc(","),
 	))

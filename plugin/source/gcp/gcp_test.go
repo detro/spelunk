@@ -8,6 +8,7 @@ import (
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath"
 	"github.com/detro/spelunk/plugin/source/gcp"
 	"github.com/detro/spelunk/types"
 	"github.com/stretchr/testify/require"
@@ -43,7 +44,10 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 	createTestSecrets(t, client)
 
 	// Initialize Spelunker with GCP plugin
-	spelunker := spelunk.NewSpelunker(gcp.WithGCP(client))
+	spelunker := spelunk.NewSpelunker(
+		gcp.WithGCP(client),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string

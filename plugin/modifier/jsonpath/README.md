@@ -4,7 +4,18 @@ This modifier allows you to extract specific values from a secret that contains 
 
 ## Status
 
-**Built-in**: This modifier is included and enabled by default in `spelunk`.
+**Plugin**: This modifier is opt-in and is not enabled by default in `spelunk`. To use it, you must register it when initializing `Spelunker`:
+
+```go
+import (
+    "github.com/detro/spelunk"
+    "github.com/detro/spelunk/plugin/modifier/jsonpath"
+)
+
+s := spelunk.NewSpelunker(
+    jsonpath.WithJSONPath(),
+)
+```
 
 ## Usage
 

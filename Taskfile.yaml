@@ -27,6 +27,10 @@ tasks:
   lint:
     cmd: golangci-lint run --allow-parallel-runners --verbose
 
+  vuln:
+    desc: Run govulncheck for vulnerability scanning
+    cmd: govulncheck ./...
+
   lint-fix:
     cmd: golangci-lint run --fix --allow-parallel-runners --verbose
 
@@ -42,10 +46,35 @@ tasks:
   mod.tidy:
     cmd: go mod tidy -v
 
-  update-dependencies:
+  dependencies.update:
     deps:
       - mod.update
       - mod.tidy
+
+  tools.plugins:
+    desc: Install all necessary asdf plugins
+    cmd: |
+      # Install all plugins listed in .tool-versions (will fail but continue for out-of-registry ones)
+      cut -d' ' -f1 .tool-versions | while read -r plugin; do
+        asdf plugin add "$plugin" || true
+      done
+      # Install out-of-registry plugins
+      asdf plugin add govulncheck https://github.com/wizzardich/asdf-govulncheck.git
+
+  tools.update:
+    desc: Update all tools in .tool-versions to latest available versions via asdf
+    deps:
+      - tools.plugins
+    cmd: |
+        cut -d' ' -f1 .tool-versions | while read -r plugin; do
+          asdf set "$plugin" latest || true
+        done
+
+  tools.install:
+    desc: Install all tools in .tool-versions via asdf
+    deps:
+      - tools.plugins
+    cmd: asdf install
 
   doc.serve:
     cmds:

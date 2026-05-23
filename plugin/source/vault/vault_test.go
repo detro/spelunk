@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/detro/spelunk"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath"
 	"github.com/detro/spelunk/plugin/source/vault"
 	"github.com/detro/spelunk/types"
 	"github.com/hashicorp/vault/api"
@@ -51,7 +52,10 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 	createTestSecrets(t, vaultClient)
 
 	// Initialize Spelunker with Vault plugin
-	spelunker := spelunk.NewSpelunker(vault.WithVault(vaultClient))
+	spelunker := spelunk.NewSpelunker(
+		vault.WithVault(vaultClient),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string
