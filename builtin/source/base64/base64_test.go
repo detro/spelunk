@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/detro/spelunk"
-	b64 "github.com/detro/spelunk/builtin/source/base64"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	b64 "github.com/detro/spelunk/v2/builtin/source/base64"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/stretchr/testify/require"
 )
 

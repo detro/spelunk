@@ -54,8 +54,8 @@ import (
     "context"
     "os"
     "github.com/1password/onepassword-sdk-go"
-    "github.com/detro/spelunk"
-    "github.com/detro/spelunk/plugin/source/1password"
+    "github.com/detro/spelunk/v2"
+    "github.com/detro/spelunk/plugin/source/1password/v2"
 )
 
 func main() {

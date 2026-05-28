@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/internal/jsonpathutil"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/common"
+	"github.com/detro/spelunk/v2/types"
 	jp "github.com/oliveagle/jsonpath"
 )
 
@@ -62,7 +62,7 @@ func (s *SecretModifierJSONPath) Modify(
 		return "", fmt.Errorf("%w (%q): %w", ErrJSONPathFailed, mod, err)
 	}
 
-	strRes, err := jsonpathutil.PostProcessJSONPathResult(res)
+	strRes, err := common.PostProcessJSONPath(res)
 	if err != nil {
 		return "", fmt.Errorf("%w: %w", ErrJSONPathMatchingFailed, err)
 	}

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/1password/onepassword-sdk-go"
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // SecretSource1Password digs up secrets from 1Password.

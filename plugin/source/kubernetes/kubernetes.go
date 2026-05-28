@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"

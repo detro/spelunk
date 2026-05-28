@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	ksm "github.com/keeper-security/secrets-manager-go/core"
 )
 

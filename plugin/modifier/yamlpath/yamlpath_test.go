@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/internal/testutil"
-	"github.com/detro/spelunk/plugin/modifier/yamlpath"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/yamlpath/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
+	"github.com/detro/spelunk/v2/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -82,8 +82,11 @@ store:
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
+			src := util.NewMockSource("test")
+			src.Val = tt.yamlPayload
+
 			spelunker := spelunk.NewSpelunker(
-				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.yamlPayload}),
+				spelunk.WithSource(src),
 				yamlpath.WithYAMLPath(),
 			)
 

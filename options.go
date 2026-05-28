@@ -1,14 +1,14 @@
 package spelunk
 
 import (
-	b64mod "github.com/detro/spelunk/builtin/modifier/base64"
-	b64dmod "github.com/detro/spelunk/builtin/modifier/base64_decoder"
-	b64emod "github.com/detro/spelunk/builtin/modifier/base64_encoder"
-	b64src "github.com/detro/spelunk/builtin/source/base64"
-	"github.com/detro/spelunk/builtin/source/env"
-	"github.com/detro/spelunk/builtin/source/file"
-	"github.com/detro/spelunk/builtin/source/plain"
-	"github.com/detro/spelunk/types"
+	b64mod "github.com/detro/spelunk/v2/builtin/modifier/base64"
+	b64dmod "github.com/detro/spelunk/v2/builtin/modifier/base64_decoder"
+	b64emod "github.com/detro/spelunk/v2/builtin/modifier/base64_encoder"
+	b64src "github.com/detro/spelunk/v2/builtin/source/base64"
+	"github.com/detro/spelunk/v2/builtin/source/env"
+	"github.com/detro/spelunk/v2/builtin/source/file"
+	"github.com/detro/spelunk/v2/builtin/source/plain"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // options are the internal configuration used by an instance of Spelunker.

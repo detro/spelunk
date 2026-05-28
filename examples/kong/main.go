@@ -6,8 +6,8 @@ import (
 	"log"
 
 	"github.com/alecthomas/kong"
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // CLI struct using Kong for flag parsing

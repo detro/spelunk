@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 )
@@ -26,7 +26,9 @@ func main() {
 	if err := os.WriteFile(configFile, configContent, 0o644); err != nil {
 		log.Fatal(err)
 	}
-	defer os.Remove(configFile) // Cleanup
+	defer func() {
+		_ = os.Remove(configFile)
+	}() // Cleanup
 
 	// 2. Configure Viper
 	viper.SetConfigFile(configFile)

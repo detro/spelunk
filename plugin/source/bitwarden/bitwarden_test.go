@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/detro/spelunk"
-	spelunkbw "github.com/detro/spelunk/plugin/source/bitwarden"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath/v2"
+	spelunkbw "github.com/detro/spelunk/plugin/source/bitwarden/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,7 +19,10 @@ func TestSecretSourceBitwarden_Type(t *testing.T) {
 func TestSecretSourceBitwarden_DigUp_Parsing(t *testing.T) {
 	// We can pass nil for the client because (for now) we are only testing
 	// the coordinate parsing logic which happens before client invocation.
-	spelunker := spelunk.NewSpelunker(spelunkbw.WithBitwarden(nil))
+	spelunker := spelunk.NewSpelunker(
+		spelunkbw.WithBitwarden(nil),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string
@@ -28,11 +32,6 @@ func TestSecretSourceBitwarden_DigUp_Parsing(t *testing.T) {
 		{
 			name:     "invalid location (just a slash)",
 			coordStr: "bw:///",
-			errMatch: types.ErrInvalidLocation,
-		},
-		{
-			name:     "invalid location (contains slash)",
-			coordStr: "bw://f47ac10b-58cc-4372-a567-0e02b2c3d479/extra",
 			errMatch: types.ErrInvalidLocation,
 		},
 		{

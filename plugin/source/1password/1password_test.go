@@ -6,9 +6,10 @@ import (
 	"testing"
 
 	"github.com/1password/onepassword-sdk-go"
-	"github.com/detro/spelunk"
-	spelunkop "github.com/detro/spelunk/plugin/source/1password"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath/v2"
+	spelunkop "github.com/detro/spelunk/plugin/source/1password/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -38,7 +39,10 @@ func TestSecretSource1Password_DigUp_Integration(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	spelunker := spelunk.NewSpelunker(spelunkop.With1Password(client))
+	spelunker := spelunk.NewSpelunker(
+		spelunkop.With1Password(client),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string
@@ -65,6 +69,11 @@ func TestSecretSource1Password_DigUp_Integration(t *testing.T) {
 			name:     "secret that does not exist (with section)",
 			coordStr: "op://non-existent-vault/item/section/password",
 			errMatch: types.ErrCouldNotFetchSecret,
+		},
+		{
+			name:     "valid secret via jp modifier",
+			coordStr: "op://w634j622awr7pd4pqr7so4gtgm/Integrations Tests Account/test-section/test-json?jp=$.key",
+			expected: "value",
 		},
 		{
 			name:     "valid secret (standard field)",

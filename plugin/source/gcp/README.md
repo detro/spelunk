@@ -53,8 +53,8 @@ To use this source, you must initialize `spelunk` with a GCP Secret Manager clie
 import (
     "context"
     secretmanager "cloud.google.com/go/secretmanager/apiv1"
-    "github.com/detro/spelunk"
-    spelunkgcp "github.com/detro/spelunk/plugin/source/gcp"
+    "github.com/detro/spelunk/v2"
+    spelunkgcp "github.com/detro/spelunk/plugin/source/gcp/v2"
 )
 
 func main() {

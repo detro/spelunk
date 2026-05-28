@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/internal/testutil"
-	"github.com/detro/spelunk/plugin/modifier/xpath"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/xpath/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
+	"github.com/detro/spelunk/v2/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -92,8 +92,11 @@ func TestSecretModifierXPath_Modify(t *testing.T) {
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
+			src := util.NewMockSource("test")
+			src.Val = tt.xmlPayload
+
 			spelunker := spelunk.NewSpelunker(
-				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.xmlPayload}),
+				spelunk.WithSource(src),
 				xpath.WithXPath(),
 			)
 

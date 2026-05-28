@@ -4,7 +4,7 @@ import (
 	"context"
 	b64 "encoding/base64"
 
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // SecretModifierBase64 is a modifier that encodes the secret value to a base64 string.

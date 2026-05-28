@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/types"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/types"
 )
 
 var ErrSecretSourceBase64FailedDecoding = fmt.Errorf("failed to decode base64 secret")

@@ -1,7 +1,7 @@
 module github.com/detro/spelunk/examples/basic
 
-go 1.26
+go 1.26.3
 
-require github.com/detro/spelunk v1.0.0
+replace github.com/detro/spelunk/v2 => ../../
 
-require github.com/oliveagle/jsonpath v0.1.4 // indirect
+require github.com/detro/spelunk/v2 v2.0.0-00010101000000-000000000000

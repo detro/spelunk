@@ -1,8 +1,8 @@
 package base64_encoder
 
 import (
-	"github.com/detro/spelunk/builtin/modifier/base64"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/builtin/modifier/base64"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // SecretModifierBase64Encoder is a modifier that encodes the secret value to a base64 string.

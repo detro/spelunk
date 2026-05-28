@@ -10,9 +10,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-	"github.com/detro/spelunk"
-	spelunkaws "github.com/detro/spelunk/plugin/source/aws"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath/v2"
+	spelunkaws "github.com/detro/spelunk/plugin/source/aws/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/localstack"
@@ -47,7 +48,11 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 	secrets := createTestSecrets(t, awsClient)
 
 	// Initialize Spelunker with AWS plugin
-	spelunker := spelunk.NewSpelunker(spelunkaws.WithAWS(awsClient), spelunk.WithoutTrimValue())
+	spelunker := spelunk.NewSpelunker(
+		spelunkaws.WithAWS(awsClient),
+		jsonpath.WithJSONPath(),
+		spelunk.WithoutTrimValue(),
+	)
 
 	tests := []struct {
 		name     string
@@ -55,6 +60,11 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		want     string
 		errMatch error
 	}{
+		{
+			name:     "(json) secret by name via jp modifier",
+			coordStr: fmt.Sprintf("aws://%s?jp=$.key", jsonSecretName),
+			want:     "value",
+		},
 		{
 			name:     "(json) secret by name",
 			coordStr: fmt.Sprintf("aws://%s", jsonSecretName),

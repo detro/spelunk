@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/internal/testutil"
-	"github.com/detro/spelunk/plugin/modifier/tomlpath"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/tomlpath/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
+	"github.com/detro/spelunk/v2/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -84,8 +84,11 @@ price = 12.99
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
+			src := util.NewMockSource("test")
+			src.Val = tt.tomlPayload
+
 			spelunker := spelunk.NewSpelunker(
-				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.tomlPayload}),
+				spelunk.WithSource(src),
 				tomlpath.WithTOMLPath(),
 			)
 

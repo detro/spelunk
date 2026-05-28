@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // SecretSourceEnv digs up secrets from environment variables.

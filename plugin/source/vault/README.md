@@ -61,8 +61,8 @@ To use this source, you must initialize `spelunk` with a Vault client:
 
 ```go
 import (
-    "github.com/detro/spelunk"
-    "github.com/detro/spelunk/plugin/source/vault"
+    "github.com/detro/spelunk/v2"
+    "github.com/detro/spelunk/plugin/source/vault/v2"
     "github.com/hashicorp/vault/api"
 )
 

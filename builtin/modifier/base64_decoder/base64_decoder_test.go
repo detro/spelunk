@@ -5,11 +5,10 @@ import (
 	b64 "encoding/base64"
 	"testing"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/builtin/modifier/base64_decoder"
-	"github.com/detro/spelunk/internal/testutil"
-	"github.com/detro/spelunk/plugin/modifier/jsonpath"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/builtin/modifier/base64_decoder"
+	"github.com/detro/spelunk/v2/types"
+	"github.com/detro/spelunk/v2/util"
 	"github.com/stretchr/testify/require"
 )
 
@@ -47,9 +46,9 @@ func TestSecretModifierBase64Decoder_Modify(t *testing.T) {
 			want:     "",
 		},
 		{
-			name:     "apply jsonpath then base64 decode",
+			name:     "apply mock then base64 decode",
 			val:      `{"key": "bXlzZWNyZXQ="}`, // bXlzZWNyZXQ= is "mysecret" in base64
-			coordStr: "test://loc?jp=$.key&b64d",
+			coordStr: "test://loc?mock=key&b64d",
 			want:     "mysecret",
 		},
 		{
@@ -65,10 +64,15 @@ func TestSecretModifierBase64Decoder_Modify(t *testing.T) {
 			coord, err := types.NewSecretCoord(tt.coordStr)
 			require.NoError(t, err)
 
+			src := util.NewMockSource("test")
+			src.Val = tt.val
+			mod := util.NewMockModifier("mock")
+			mod.ArgToVal = map[string]string{"key": "bXlzZWNyZXQ="}
+
 			spelunker := spelunk.NewSpelunker(
-				spelunk.WithSource(&testutil.MockSource{Typ: "test", Val: tt.val}),
+				spelunk.WithSource(src),
 				spelunk.WithModifier(&base64_decoder.SecretModifierBase64Decoder{}),
-				jsonpath.WithJSONPath(),
+				spelunk.WithModifier(mod),
 			)
 
 			got, err := spelunker.DigUp(ctx, coord)

@@ -8,8 +8,8 @@ This modifier allows you to extract specific values from a secret that contains 
 
 ```go
 import (
-    "github.com/detro/spelunk"
-    "github.com/detro/spelunk/plugin/modifier/jsonpath"
+    "github.com/detro/spelunk/v2"
+    "github.com/detro/spelunk/plugin/modifier/jsonpath/v2"
 )
 
 s := spelunk.NewSpelunker(

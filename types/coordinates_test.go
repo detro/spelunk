@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/stretchr/testify/require"
 )
 

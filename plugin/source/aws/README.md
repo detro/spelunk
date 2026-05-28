@@ -55,8 +55,8 @@ import (
     "context"
     "github.com/aws/aws-sdk-go-v2/config"
     "github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-    "github.com/detro/spelunk"
-    spelunkaws "github.com/detro/spelunk/plugin/source/aws"
+    "github.com/detro/spelunk/v2"
+    spelunkaws "github.com/detro/spelunk/plugin/source/aws/v2"
 )
 
 func main() {

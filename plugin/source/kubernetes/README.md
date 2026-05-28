@@ -62,8 +62,8 @@ To use this source, you must initialize `spelunk` with a Kubernetes client:
 
 ```go
 import (
-    "github.com/detro/spelunk"
-    "github.com/detro/spelunk/plugin/source/kubernetes"
+    "github.com/detro/spelunk/v2"
+    "github.com/detro/spelunk/plugin/source/kubernetes/v2"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/rest"
 )

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/internal/jsonpathutil"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/common"
+	"github.com/detro/spelunk/v2/types"
 	jp "github.com/oliveagle/jsonpath"
 	"github.com/pelletier/go-toml/v2"
 )
@@ -48,7 +48,7 @@ func (s *SecretModifierTOMLPath) Modify(
 		return "", fmt.Errorf("%w (%q): %w", ErrTOMLPathFailed, mod, err)
 	}
 
-	strRes, err := jsonpathutil.PostProcessJSONPathResult(res)
+	strRes, err := common.PostProcessJSONPath(res)
 	if err != nil {
 		return "", fmt.Errorf("%w: %w", ErrTOMLPathMatchingFailed, err)
 	}

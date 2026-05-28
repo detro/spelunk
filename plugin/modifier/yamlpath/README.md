@@ -11,8 +11,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/plugin/modifier/yamlpath"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/plugin/modifier/yamlpath/v2"
 )
 
 func main() {

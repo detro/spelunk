@@ -43,8 +43,8 @@ To use this source, you must initialize `spelunk` with a Bitwarden client:
 import (
     "os"
     "github.com/bitwarden/sdk-go/v2"
-    "github.com/detro/spelunk"
-    "github.com/detro/spelunk/plugin/source/bitwarden"
+    "github.com/detro/spelunk/v2"
+    "github.com/detro/spelunk/plugin/source/bitwarden/v2"
 )
 
 func main() {

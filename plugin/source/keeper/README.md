@@ -56,8 +56,8 @@ To use this source, you must initialize `spelunk` with a Keeper Secrets Manager 
 import (
     "os"
     ksm "github.com/keeper-security/secrets-manager-go/core"
-    "github.com/detro/spelunk"
-    "github.com/detro/spelunk/plugin/source/keeper"
+    "github.com/detro/spelunk/v2"
+    "github.com/detro/spelunk/plugin/source/keeper/v2"
 )
 
 func main() {

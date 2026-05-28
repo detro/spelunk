@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/detro/spelunk"
-	spelunkkeeper "github.com/detro/spelunk/plugin/source/keeper"
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/plugin/modifier/jsonpath/v2"
+	spelunkkeeper "github.com/detro/spelunk/plugin/source/keeper/v2"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,7 +19,10 @@ func TestSecretSourceKeeper_Type(t *testing.T) {
 func TestSecretSourceKeeper_DigUp_Parsing(t *testing.T) {
 	// We can pass nil for the client because (for now) we are only testing
 	// the coordinate parsing logic which happens before client invocation.
-	spelunker := spelunk.NewSpelunker(spelunkkeeper.WithKeeper(nil))
+	spelunker := spelunk.NewSpelunker(
+		spelunkkeeper.WithKeeper(nil),
+		jsonpath.WithJSONPath(),
+	)
 
 	tests := []struct {
 		name     string

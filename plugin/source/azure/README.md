@@ -55,8 +55,8 @@ import (
     "fmt"
     "github.com/Azure/azure-sdk-for-go/sdk/azidentity"
     "github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
-    "github.com/detro/spelunk"
-    spelunkazure "github.com/detro/spelunk/plugin/source/azure"
+    "github.com/detro/spelunk/v2"
+    spelunkazure "github.com/detro/spelunk/plugin/source/azure/v2"
 )
 
 func main() {

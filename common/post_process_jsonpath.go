@@ -1,4 +1,4 @@
-package jsonpathutil
+package common
 
 import (
 	"encoding/json"
@@ -6,11 +6,11 @@ import (
 	"strconv"
 )
 
-// PostProcessJSONPathResult takes the result of a jsonpath extraction
+// PostProcessJSONPath takes the result of a jsonpath extraction
 // and formats it into a string following common rules for spelunk modifiers
 // (jp, yp, tp). It extracts the first element of lists, converts floats
 // appropriately, returns errors for null, and JSON-marshals other complex types.
-func PostProcessJSONPathResult(res any) (string, error) {
+func PostProcessJSONPath(res any) (string, error) {
 	// If the JSONPath matches multiple values, focus on the first one.
 	// NOTE: user can always refine their JSONPath modifier if they need something else.
 	if list, ok := res.([]any); ok {

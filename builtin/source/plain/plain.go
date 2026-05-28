@@ -3,7 +3,7 @@ package plain
 import (
 	"context"
 
-	"github.com/detro/spelunk/types"
+	"github.com/detro/spelunk/v2/types"
 )
 
 // SecretSourcePlain digs up secrets that can be found with URI-coordinates in the format:
