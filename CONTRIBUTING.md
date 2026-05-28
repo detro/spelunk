@@ -41,6 +41,47 @@ $ task tools.update
 $ task tools.install
 ```
 
+### Go Workspaces Setup
+
+This repository is structured as a multi-module Go Workspace to isolate the dependencies of each plugin module. 
+
+Since `go.work` and `go.work.sum` files are excluded from git, you need to create your workspace locally before you can build, lint, or run tests:
+
+```shell
+# Initialize the workspace at the root directory
+$ go work init
+
+# Add the root module and all plugins/examples to the workspace
+$ go work use . $(find plugin examples -name go.mod -exec dirname {} \;)
+```
+
+This creates a local `go.work` file containing:
+```go
+go 1.26.3
+
+use (
+	.
+	./plugin/modifier/jsonpath
+	./plugin/modifier/tomlpath
+	./plugin/modifier/yamlpath
+	./plugin/modifier/xpath
+	./plugin/source/1password
+	./plugin/source/aws
+	./plugin/source/azure
+	./plugin/source/bitwarden
+	./plugin/source/gcp
+	./plugin/source/keeper
+	./plugin/source/kubernetes
+	./plugin/source/vault
+	./examples/basic
+	./examples/kong
+	./examples/urfave-cli
+	./examples/viper
+)
+```
+
+Now, your IDE and standard Go tooling will seamlessly compile, lint, and run tests across all workspace packages!
+
 ### `task` toolchain
 
 This codebase uses [task] to define a simple "development toolchain"
@@ -57,21 +98,41 @@ $ task <TAB><TAB>
 
 ### Running Tests
 
-To run the full test suite (including integration tests):
+By default, the test tasks recursively run across the root module and **all** workspace submodules (plugins and examples) automatically:
+
+To run the full test suite across the entire workspace (including integration tests):
 ```shell
 $ task test
 ```
 
-To run only unit tests (skip integration tests):
+To run only unit tests across the entire workspace (skip integration tests):
 ```shell
 $ task test.short
 ```
 
-You can optionally pass a specific package path to any test task by appending `-- <path>`. This is very useful when working on a specific plugin:
+#### Targeting Specific Packages/Plugins
+
+If you are developing a specific plugin, you can avoid running the whole workspace test suite by targeting its directory path. Append `-- <path>` to target a single submodule directory:
 ```shell
+# Run full tests on a single plugin module
 $ task test -- ./plugin/source/1password
+
+# Run unit tests on a single plugin module
+$ task test.short -- ./plugin/source/1password
+
+# Run tests on the root module's types directory
 $ task test.short -- ./types
 ```
+
+### Dependency Management
+
+The dependency task is also workspace-aware. You can update and tidy the `go.mod` files of the root module, all 12 plugins, and all examples with a single command:
+
+```shell
+$ task dependencies.update
+```
+
+This runs `go get -t -u ./...` and `go mod tidy` in the root and in every submodule folder sequentially.
 
 ### Update tools
 
@@ -85,7 +146,36 @@ $ asdf install
 
 ## Pull Request Process
 
-TODO
+We follow a standard GitHub PR flow:
+
+1. Fork the repository and create your branch from `main`.
+2. Ensure that any code changes are covered by tests.
+3. Make sure all tests pass locally via `task test` or `task test.short`.
+4. Ensure your changes pass the linter via `task lint`.
+5. Submit your PR and write a descriptive summary.
+
+## Release Process
+
+Because this repository utilizes a Go Workspace with independent submodules, releasing a new version requires tagging **both** the root module and the submodule paths.
+
+When releasing version `vX.Y.Z`:
+
+1. Update the `CHANGELOG.md` file following the [Keep a Changelog](https://keepachangelog.com/) guidelines.
+2. Push your changes to `main`.
+3. Use the unified `task tag` utility to automatically tag either the whole workspace or a specific submodule:
+   ```shell
+   # Tag the entire workspace (root module and all 16 submodules/examples) at v2.0.0:
+   $ task tag -- v2.0.0
+
+   # Tag ONLY a specific submodule (e.g., if releasing a standalone patch for a plugin):
+   $ task tag -- v2.0.1 plugin/source/aws
+   ```
+4. Push all generated tags to GitHub:
+   ```shell
+   $ git push origin --tags
+   ```
+
+By using prefix-based tags (e.g., `plugin/source/aws/vX.Y.Z`), Go clients can cleanly import specific submodules at defined releases independent of each other.
 
 ## Code of Conduct
 

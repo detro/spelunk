@@ -6,50 +6,166 @@ env:
 
 tasks:
   generate:
-    cmd: go generate ./...
+    cmd: |
+      go generate ./...
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Generating code in $dir..."
+        (cd "$dir" && go generate ./...)
+      done
 
   build:
     deps: [generate]
-    cmd: go build .
+    cmd: |
+      go build .
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Building in $dir..."
+        (cd "$dir" && go build ./...)
+      done
 
   test:
     deps: [test.full]
 
   test.short:
-    cmd: go test -v -race -cover -short {{.CLI_ARGS | default "./..."}}
+    cmd: |
+      {{if .CLI_ARGS}}
+      go test -v -race -cover -short {{.CLI_ARGS}}
+      {{else}}
+      go test -v -race -cover -short ./...
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Testing $dir..."
+        (cd "$dir" && go test -v -race -cover -short ./...)
+      done
+      {{end}}
 
   test.full:
-    cmd: go test -v -race -cover {{.CLI_ARGS | default "./..."}}
+    cmd: |
+      {{if .CLI_ARGS}}
+      go test -v -race -cover {{.CLI_ARGS}}
+      {{else}}
+      go test -v -race -cover ./...
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Testing $dir..."
+        (cd "$dir" && go test -v -race -cover ./...)
+      done
+      {{end}}
 
   test.ci:
-    cmd: go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS | default "./..."}}
+    cmd: |
+      {{if .CLI_ARGS}}
+      go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}
+      {{else}}
+      go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Testing $dir..."
+        (cd "$dir" && go test -v -race -coverprofile=coverage.out -covermode=atomic ./...)
+      done
+      {{end}}
 
   lint:
-    cmd: golangci-lint run --allow-parallel-runners --verbose
+    cmd: |
+      golangci-lint run --allow-parallel-runners --verbose
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Linting in $dir..."
+        (cd "$dir" && golangci-lint run --allow-parallel-runners --verbose)
+      done
 
   vuln:
     desc: Run govulncheck for vulnerability scanning
-    cmd: govulncheck ./...
+    cmd: |
+      govulncheck ./...
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Scanning vulnerabilities in $dir..."
+        (cd "$dir" && govulncheck ./...)
+      done
 
   lint-fix:
-    cmd: golangci-lint run --fix --allow-parallel-runners --verbose
+    cmd: |
+      golangci-lint run --fix --allow-parallel-runners --verbose
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Fixing linter issues in $dir..."
+        (cd "$dir" && golangci-lint run --fix --allow-parallel-runners --verbose)
+      done
 
   fmt:
-    cmd: golangci-lint fmt -v
+    cmd: |
+      golangci-lint fmt -v
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Formatting in $dir..."
+        (cd "$dir" && golangci-lint fmt -v)
+      done
 
   run:
     cmd: go run . {{.CLI_ARGS}}
 
   mod.update:
-    cmd: go get -t -u ./...
+    cmd: |
+      echo "Updating root module..."
+      go get -t -u ./...
+      
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Updating dependencies in $dir..."
+        (cd "$dir" && go get -t -u ./...)
+      done
 
   mod.tidy:
-    cmd: go mod tidy -v
+    cmd: |
+      echo "Tidying root module..."
+      go mod tidy -v
+      
+      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        echo "Tidying module in $dir..."
+        (cd "$dir" && go mod tidy -v)
+      done
 
   dependencies.update:
     deps:
       - mod.update
       - mod.tidy
+
+  tag:
+    desc: Create release tags for the root module and submodules
+    cmd: |
+      # Check if version was provided
+      if [ -z "{{.CLI_ARGS}}" ]; then
+        echo "Error: You must provide a version tag (e.g. task tag -- v2.0.0)"
+        exit 1
+      fi
+
+      # Parse arguments
+      set -- {{.CLI_ARGS}}
+      TAG_VER="$1"
+      SUBMOD_PATH="$2"
+
+      # Validate version starts with 'v'
+      if [[ ! "$TAG_VER" =~ ^v[0-9] ]]; then
+        echo "Error: Version must start with 'v' followed by a number (e.g. v2.0.0), got '$TAG_VER'"
+        exit 1
+      fi
+
+      if [ -n "$SUBMOD_PATH" ]; then
+        # Trim leading/trailing slashes from path
+        SUBMOD_PATH="${SUBMOD_PATH#/}"
+        SUBMOD_PATH="${SUBMOD_PATH%/}"
+
+        # Verify that sub-module exists and contains a go.mod
+        if [ ! -f "$SUBMOD_PATH/go.mod" ]; then
+          echo "Error: Submodule directory '$SUBMOD_PATH' does not exist or does not contain a go.mod file"
+          exit 1
+        fi
+
+        echo "Tagging submodule '$SUBMOD_PATH' with tag: $SUBMOD_PATH/$TAG_VER"
+        git tag "$SUBMOD_PATH/$TAG_VER"
+      else
+        echo "Tagging root module with tag: $TAG_VER"
+        git tag "$TAG_VER"
+
+        find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+          echo "Tagging submodule '$dir' with tag: $dir/$TAG_VER"
+          git tag "$dir/$TAG_VER"
+        done
+      fi
+
+      echo "Tags created successfully. To push tags, run: git push origin --tags"
 
   tools.plugins:
     desc: Install all necessary asdf plugins
