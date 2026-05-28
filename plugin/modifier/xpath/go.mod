@@ -6,7 +6,7 @@ replace github.com/detro/spelunk/v2 => ../../../
 
 require (
 	github.com/antchfx/xmlquery v1.5.1
-	github.com/detro/spelunk/v2 v2.0.0-rc1
+	github.com/detro/spelunk/v2 v2.0.0-rc3
 	github.com/stretchr/testify v1.11.1
 )
 

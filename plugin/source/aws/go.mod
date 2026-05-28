@@ -11,8 +11,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.19
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.18
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.41.8
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc1
-	github.com/detro/spelunk/v2 v2.0.0-rc1
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc3
+	github.com/detro/spelunk/v2 v2.0.0-rc3
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.42.0
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.42.0

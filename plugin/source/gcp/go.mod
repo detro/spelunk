@@ -8,8 +8,8 @@ replace github.com/detro/spelunk/plugin/modifier/jsonpath/v2 => ../../modifier/j
 
 require (
 	cloud.google.com/go/secretmanager v1.20.0
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc1
-	github.com/detro/spelunk/v2 v2.0.0-rc1
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc3
+	github.com/detro/spelunk/v2 v2.0.0-rc3
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.42.0
 	google.golang.org/api v0.282.0
