@@ -31,7 +31,7 @@ tasks:
       go test -v -race -cover -short {{.CLI_ARGS}}
       {{else}}
       go test -v -race -cover -short ./...
-      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+      find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
         echo "Testing $dir..."
         (cd "$dir" && go test -v -race -cover -short ./...)
       done
@@ -43,7 +43,7 @@ tasks:
       go test -v -race -cover {{.CLI_ARGS}}
       {{else}}
       go test -v -race -cover ./...
-      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+      find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
         echo "Testing $dir..."
         (cd "$dir" && go test -v -race -cover ./...)
       done
@@ -55,7 +55,7 @@ tasks:
       go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}
       {{else}}
       go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+      find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
         echo "Testing $dir..."
         (cd "$dir" && go test -v -race -coverprofile=coverage.out -covermode=atomic ./...)
       done
@@ -64,7 +64,7 @@ tasks:
   lint:
     cmd: |
       golangci-lint run --allow-parallel-runners --verbose
-      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+      find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
         echo "Linting in $dir..."
         (cd "$dir" && golangci-lint run --allow-parallel-runners --verbose)
       done
@@ -81,7 +81,7 @@ tasks:
   lint-fix:
     cmd: |
       golangci-lint run --fix --allow-parallel-runners --verbose
-      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+      find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
         echo "Fixing linter issues in $dir..."
         (cd "$dir" && golangci-lint run --fix --allow-parallel-runners --verbose)
       done
@@ -89,7 +89,7 @@ tasks:
   fmt:
     cmd: |
       golangci-lint fmt -v
-      find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+      find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
         echo "Formatting in $dir..."
         (cd "$dir" && golangci-lint fmt -v)
       done
@@ -159,7 +159,7 @@ tasks:
         echo "Tagging root module with tag: $TAG_VER"
         git tag "$TAG_VER"
 
-        find plugin examples -name go.mod -exec dirname {} \; | while read -r dir; do
+        find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
           echo "Tagging submodule '$dir' with tag: $dir/$TAG_VER"
           git tag "$dir/$TAG_VER"
         done

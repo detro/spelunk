@@ -164,7 +164,7 @@ When releasing version `vX.Y.Z`:
 2. Push your changes to `main`.
 3. Use the unified `task tag` utility to automatically tag either the whole workspace or a specific submodule:
    ```shell
-   # Tag the entire workspace (root module and all 16 submodules/examples) at v2.0.0:
+   # Tag the entire workspace (root module and all 12 plugin submodules) at v2.0.0:
    $ task tag -- v2.0.0
 
    # Tag ONLY a specific submodule (e.g., if releasing a standalone patch for a plugin):
