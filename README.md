@@ -3,8 +3,8 @@
 <img align="right" width="300" src="docs/images/spelunk-logo-transparent.png">
 
 [![CI](https://github.com/detro/spelunk/actions/workflows/ci.yaml/badge.svg)](https://github.com/detro/spelunk/actions/workflows/ci.yaml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/detro/spelunk.svg)](https://pkg.go.dev/github.com/detro/spelunk)
-[![Go Report Card](https://goreportcard.com/badge/github.com/detro/spelunk)](https://goreportcard.com/report/github.com/detro/spelunk)
+[![Go Reference](https://pkg.go.dev/badge/github.com/detro/spelunk/v2.svg)](https://pkg.go.dev/github.com/detro/spelunk/v2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/detro/spelunk/v2)](https://goreportcard.com/report/github.com/detro/spelunk/v2)
 [![License](https://img.shields.io/github/license/detro/spelunk)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/detro/spelunk)](https://github.com/detro/spelunk/releases)
 
@@ -40,15 +40,26 @@ environment, situation and/or needs.**
 Spelunk can be configured to support more [Sources](#sources-secretsource), and users can apply
 [Modifiers](#modifiers-secretmodifier) to "prepare" the secret in the exact way they need it.
 
+## ⚡️ Multi-Module Architecture (New in v2.x)
+
+Starting with version `v2.x`, Spelunk implements a highly efficient **Go Multi-Module Workspace** architecture.
+
+Previously, importing Spelunk pulled down every single heavy SDK dependency (including the AWS, GCP, Azure, HashiCorp Vault, Kubernetes, and 1Password SDKs) regardless of whether you used them or not. 
+
+From `v2.0.0` onwards:
+- **Ultra-Lean Core:** The root core module `github.com/detro/spelunk/v2` is completely bare and carries virtually zero production dependencies.
+- **Pay Only For What You Use:** Sibling plugins are completely decoupled into isolated submodules. Heavyweight dependencies are **only** pulled down by Go if you explicitly choose to import and register their corresponding plugin.
+
 ## Get started
 
-Add the library to your project:
+Add the core library to your project:
 
 ```shell
-# Pull the main library
-go get github.com/detro/spelunk
-# Pull optional plugins
-go get github.com/detro/spelunk/plugin/source/kubernetes
+# Pull the ultra-lean core library
+go get github.com/detro/spelunk/v2
+
+# Pull only the specific plugins you want to use
+go get github.com/detro/spelunk/plugin/source/kubernetes/v2
 ```
 
 Setup a new `Spelunker` and start digging up secrets:
@@ -57,8 +68,10 @@ Setup a new `Spelunker` and start digging up secrets:
 package main
 
 import (
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/plugin/source/kubernetes"
+	"context"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/v2/types"
+	"github.com/detro/spelunk/plugin/source/kubernetes/v2"
 	v1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
@@ -101,9 +114,9 @@ provided at construction time:
 package main
 
 import (
-	"github.com/detro/spelunk"
-	"github.com/detro/spelunk/plugin/source/kubernetes"
-	"github.com/detro/spelunk/plugin/source/vault"
+	"github.com/detro/spelunk/v2"
+	"github.com/detro/spelunk/plugin/source/kubernetes/v2"
+	"github.com/detro/spelunk/plugin/source/vault/v2"
 )
 
 _ = spelunk.NewSpelunker(
@@ -135,7 +148,7 @@ For example, when using the _awesome_ [Kong](https://github.com/alecthomas/kong)
 ```go
 package main
 
-import "github.com/detro/spelunk"
+import "github.com/detro/spelunk/v2"
 
 type CLI struct {
 	Password spelunk.SecretCoord `name:"password" short:"p" help:"your password"`
@@ -150,18 +163,18 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 
 | Source (of Secrets)                                                              | Type (scheme) | Available as | Status |                                        Doc                                        |
 |----------------------------------------------------------------------------------|---------------|:------------:|:------:|:---------------------------------------------------------------------------------:|
-| Environment Variables                                                            | `env://`      |   built-in   |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/env)    |
-| File                                                                             | `file://`     |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/file)    |
-| Plaintext                                                                        | `plain://`    |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/plain)   |
-| Base64 encoded                                                                   | `base64://`   |   built-in   |   ✅    |  [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/source/base64)   |
-| [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`      |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/kubernetes) |
-| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/vault)    |
-| [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/aws)     |
-| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/gcp)     |
-| [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/azure)    |
-| [1Password](https://developer.1password.com/docs/cli/)                           | `op://`       |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/1password)  |
-| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    | 👷[^1] | [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/bitwarden)  |
-| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `kp://`       |   plug-in    | 👷[^1] |   [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/source/keeper)   |
+| Environment Variables                                                            | `env://`      |   built-in   |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/source/env)    |
+| File                                                                             | `file://`     |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/source/file)    |
+| Plaintext                                                                        | `plain://`    |   built-in   |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/source/plain)   |
+| Base64 encoded                                                                   | `base64://`   |   built-in   |   ✅    |  [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/source/base64)   |
+| [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)  | `k8s://`      |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/kubernetes/v2) |
+| [Vault](https://www.hashicorp.com/en/products/vault)                             | `vault://`    |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/vault/v2)    |
+| [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/)                   | `aws://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/aws/v2)     |
+| [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/gcp/v2)     |
+| [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/azure/v2)    |
+| [1Password](https://developer.1password.com/docs/cli/)                           | `op://`       |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/1password/v2)  |
+| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    | 👷[^1] | [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/bitwarden/v2)  |
+| [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `kp://`       |   plug-in    | 👷[^1] |   [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/keeper/v2)   |
 | [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lp://`       |   plug-in    | ❌ [^2] |                                                                                   |
 | [Dashlane](https://cli.dashlane.com/)                                            | `dl://`       |   plug-in    | ❌ [^2] |                                                                                   |
 
@@ -193,13 +206,13 @@ will result in this sequence:
 
 | Modifier (of Secrets)             | Type (query)     | Available as | Status |                                           Doc                                            |
 |-----------------------------------|------------------|:------------:|:------:|:----------------------------------------------------------------------------------------:|
-| Base64 encoder                    | `?b64`           |   built-in   |   ✅    |     [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64)     |
-| Base64 encoder (alias for `?b64`) | `?b64e`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_encoder) |
-| Base64 decoder                    | `?b64d`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk@main/builtin/modifier/base64_decoder) |
-| JSONPath extractor                | `?jp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/jsonpath)     |
-| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ✅    |      [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/xpath)      |
-| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/yamlpath)     |
-| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk@main/plugin/modifier/tomlpath)     |
+| Base64 encoder                    | `?b64`           |   built-in   |   ✅    |     [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/modifier/base64)     |
+| Base64 encoder (alias for `?b64`) | `?b64e`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/modifier/base64_encoder) |
+| Base64 decoder                    | `?b64d`          |   built-in   |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk/v2@main/builtin/modifier/base64_decoder) |
+| JSONPath extractor                | `?jp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/modifier/jsonpath/v2)     |
+| XPath extractor                   | `?xp=<XPath>`    |   plug-in    |   ✅    |      [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/modifier/xpath/v2)      |
+| YAML JSONPath extractor           | `?yp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/modifier/yamlpath/v2)     |
+| TOML JSONPath extractor           | `?tp=<JSONPath>` |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/modifier/tomlpath/v2)     |
 | SHA-2/3 / BLAKE-2/3 / ... hasher  | TBD              |   plug-in    |   ⏳    |                                                                                          |
 
 ## Contributing
