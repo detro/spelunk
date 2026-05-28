@@ -146,6 +146,7 @@ func setupAzureTestContainer(t *testing.T, ctx context.Context) (*azsecrets.Clie
 	// Need a custom HTTP client that skips TLS verification
 	client, err := azsecrets.NewClient(lowkeyVaultURL, &fakeCredential{}, &azsecrets.ClientOptions{
 		ClientOptions: azcore.ClientOptions{
+			APIVersion: "7.4",
 			Transport: &http.Client{Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}},

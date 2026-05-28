@@ -102,6 +102,21 @@ func main() {
 
 Integration tests for this plugin are powered by [Testcontainers](https://golang.testcontainers.org/) using the `nagyesta/lowkey-vault` image. They are automatically skipped in short test mode (`go test -short` or `task test.short`).
 
+> [!IMPORTANT]
+> **Emulator/Mock Compatibility (SDK v1.5.0+):**
+>
+> In version `v1.5.0`, the underlying `azsecrets` SDK upgraded its default targeted API version to `2025-07-01`. Because emulators (like `lowkey-vault`) typically trail the latest Azure Cloud API releases, calling them with default settings will yield a `400 Bad Request` or compatibility error.
+>
+> If you are running integration tests or local development against `lowkey-vault` or similar emulators, you **must** configure the client's `APIVersion` option to a backward-compatible version (e.g., `7.4`):
+>
+> ```go
+> client, err := azsecrets.NewClient(lowkeyVaultURL, credential, &azsecrets.ClientOptions{
+>     ClientOptions: azcore.ClientOptions{
+>         APIVersion: "7.4", // Force a backward-compatible API version
+>     },
+> })
+> ```
+
 ## Use Cases
 
 - Dynamically fetching database credentials, API keys, or certificates managed by Azure Key Vault within Azure infrastructure (AKS, Azure Functions, App Service).
