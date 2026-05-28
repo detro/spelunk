@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-05-29
+
+### Added
+
+- **Multi-Module Workspace Support**: Restructured the entire repository into a multi-module architecture leveraging [Go Workspaces](https://go.dev/doc/tutorial/workspaces).
+- **Submodule Isolation**: Converted all 12 plugins (`plugin/modifier/*` and `plugin/source/*`) and 4 example applications (`examples/*`) into fully decoupled, isolated Go modules.
+- **Root-level Public Utilities**: Created the root public package `github.com/detro/spelunk/v2/util` containing shared utilities (`post_process_jsonpath.go`, `mock_source.go`, and `mock_modifier.go`) to prevent import cycles and make testing helpers cleanly importable across standalone submodules.
+- **Unified Tagging Tool**: Added a robust `task tag` command to `Taskfile.yaml` that automates tagging either the entire workspace at once (root + all submodules using their relative directory prefixes) or target submodules individually.
+
+### Changed
+
+- **Dependencies Separation (Ultra-lean Core)**: The core root module `github.com/detro/spelunk/v2` has been stripped down to a absolute minimum dependency surface (carrying almost zero external production dependencies). Users now only pull down the specific heavyweight SDK dependencies (e.g. AWS, Azure, GCP, Vault, Kubernetes) for the exact plugins they choose to import.
+- **Plugin Module Import Paths**: All 12 plugin imports have been updated to target their isolated `v2` module paths (e.g. `github.com/detro/spelunk/plugin/source/vault/v2`).
+- **Task Runner Optimization**: Enhanced and parallelized `Taskfile.yaml` commands (`build`, `test`, `lint`, `fmt`, `vuln`) to recursively cycle through the root module, all 12 plugin modules, and all 4 examples, leveraging workspace-aware Go test targets and concurrent execution via `xargs` to significantly speed up feedback loops.
+- **Azure SDK Upgrade**: Upgraded `github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets` to `v1.5.0` in the Azure Key Vault plugin.
+
+### Fixed
+
+- **Azure Emulator Testing**: Configured Azure Key Vault integration tests to target API version `7.4` to maintain compatibility with `lowkey-vault` emulator, following the `azsecrets` SDK upgrade to `v1.5.0`.
+- **Examples Build Protection**: Updated task runner configuration and workspace settings to prevent compiled binaries of `/examples` from being accidentally checked into Git.
+- **Workspace Tagging Scope**: Refined tagging automation to ensure examples are excluded from automated plugin submodule tagging tasks.
+
 ## [1.4.0] - 2026-05-23
 
 ### Added

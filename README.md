@@ -40,15 +40,21 @@ environment, situation and/or needs.**
 Spelunk can be configured to support more [Sources](#sources-secretsource), and users can apply
 [Modifiers](#modifiers-secretmodifier) to "prepare" the secret in the exact way they need it.
 
-## ⚡️ Multi-Module Architecture (New in v2.x)
+## Multi-Module Architecture (since 2.x)
 
 Starting with version `v2.x`, Spelunk implements a highly efficient **Go Multi-Module Workspace** architecture.
 
-Previously, importing Spelunk pulled down every single heavy SDK dependency (including the AWS, GCP, Azure, HashiCorp Vault, Kubernetes, and 1Password SDKs) regardless of whether you used them or not. 
+Previously, importing Spelunk pulled down every single heavy SDK dependency
+(including the AWS, GCP, Azure, HashiCorp Vault, Kubernetes, and 1Password SDKs)
+regardless of whether you used them or not. 
 
 From `v2.0.0` onwards:
-- **Ultra-Lean Core:** The root core module `github.com/detro/spelunk/v2` is completely bare and carries virtually zero production dependencies.
-- **Pay Only For What You Use:** Sibling plugins are completely decoupled into isolated submodules. Heavyweight dependencies are **only** pulled down by Go if you explicitly choose to import and register their corresponding plugin.
+
+- **Ultra-Lean Core:** The root core module `github.com/detro/spelunk/v2` is completely bare
+  and carries virtually zero production dependencies.
+- **Pay Only For What You Use:** Sibling plugins are completely decoupled into isolated submodules.
+  Heavyweight dependencies are **only** pulled down by Go if you explicitly choose to import
+  and register their corresponding plugin.
 
 ## Get started
 
