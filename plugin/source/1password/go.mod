@@ -8,8 +8,8 @@ replace github.com/detro/spelunk/plugin/modifier/jsonpath/v2 => ../../modifier/j
 
 require (
 	github.com/1password/onepassword-sdk-go v0.4.0
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-00010101000000-000000000000
-	github.com/detro/spelunk/v2 v2.0.0-00010101000000-000000000000
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc1
+	github.com/detro/spelunk/v2 v2.0.0-rc1
 	github.com/stretchr/testify v1.11.1
 )
 

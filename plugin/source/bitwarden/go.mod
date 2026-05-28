@@ -8,8 +8,8 @@ replace github.com/detro/spelunk/plugin/modifier/jsonpath/v2 => ../../modifier/j
 
 require (
 	github.com/bitwarden/sdk-go/v2 v2.1.0
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-00010101000000-000000000000
-	github.com/detro/spelunk/v2 v2.0.0-00010101000000-000000000000
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc1
+	github.com/detro/spelunk/v2 v2.0.0-rc1
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.11.1
 )
