@@ -1,6 +1,11 @@
 # See: https://taskfile.dev/docs/getting-started
 version: '3'
 
+includes:
+  cli:
+    taskfile: ./cmd/spelunk
+    dir: ./cmd/spelunk
+
 env:
   GOBIN: '{{.TASKFILE_DIR}}/bin'
 
@@ -9,7 +14,9 @@ tasks:
     cmd: go generate github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
 
   build:
-    deps: [generate]
+    deps: 
+      - generate
+      - cli:build
     cmd: go build github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
 
   test:
@@ -40,6 +47,8 @@ tasks:
       {{end}}
 
   lint:
+    deps:
+      - cli:lint
     cmd: |
       golangci-lint run --allow-parallel-runners --verbose
       find plugin -name go.mod -exec dirname {} \; | 
@@ -49,6 +58,8 @@ tasks:
 
   vuln:
     desc: Run govulncheck for vulnerability scanning
+    deps:
+      - cli:vuln
     cmd: |
       govulncheck ./...
       find plugin examples -name go.mod -exec dirname {} \; | 
@@ -57,6 +68,8 @@ tasks:
         govulncheck ./...'
 
   lint-fix:
+    deps:
+      - cli:lint-fix
     cmd: |
       golangci-lint run --fix --allow-parallel-runners --verbose
       find plugin -name go.mod -exec dirname {} \; | 
@@ -65,6 +78,8 @@ tasks:
         golangci-lint run --fix --allow-parallel-runners --verbose'
 
   fmt:
+    deps:
+      - cli:fmt
     cmd: |
       golangci-lint fmt -v
       find plugin -name go.mod -exec dirname {} \; | 
@@ -76,6 +91,8 @@ tasks:
     cmd: go run . {{.CLI_ARGS}}
 
   mod.update:
+    deps:
+      - cli:mod.update
     cmd: |
       echo "Updating root module..."
       go get -t -u ./...
@@ -85,6 +102,8 @@ tasks:
         go get -t -u ./...'
 
   mod.tidy:
+    deps:
+      - cli:mod.tidy
     cmd: |
       echo "Tidying root module..."
       go mod tidy -v
@@ -135,7 +154,7 @@ tasks:
         echo "Tagging root module with tag: $TAG_VER"
         git tag "$TAG_VER"
 
-        find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
+        find plugin cmd -name go.mod -exec dirname {} \; | while read -r dir; do
           echo "Tagging submodule '$dir' with tag: $dir/$TAG_VER"
           git tag "$dir/$TAG_VER"
         done

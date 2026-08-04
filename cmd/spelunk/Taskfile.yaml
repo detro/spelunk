@@ -1,0 +1,87 @@
+# See: https://taskfile.dev/docs/getting-started
+version: '3'
+
+env:
+  GOBIN: '{{.TASKFILE_DIR}}/bin'
+
+vars:
+  BUILD_NAME: spelunk
+  BUILD_VERSION:
+    sh: ver=$(git tag --points-at HEAD | cut -c2-); echo ${ver:-"no-version"}
+  BUILD_COMMIT:
+    sh: git log -n 1 --format=%h 2>/dev/null || echo "n/a"
+  BUILD_BRANCH:
+    sh: ver=$(git branch --show-current 2>/dev/null); echo ${ver:-"no-branch"}
+  BUILD_DATE:
+    sh: date -Iseconds
+
+tasks:
+  build:
+    desc: Build the spelunk CLI
+    vars:
+      NAME:
+        ref: .BUILD_NAME
+      VERSION:
+        ref: .BUILD_VERSION
+      COMMIT:
+        ref: .BUILD_COMMIT
+      BRANCH:
+        ref: .BUILD_BRANCH
+      DATE:
+        ref: .BUILD_DATE
+    cmd: >-
+      go build -o ${GOBIN}/spelunk {{.BUILD_FLAGS}} -ldflags="{{.LD_FLAGS}} \
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.name={{.NAME}}' \
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.version={{.VERSION}}' \
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.commit={{.COMMIT}}' \
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.branch={{.BRANCH}}' \
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.date={{.DATE}}' \
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=taskfile.dev' \
+      " .
+
+  build-release:
+    desc: Build the spelunk CLI for release (trimmed and stripped)
+    cmds:
+      - task: build
+        vars:
+          BUILD_FLAGS: -trimpath
+          LD_FLAGS: -s -w
+
+  test:
+    desc: Run tests for the spelunk CLI
+    cmd: |
+      {{if .CLI_ARGS}}
+      go test -v -race -cover {{.CLI_ARGS}}
+      {{else}}
+      go test -v -race -cover ./...
+      {{end}}
+
+  lint:
+    desc: Lint the spelunk CLI
+    cmd: golangci-lint run --allow-parallel-runners --verbose
+
+  lint-fix:
+    desc: Fix linter issues in the spelunk CLI
+    cmd: golangci-lint run --fix --allow-parallel-runners --verbose
+
+  fmt:
+    desc: Format the spelunk CLI code
+    cmd: golangci-lint fmt -v
+
+  vuln:
+    desc: Run govulncheck for vulnerability scanning in spelunk CLI
+    cmd: govulncheck ./...
+
+  mod.update:
+    desc: Update dependencies for spelunk CLI
+    cmd: go get -t -u ./...
+
+  mod.tidy:
+    desc: Tidy Go module for spelunk CLI
+    cmd: go mod tidy -v
+
+  dependencies.update:
+    desc: Update and tidy dependencies for spelunk CLI
+    deps:
+      - mod.update
+      - mod.tidy
