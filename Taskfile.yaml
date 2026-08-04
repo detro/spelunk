@@ -42,23 +42,35 @@ tasks:
   lint:
     cmd: |
       golangci-lint run --allow-parallel-runners --verbose
-      find plugin -name go.mod -exec dirname {} \; | xargs -I {} -P 8 sh -c 'echo "Linting in {}..." && cd {} && golangci-lint run --allow-parallel-runners --verbose'
+      find plugin -name go.mod -exec dirname {} \; | 
+        xargs -I {} -P 8 sh -c 'echo "Linting in {}..." && 
+        cd {} && 
+        golangci-lint run --allow-parallel-runners --verbose'
 
   vuln:
     desc: Run govulncheck for vulnerability scanning
     cmd: |
       govulncheck ./...
-      find plugin examples -name go.mod -exec dirname {} \; | xargs -I {} -P 8 sh -c 'echo "Scanning vulnerabilities in {}..." && cd {} && govulncheck ./...'
+      find plugin examples -name go.mod -exec dirname {} \; | 
+        xargs -I {} -P 8 sh -c 'echo "Scanning vulnerabilities in {}..." && 
+        cd {} && 
+        govulncheck ./...'
 
   lint-fix:
     cmd: |
       golangci-lint run --fix --allow-parallel-runners --verbose
-      find plugin -name go.mod -exec dirname {} \; | xargs -I {} -P 8 sh -c 'echo "Fixing linter issues in {}..." && cd {} && golangci-lint run --fix --allow-parallel-runners --verbose'
+      find plugin -name go.mod -exec dirname {} \; | 
+        xargs -I {} -P 8 sh -c 'echo "Fixing linter issues in {}..." && 
+        cd {} && 
+        golangci-lint run --fix --allow-parallel-runners --verbose'
 
   fmt:
     cmd: |
       golangci-lint fmt -v
-      find plugin -name go.mod -exec dirname {} \; | xargs -I {} -P 8 sh -c 'echo "Formatting in {}..." && cd {} && golangci-lint fmt -v'
+      find plugin -name go.mod -exec dirname {} \; | 
+        xargs -I {} -P 8 sh -c 'echo "Formatting in {}..." && 
+        cd {} && 
+        golangci-lint fmt -v'
 
   run:
     cmd: go run . {{.CLI_ARGS}}
@@ -67,13 +79,19 @@ tasks:
     cmd: |
       echo "Updating root module..."
       go get -t -u ./...
-      find plugin examples -name go.mod -exec dirname {} \; | xargs -I {} -P 8 sh -c 'echo "Updating dependencies in {}..." && cd {} && go get -t -u ./...'
+      find plugin examples -name go.mod -exec dirname {} \; | 
+        xargs -I {} -P 8 sh -c 'echo "Updating dependencies in {}..." && 
+        cd {} && 
+        go get -t -u ./...'
 
   mod.tidy:
     cmd: |
       echo "Tidying root module..."
       go mod tidy -v
-      find plugin examples -name go.mod -exec dirname {} \; | xargs -I {} -P 8 sh -c 'echo "Tidying module in {}..." && cd {} && go mod tidy -v'
+      find plugin examples -name go.mod -exec dirname {} \; | 
+        xargs -I {} -P 8 sh -c 'echo "Tidying module in {}..." && 
+        cd {} && 
+        go mod tidy -v'
 
   dependencies.update:
     deps:
