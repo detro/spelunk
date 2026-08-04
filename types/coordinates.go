@@ -29,6 +29,16 @@ type SecretCoord struct {
 	Modifiers [][2]string
 }
 
+func (sc *SecretCoord) String() string {
+	res := strings.Builder{}
+	res.WriteString("t=" + sc.Type)
+	res.WriteString(" l=" + sc.Location)
+	for idx, mod := range sc.Modifiers {
+		res.WriteString(fmt.Sprintf(" m[%d]=%s:%s", idx, mod[0], mod[1]))
+	}
+	return res.String()
+}
+
 // NewSecretCoord creates a new SecretCoord from a URI-based coordinates string.
 //
 // Splunker will then dig-up the secret using the correct SecretSource, identified using the SecretCoord.Type (scheme).
