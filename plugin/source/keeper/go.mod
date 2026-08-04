@@ -1,14 +1,14 @@
 module github.com/detro/spelunk/plugin/source/keeper/v2
 
-go 1.26.3
+go 1.26.5
 
 replace github.com/detro/spelunk/v2 => ../../../
 
 replace github.com/detro/spelunk/plugin/modifier/jsonpath/v2 => ../../modifier/jsonpath
 
 require (
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0-rc3
-	github.com/detro/spelunk/v2 v2.0.0-rc3
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0
+	github.com/detro/spelunk/v2 v2.0.0
 	github.com/keeper-security/secrets-manager-go/core v1.7.0
 	github.com/stretchr/testify v1.11.1
 )
