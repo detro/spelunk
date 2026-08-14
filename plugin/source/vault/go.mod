@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/plugin/source/vault/v2
 
-go 1.26.5
+go 1.26.6
 
 replace github.com/detro/spelunk/v2 => ../../../
 

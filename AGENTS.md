@@ -12,6 +12,7 @@ This document provides essential information for AI agents working on the `spelu
 * **Never leave this repository**:
   * All your "read" and "write" operations and all your tools should only be ever applied to this repo and its subdirectories
   * Never access any of the files on the rest of this system
+* **Tool management via task**: always use `task tools.update` and `task tools.install` to update and install project tools.
 
 ## 🏗 Architecture
 
