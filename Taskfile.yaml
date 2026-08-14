@@ -14,7 +14,7 @@ tasks:
     cmd: go generate github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
 
   build:
-    deps: 
+    deps:
       - generate
       - cli:build
     cmd: go build github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
@@ -23,6 +23,8 @@ tasks:
     deps: [test.full]
 
   test.short:
+    deps:
+      - cli:test.short
     cmd: |
       {{if .CLI_ARGS}}
       go test -v -race -cover -short {{.CLI_ARGS}}
@@ -31,6 +33,8 @@ tasks:
       {{end}}
 
   test.full:
+    deps:
+      - cli:test.full
     cmd: |
       {{if .CLI_ARGS}}
       go test -v -race -cover {{.CLI_ARGS}}
@@ -39,6 +43,8 @@ tasks:
       {{end}}
 
   test.ci:
+    deps:
+      - cli:test.ci
     cmd: |
       {{if .CLI_ARGS}}
       go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}

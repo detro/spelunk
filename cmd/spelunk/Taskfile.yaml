@@ -48,12 +48,35 @@ tasks:
           LD_FLAGS: -s -w
 
   test:
-    desc: Run tests for the spelunk CLI
+    desc: Run all tests for the spelunk CLI (alias for test.full)
+    deps:
+      - test.full
+
+  test.short:
+    desc: Run short tests for the spelunk CLI (skips integration tests)
+    cmd: |
+      {{if .CLI_ARGS}}
+      go test -v -race -cover -short {{.CLI_ARGS}}
+      {{else}}
+      go test -v -race -cover -short ./...
+      {{end}}
+
+  test.full:
+    desc: Run all tests for the spelunk CLI with race detection and coverage
     cmd: |
       {{if .CLI_ARGS}}
       go test -v -race -cover {{.CLI_ARGS}}
       {{else}}
       go test -v -race -cover ./...
+      {{end}}
+
+  test.ci:
+    desc: Run tests with coverage profile for CI for the spelunk CLI
+    cmd: |
+      {{if .CLI_ARGS}}
+      go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}
+      {{else}}
+      go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
       {{end}}
 
   lint:
