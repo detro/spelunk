@@ -16,6 +16,9 @@ vars:
     sh: date -Iseconds
 
 tasks:
+  generate:
+    cmd: go generate .
+
   build:
     desc: Build the spelunk CLI
     vars:
@@ -29,6 +32,8 @@ tasks:
         ref: .BUILD_BRANCH
       DATE:
         ref: .BUILD_DATE
+    deps:
+      - generate
     cmd: >-
       go build -o ${GOBIN}/spelunk {{.BUILD_FLAGS}} -ldflags="{{.LD_FLAGS}} \
         -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.name={{.NAME}}' \
