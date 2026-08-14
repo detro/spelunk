@@ -5,7 +5,7 @@ go 1.26.6
 replace github.com/detro/spelunk/v2 => ../../
 
 require (
-	github.com/alecthomas/kong v1.16.0
+	github.com/alecthomas/kong v1.16.1
 	github.com/detro/spelunk/v2 v2.0.0
 	github.com/jotaen/kong-completion v0.0.14
 	github.com/lmittmann/tint v1.2.0
