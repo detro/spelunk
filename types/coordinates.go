@@ -34,7 +34,7 @@ func (sc *SecretCoord) String() string {
 	res.WriteString("t=" + sc.Type)
 	res.WriteString(" l=" + sc.Location)
 	for idx, mod := range sc.Modifiers {
-		res.WriteString(fmt.Sprintf(" m[%d]=%s:%s", idx, mod[0], mod[1]))
+		fmt.Fprintf(&res, " m[%d]=%s:%s", idx, mod[0], mod[1])
 	}
 	return res.String()
 }
