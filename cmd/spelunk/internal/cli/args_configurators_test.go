@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"context"
+	"errors"
 	"testing"
 
 	"github.com/detro/spelunk/cmd/spelunk/internal/configurator"
@@ -22,31 +22,67 @@ func TestPluginConfigs_Types(t *testing.T) {
 	}
 }
 
-func TestPluginConfigs_NoCredentials_ReturnsNil(t *testing.T) {
-	ctx := context.Background()
+func TestPluginConfigs_SpelunkerOptions_HostAware(t *testing.T) {
+	ctx := t.Context()
 	var cfg Configurators
+
+	var detectedCount int
+	for _, p := range cfg.All() {
+		if p.CredentialsDetected() {
+			detectedCount++
+		}
+	}
 
 	opts, err := cfg.SpelunkerOptions(ctx)
 	require.NoError(t, err)
-	require.Empty(t, opts)
-}
+	require.Len(t, opts, detectedCount)
 
-func TestPluginConfigs_NoCredentials_CredentialsValid_ReturnsError(t *testing.T) {
-	ctx := context.Background()
-	var cfg Configurators
-
-	for _, p := range cfg.All() {
-		require.False(t, p.CredentialsDetected())
-		err := p.CredentialsValid(ctx)
-		require.Error(t, err)
-		require.ErrorIs(t, err, configurator.ErrCredentialsNotDetected)
+	for _, opt := range opts {
+		require.NotNil(t, opt)
 	}
 }
 
-func TestConfig_VerifyAll_NoCredentials_NoError(t *testing.T) {
-	ctx := context.Background()
+func TestPluginConfigs_CredentialsValid_HostAware(t *testing.T) {
+	ctx := t.Context()
 	var cfg Configurators
 
+	for _, p := range cfg.All() {
+		t.Run(p.Type(), func(t *testing.T) {
+			err := p.CredentialsValid(ctx)
+			if !p.CredentialsDetected() {
+				require.Error(t, err)
+				require.ErrorIs(t, err, configurator.ErrCredentialsNotDetected)
+			} else {
+				// If detected on host machine, validation can succeed or fail at provider level,
+				// but must NOT fail with ErrCredentialsNotDetected
+				require.False(
+					t,
+					errors.Is(err, configurator.ErrCredentialsNotDetected),
+					"plugin %s detected credentials but returned ErrCredentialsNotDetected",
+					p.Type(),
+				)
+			}
+		})
+	}
+}
+
+func TestConfig_VerifyAll_HostAware(t *testing.T) {
+	ctx := t.Context()
+	var cfg Configurators
+
+	var expectedErrors []error
+	for _, p := range cfg.All() {
+		if p.CredentialsDetected() {
+			if err := p.CredentialsValid(ctx); err != nil {
+				expectedErrors = append(expectedErrors, err)
+			}
+		}
+	}
+
 	err := cfg.VerifyAll(ctx)
-	require.NoError(t, err)
+	if len(expectedErrors) == 0 {
+		require.NoError(t, err)
+	} else {
+		require.Error(t, err)
+	}
 }
