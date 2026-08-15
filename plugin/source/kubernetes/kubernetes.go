@@ -66,6 +66,10 @@ func (s *SecretSourceKubernetes) DigUp(
 	// Take Location apart
 	var namespace, name, key string
 	switch len(parts) {
+	case 1:
+		namespace = defaultNamespace
+		name = parts[0]
+		key = ""
 	case 2:
 		namespace = defaultNamespace
 		name = parts[0]
