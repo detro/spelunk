@@ -31,10 +31,12 @@ func With1Password(client *onepassword.Client) spelunk.SpelunkerOption {
 	})
 }
 
+const Type = "op"
+
 var _ types.SecretSource = (*SecretSource1Password)(nil)
 
 func (s *SecretSource1Password) Type() string {
-	return "op"
+	return Type
 }
 
 func (s *SecretSource1Password) DigUp(

@@ -55,10 +55,12 @@ func WithGCP(client *secretmanager.Client) spelunk.SpelunkerOption {
 	})
 }
 
+const Type = "gcp"
+
 var _ types.SecretSource = (*SecretSourceGCP)(nil)
 
 func (s *SecretSourceGCP) Type() string {
-	return "gcp"
+	return Type
 }
 
 func (s *SecretSourceGCP) DigUp(ctx context.Context, coord types.SecretCoord) (string, error) {

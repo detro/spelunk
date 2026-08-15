@@ -31,10 +31,12 @@ func WithBitwarden(client sdk.BitwardenClientInterface) spelunk.SpelunkerOption 
 	return spelunk.WithSource(source)
 }
 
+const Type = "bw"
+
 var _ types.SecretSource = (*SecretSourceBitwarden)(nil)
 
 func (s *SecretSourceBitwarden) Type() string {
-	return "bw"
+	return Type
 }
 
 func (s *SecretSourceBitwarden) DigUp(
