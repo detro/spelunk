@@ -28,6 +28,9 @@ const (
 	jsonSecretName  = "my-app/my-jsonsecret"
 	jsonSecretValue = `{"key":"value"}`
 
+	flatSecretName  = "my-flatsecret"
+	flatSecretValue = `flat-secret-value`
+
 	plainSecretName  = "my-app/my-plainsecret"
 	plainSecretValue = `
 		key=value
@@ -69,6 +72,26 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 			name:     "(json) secret by name",
 			coordStr: fmt.Sprintf("aws://%s", jsonSecretName),
 			want:     jsonSecretValue,
+		},
+		{
+			name:     "(json) secret by name with leading slash (///)",
+			coordStr: fmt.Sprintf("aws:///%s", jsonSecretName),
+			want:     jsonSecretValue,
+		},
+		{
+			name:     "(json) secret by name with trailing slash",
+			coordStr: fmt.Sprintf("aws://%s/", jsonSecretName),
+			want:     jsonSecretValue,
+		},
+		{
+			name:     "(json) secret by name with trailing slash and modifier",
+			coordStr: fmt.Sprintf("aws://%s/?jp=$.key", jsonSecretName),
+			want:     "value",
+		},
+		{
+			name:     "(flat) secret by flat name",
+			coordStr: fmt.Sprintf("aws://%s", flatSecretName),
+			want:     flatSecretValue,
 		},
 		{
 			name:     "(json) secret by exact ARN (with ///)",
@@ -163,6 +186,13 @@ func createTestSecrets(
 	})
 	require.NoError(t, err)
 	res[plainSecretName] = plainSecret
+
+	flatSecret, err := client.CreateSecret(t.Context(), &secretsmanager.CreateSecretInput{
+		Name:         aws.String(flatSecretName),
+		SecretString: aws.String(flatSecretValue),
+	})
+	require.NoError(t, err)
+	res[flatSecretName] = flatSecret
 
 	return res
 }

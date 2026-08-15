@@ -18,6 +18,42 @@ func TestSecretSource1Password_Type(t *testing.T) {
 	require.Equal(t, "op", s.Type())
 }
 
+func TestSecretSource1Password_DigUp_Parsing(t *testing.T) {
+	s := &spelunkop.SecretSource1Password{}
+
+	tests := []struct {
+		name     string
+		coordStr string
+		errMatch error
+	}{
+		{
+			name:     "invalid location (not enough parts - 2 parts)",
+			coordStr: "op://my-vault/my-item",
+			errMatch: types.ErrInvalidLocation,
+		},
+		{
+			name:     "invalid location (not enough parts - 1 part)",
+			coordStr: "op://my-item",
+			errMatch: types.ErrInvalidLocation,
+		},
+		{
+			name:     "invalid location (too many parts - 5 parts)",
+			coordStr: "op://my-vault/my-item/my-section/my-field/extra",
+			errMatch: types.ErrInvalidLocation,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			coord, err := types.NewSecretCoord(tt.coordStr)
+			require.NoError(t, err)
+
+			_, err = s.DigUp(t.Context(), *coord)
+			require.ErrorIs(t, err, tt.errMatch)
+		})
+	}
+}
+
 // TestSecretSource1Password_DigUp_Integration because there is no way to simulate locally a 1Password installation,
 // tests here are designed to be executed by maintainers with access to a specific 1Password vault and with the
 // environment variable `SPELUNK_1PASSWORD_TEST_SATOKEN` set.

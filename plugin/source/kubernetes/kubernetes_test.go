@@ -22,6 +22,42 @@ func TestSecretSourceKubernetes_Type(t *testing.T) {
 	require.Equal(t, "k8s", s.Type())
 }
 
+func TestSecretSourceKubernetes_DigUp_Parsing(t *testing.T) {
+	s := &kubernetes.SecretSourceKubernetes{}
+
+	tests := []struct {
+		name     string
+		coordStr string
+		errMatch error
+	}{
+		{
+			name:     "invalid namespace name",
+			coordStr: "k8s://INVALID-NAMESPACE/secret/key",
+			errMatch: kubernetes.ErrSecretSourceKubernetesInvalidName,
+		},
+		{
+			name:     "invalid secret name",
+			coordStr: "k8s://ns/INVALID-SECRET/key",
+			errMatch: kubernetes.ErrSecretSourceKubernetesInvalidName,
+		},
+		{
+			name:     "invalid location (too many parts)",
+			coordStr: "k8s://ns/secret/key/extra",
+			errMatch: types.ErrInvalidLocation,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			coord, err := types.NewSecretCoord(tt.coordStr)
+			require.NoError(t, err)
+
+			_, err = s.DigUp(t.Context(), *coord)
+			require.ErrorIs(t, err, tt.errMatch)
+		})
+	}
+}
+
 const (
 	secretNamespace = "test-ns"
 	secretName      = "my-secret"
@@ -72,8 +108,18 @@ func TestSecretSourceKubernetes_DigUp_Integration(t *testing.T) {
 			want:     fmt.Sprintf(`{"%s":"%s"}`, secretKey, secretValue),
 		},
 		{
+			name:     "whole secret as JSON in default namespace without trailing slash",
+			coordStr: fmt.Sprintf("k8s://%s", secretName),
+			want:     fmt.Sprintf(`{"%s":"%s"}`, secretKey, secretValue),
+		},
+		{
 			name:     "valid secret but via jp modifier",
 			coordStr: fmt.Sprintf(`k8s://%s/%s/?jp=$.%s`, secretNamespace, secretName, secretKey),
+			want:     secretValue,
+		},
+		{
+			name:     "valid secret in default namespace via jp modifier",
+			coordStr: fmt.Sprintf(`k8s://%s/?jp=$.%s`, secretName, secretKey),
 			want:     secretValue,
 		},
 		{

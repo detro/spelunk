@@ -21,10 +21,14 @@ func TestSecretSourceEnv_DigUp(t *testing.T) {
 	require.NoError(t, os.Setenv("TEST_SECRET_KEY", "super-secret-value"))
 	require.NoError(t, os.Setenv("TEST_EMPTY_KEY", ""))
 	require.NoError(t, os.Setenv("TEST_SECRET_KEY_WITH_WHITESPACES", "\nsecret\tword\r"))
+	require.NoError(t, os.Setenv("my_secret_var", "lowercase-value"))
+	require.NoError(t, os.Setenv("USER@VAR_NAME", "userinfo-value"))
 	t.Cleanup(func() {
 		_ = os.Unsetenv("TEST_SECRET_KEY")
 		_ = os.Unsetenv("TEST_EMPTY_KEY")
 		_ = os.Unsetenv("TEST_SECRET_KEY_WITH_WHITESPACES")
+		_ = os.Unsetenv("my_secret_var")
+		_ = os.Unsetenv("USER@VAR_NAME")
 	})
 
 	tests := []struct {
@@ -47,6 +51,21 @@ func TestSecretSourceEnv_DigUp(t *testing.T) {
 			name:     "variable with whitespace",
 			coordStr: "env://TEST_SECRET_KEY_WITH_WHITESPACES",
 			want:     "secret\tword",
+		},
+		{
+			name:     "lowercase and underscore variable",
+			coordStr: "env://my_secret_var",
+			want:     "lowercase-value",
+		},
+		{
+			name:     "variable with userinfo format",
+			coordStr: "env://USER@VAR_NAME",
+			want:     "userinfo-value",
+		},
+		{
+			name:     "missing variable with leading slash",
+			coordStr: "env:///TEST_SECRET_KEY",
+			errMatch: types.ErrSecretNotFound,
 		},
 		{
 			name:     "missing variable",

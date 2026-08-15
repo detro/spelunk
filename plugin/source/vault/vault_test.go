@@ -22,6 +22,42 @@ func TestSecretSourceVault_Type(t *testing.T) {
 	require.Equal(t, "vault", s.Type())
 }
 
+func TestSecretSourceVault_DigUp_Parsing(t *testing.T) {
+	s := &vault.SecretSourceVault{}
+
+	tests := []struct {
+		name     string
+		coordStr string
+		errMatch error
+	}{
+		{
+			name:     "invalid location (just key)",
+			coordStr: "vault://key",
+			errMatch: types.ErrInvalidLocation,
+		},
+		{
+			name:     "invalid location (mount and key, but no secret)",
+			coordStr: "vault://mount/key",
+			errMatch: types.ErrInvalidLocation,
+		},
+		{
+			name:     "invalid location (just mount, no secret)",
+			coordStr: "vault://mount/",
+			errMatch: types.ErrInvalidLocation,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			coord, err := types.NewSecretCoord(tt.coordStr)
+			require.NoError(t, err)
+
+			_, err = s.DigUp(t.Context(), *coord)
+			require.ErrorIs(t, err, tt.errMatch)
+		})
+	}
+}
+
 const (
 	kvSecretEngineV1Mount = "kvSecretsV1"
 	kvSecretEngineV2Mount = "kvSecretsV2"
@@ -117,6 +153,11 @@ func TestSecretSourceVault_DigUp_Integration(t *testing.T) {
 		{
 			name:     "key from v1 secret via JSONPath modifier",
 			coordStr: fmt.Sprintf("vault://%s/?jp=$.%s", v1SecPath, "string_value"),
+			want:     "one",
+		},
+		{
+			name:     "key from v2 secret via JSONPath modifier",
+			coordStr: fmt.Sprintf("vault://%s/?jp=$.%s", v2SecPath, "string_value"),
 			want:     "one",
 		},
 	}

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Configurable Logging: Structured logging with support for colored console output, text, and JSON formats.
   - End-to-End Testing: Comprehensive integration test suites using Testcontainers for AWS, Azure, GCP, Vault, and Kubernetes.
 - **Coordinates Reconstitution**: Implemented `fmt.Stringer` (`String()` method) on `types.SecretCoord` to reconstruct the URI representation from parsed secret coordinates.
+- **Secret Source Coordinate Test Coverage**: Expanded test suites across all built-in and plugin `SecretSource` implementations to systematically exercise supported coordinate format variations (including leading/trailing slashes, encoded paths, version specifications, and offline parsing validations).
 
 ### Fixed
 

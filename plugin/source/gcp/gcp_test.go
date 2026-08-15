@@ -25,9 +25,13 @@ func TestSecretSourceGCP_Type(t *testing.T) {
 }
 
 const (
-	projectID   = "test-project"
-	secretName  = "my-secret"
-	secretValue = "super-secret-value"
+	projectID        = "test-project"
+	numericProjectID = "123456789012"
+	secretName       = "my-secret"
+	secretValue      = "super-secret-value"
+
+	underscoreSecretName  = "MY_SECRET_NAME"
+	underscoreSecretValue = "underscore-secret-value"
 
 	jsonSecretName  = "my-json-secret"
 	jsonSecretValue = `{"password":"super-secret-value"}`
@@ -61,6 +65,21 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 			want:     base64.StdEncoding.EncodeToString([]byte(secretValue)),
 		},
 		{
+			name:     "valid secret numeric project",
+			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/%s", numericProjectID, secretName),
+			want:     base64.StdEncoding.EncodeToString([]byte(secretValue)),
+		},
+		{
+			name:     "valid secret uppercase and underscore name",
+			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/%s", projectID, underscoreSecretName),
+			want:     base64.StdEncoding.EncodeToString([]byte(underscoreSecretValue)),
+		},
+		{
+			name:     "valid secret with trailing slash",
+			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/%s/", projectID, secretName),
+			want:     base64.StdEncoding.EncodeToString([]byte(secretValue)),
+		},
+		{
 			name:     "valid secret specific version",
 			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/%s/versions/1", projectID, secretName),
 			want:     base64.StdEncoding.EncodeToString([]byte(secretValue)),
@@ -87,6 +106,11 @@ func TestSecretSourceGCP_DigUp_Integration(t *testing.T) {
 			name:     "secret not found",
 			coordStr: fmt.Sprintf("gcp://projects/%s/secrets/missing-secret", projectID),
 			errMatch: types.ErrSecretNotFound,
+		},
+		{
+			name:     "invalid location with leading slash (///)",
+			coordStr: fmt.Sprintf("gcp:///projects/%s/secrets/%s", projectID, secretName),
+			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location missing project",
@@ -162,6 +186,49 @@ func createTestSecrets(t *testing.T, client *secretmanager.Client) {
 		},
 	}
 	_, err = client.AddSecretVersion(t.Context(), addVersionReq)
+	require.NoError(t, err)
+
+	// Create secret in numeric project
+	numParent := fmt.Sprintf("projects/%s", numericProjectID)
+	numSecret, err := client.CreateSecret(t.Context(), &secretmanagerpb.CreateSecretRequest{
+		Parent:   numParent,
+		SecretId: secretName,
+		Secret: &secretmanagerpb.Secret{
+			Replication: &secretmanagerpb.Replication{
+				Replication: &secretmanagerpb.Replication_Automatic_{
+					Automatic: &secretmanagerpb.Replication_Automatic{},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+	_, err = client.AddSecretVersion(t.Context(), &secretmanagerpb.AddSecretVersionRequest{
+		Parent: numSecret.Name,
+		Payload: &secretmanagerpb.SecretPayload{
+			Data: []byte(secretValue),
+		},
+	})
+	require.NoError(t, err)
+
+	// Create secret with uppercase and underscore
+	underscoreSecret, err := client.CreateSecret(t.Context(), &secretmanagerpb.CreateSecretRequest{
+		Parent:   parent,
+		SecretId: underscoreSecretName,
+		Secret: &secretmanagerpb.Secret{
+			Replication: &secretmanagerpb.Replication{
+				Replication: &secretmanagerpb.Replication_Automatic_{
+					Automatic: &secretmanagerpb.Replication_Automatic{},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+	_, err = client.AddSecretVersion(t.Context(), &secretmanagerpb.AddSecretVersionRequest{
+		Parent: underscoreSecret.Name,
+		Payload: &secretmanagerpb.SecretPayload{
+			Data: []byte(underscoreSecretValue),
+		},
+	})
 	require.NoError(t, err)
 
 	createJsonSecretReq := &secretmanagerpb.CreateSecretRequest{
