@@ -177,7 +177,7 @@ func TestPlugin_GCP_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			fmt.Sprintf("gcp://projects/%s/secrets/%s", gcpProjectID, gcpPlainSecretName),
 		)
 		require.Equal(t, 0, res.ExitCode, res.Stderr)
@@ -188,7 +188,7 @@ func TestPlugin_GCP_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			fmt.Sprintf("gcp://projects/%s/secrets/missing-secret", gcpProjectID),
 		)
 		require.NotEqual(t, 0, res.ExitCode)

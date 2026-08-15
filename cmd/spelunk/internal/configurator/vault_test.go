@@ -114,14 +114,14 @@ func TestPlugin_Vault_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			fmt.Sprintf("vault://%s/string_value", vaultV1SecPath),
 		)
 		require.Equal(t, 0, res.ExitCode, res.Stderr)
 	})
 
 	t.Run("exist secret missing", func(t *testing.T) {
-		res := runCLI(ctx, bin, env, "exist", "vault://missing/secret/key")
+		res := runCLI(ctx, bin, env, "exists", "vault://missing/secret/key")
 		require.NotEqual(t, 0, res.ExitCode)
 	})
 

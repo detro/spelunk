@@ -149,7 +149,7 @@ func TestPlugin_Azure_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			fmt.Sprintf("az://%s", azurePlainSecretName),
 			"--azure-insecure-skip-tls-verify",
 		)
@@ -161,7 +161,7 @@ func TestPlugin_Azure_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			"az://missing-secret",
 			"--azure-insecure-skip-tls-verify",
 		)

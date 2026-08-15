@@ -106,12 +106,12 @@ func TestPlugin_AWS_E2E(t *testing.T) {
 	})
 
 	t.Run("exist secret found", func(t *testing.T) {
-		res := runCLI(ctx, bin, env, "exist", fmt.Sprintf("aws://%s", awsPlainSecretName))
+		res := runCLI(ctx, bin, env, "exists", fmt.Sprintf("aws://%s", awsPlainSecretName))
 		require.Equal(t, 0, res.ExitCode, res.Stderr)
 	})
 
 	t.Run("exist secret missing", func(t *testing.T) {
-		res := runCLI(ctx, bin, env, "exist", "aws://missing/secret")
+		res := runCLI(ctx, bin, env, "exists", "aws://missing/secret")
 		require.NotEqual(t, 0, res.ExitCode)
 	})
 

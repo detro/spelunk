@@ -135,7 +135,7 @@ func TestPlugin_Kubernetes_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			fmt.Sprintf("k8s://%s/%s/%s", k8sSecretNamespace, k8sSecretName, k8sSecretKey),
 		)
 		require.Equal(t, 0, res.ExitCode, res.Stderr)
@@ -146,7 +146,7 @@ func TestPlugin_Kubernetes_E2E(t *testing.T) {
 			ctx,
 			bin,
 			env,
-			"exist",
+			"exists",
 			fmt.Sprintf("k8s://%s/missing-secret/%s", k8sSecretNamespace, k8sSecretKey),
 		)
 		require.NotEqual(t, 0, res.ExitCode)
