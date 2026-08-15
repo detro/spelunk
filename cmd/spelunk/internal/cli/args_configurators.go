@@ -14,11 +14,27 @@ import (
 
 // Configurators aggregates all source configurations embedded into the CLI.
 type Configurators struct {
+	AWS         configurator.AWSConfigurator         `embed:"" group:"AWS Secrets Manager Configuration (https://aws.amazon.com/secrets-manager/):"`
+	Azure       configurator.AzureConfigurator       `embed:"" group:"Azure Key Vault Configuration (https://azure.microsoft.com/en-us/products/key-vault/):"`
+	GCP         configurator.GCPConfigurator         `embed:"" group:"GCP Secrets Manager Configuration (https://cloud.google.com/security/products/secret-manager):"`
+	Vault       configurator.VaultConfigurator       `embed:"" group:"HashiCorp Vault Configuration (https://www.hashicorp.com/en/products/vault):"`
+	Kubernetes  configurator.KubernetesConfigurator  `embed:"" group:"Kubernetes Secrets Configuration (https://kubernetes.io/docs/concepts/configuration/secret/):"`
+	OnePassword configurator.OnePasswordConfigurator `embed:"" group:"1Password Configuration (https://developer.1password.com/docs/cli/):"`
+	Bitwarden   configurator.BitwardenConfigurator   `embed:"" group:"Bitwarden Configuration (https://bitwarden.com/help/cli/):"`
+	Keeper      configurator.KeeperConfigurator      `embed:"" group:"Keeper Configuration (https://docs.keeper.io/en/enterprise-guide/commander-cli):"`
 }
 
 // All returns all registered SecretSourceConfigurator instances.
 func (c *Configurators) All() []internal.SecretSourceConfigurator {
 	return []internal.SecretSourceConfigurator{
+		&c.AWS,
+		&c.Azure,
+		&c.GCP,
+		&c.Vault,
+		&c.Kubernetes,
+		&c.OnePassword,
+		&c.Bitwarden,
+		&c.Keeper,
 	}
 }
 
