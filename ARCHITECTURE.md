@@ -177,3 +177,9 @@ func (m *MyModifier) Modify(ctx context.Context, val, arg string) (string, error
 s := spelunk.NewSpelunker(spelunk.WithModifier(&MyModifier{}))
 // URI: ...?upper=true
 ```
+
+## Spelunk CLI Binary
+
+The project includes an official standalone CLI binary in [`cmd/spelunk`](./cmd/spelunk). The CLI acts as an aggregate consumer of the core library and all plugin modules, using a configurator pattern to discover host credentials automatically and wire all sources and modifiers into an executable runner.
+
+See [Spelunk CLI Architecture](./cmd/spelunk/ARCHITECTURE.md) for architectural details of the binary.

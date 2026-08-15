@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Spelunk CLI Documentation & Architecture**: Added dedicated `README.md` and `ARCHITECTURE.md` documentation for `cmd/spelunk` detailing CLI capabilities, subcommands, provider auto-configuration, shell completion, and architectural design, along with root documentation links.
 - **Spelunk CLI Utility**: Added a command-line interface in `cmd/spelunk` to dig up secrets directly from the terminal.
   - Subcommands: `dig` (default) to retrieve secrets, `exist` (alias: `is`) to verify secret existence without outputting values, and `creds` (alias: `check`) to validate backend provider credentials.
   - Built-in Support: Integrated all secret sources (AWS, Azure, GCP, Vault, Kubernetes, 1Password, Bitwarden, Keeper, file, env, plain, base64) and modifiers (JSONPath, TOMLPath, XPath, YAMLPath, base64).
