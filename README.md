@@ -40,6 +40,8 @@ environment, situation and/or needs.**
 Spelunk can be configured to support more [Sources](#sources-secretsource), and users can apply
 [Modifiers](#modifiers-secretmodifier) to "prepare" the secret in the exact way they need it.
 
+And, if you want to use Spelunk in your scripts, it also comes with [its own `spelunk` CLI](#spelunk-cli).
+
 ## Multi-Module Architecture (since 2.x)
 
 Starting with version `v2.x`, Spelunk implements a highly efficient **Go Multi-Module Workspace** architecture.
@@ -130,6 +132,15 @@ _ = spelunk.NewSpelunker(
 	vault.WithVault(vaultClient),
 )
 ```
+
+## Spelunk CLI
+
+Spelunk includes an official standalone command-line interface located in [`cmd/spelunk`](./cmd/spelunk).
+It bundles all built-in and plugin backends into a single binary, supporting secret retrieval (`dig`),
+existence checks (`exists`), credential verification (`creds`),
+and shell auto-completion directly from terminal or CI/CD pipelines.
+
+See [Spelunk CLI Documentation](./cmd/spelunk/README.md) for details and installation instructions.
 
 ## Key Types
 
@@ -232,6 +243,7 @@ This project is shared under the [MIT](./LICENSE) license.
 
 ## Links
 
+* [Spelunk CLI documentation](./cmd/spelunk/README.md): standalone CLI tool and reference
 * [Architecture documentation](./ARCHITECTURE.md): understand how Spelunk works internally
 * [Contribution guidelines](./CONTRIBUTING.md): setting some ground rules
 * [Agents documentation](./AGENTS.md): helps LLM-agent augmented developers in their contribution journey
