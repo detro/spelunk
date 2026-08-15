@@ -5,34 +5,19 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-
-	"github.com/detro/spelunk/cmd/spelunk/internal/logger"
-	"github.com/detro/spelunk/v2"
-	"github.com/detro/spelunk/v2/types"
 )
 
+// DigCmd digs up a secret at the given Coordinate.
 type DigCmd struct {
-	Coordinate string `arg:"" name:"coordinate" help:"Coordinates to the Secret to dig up."`
+	coordsArgs `embed:""`
 }
 
-func (c *DigCmd) Run() error {
+func (c *DigCmd) Run(cli *CLI) error {
 	ctx := context.Background()
-	slog.Debug("Digging secret", "coord", c.Coordinate)
-
-	coord, err := types.NewSecretCoord(c.Coordinate)
+	secret, err := cli.DigUpSecret(ctx, c.Coordinate)
 	if err != nil {
-		slog.Error("Failed to parse secret coordinate", "err", err, "coord", c.Coordinate)
 		return err
 	}
-	slog.Log(ctx, logger.LevelTrace, "Coordinate parsed", "coord", c.Coordinate, "parsed", coord)
-
-	sp := spelunk.NewSpelunker()
-	secret, err := sp.DigUp(context.Background(), coord)
-	if err != nil {
-		slog.Error("Failed to dig up secret", "err", err, "coord", c.Coordinate)
-		return err
-	}
-	slog.Log(ctx, logger.LevelTrace, "Spelunker initialized")
 
 	_, err = fmt.Fprint(os.Stdout, secret)
 	if err != nil {
@@ -43,6 +28,7 @@ func (c *DigCmd) Run() error {
 			"coord",
 			c.Coordinate,
 		)
+		return err
 	}
 	return nil
 }
