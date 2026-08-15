@@ -5,12 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.1] - 2026-08-03
+## [Unreleased]
+
+### Added
+
+- **Spelunk CLI Utility**: Added a command-line interface in `cmd/spelunk` to dig up secrets directly from the terminal.
+  - Subcommands: `dig` (default) to retrieve secrets, `exist` (alias: `is`) to verify secret existence without outputting values, and `creds` (alias: `check`) to validate backend provider credentials.
+  - Built-in Support: Integrated all secret sources (AWS, Azure, GCP, Vault, Kubernetes, 1Password, Bitwarden, Keeper, file, env, plain, base64) and modifiers (JSONPath, TOMLPath, XPath, YAMLPath, base64).
+  - Configurable Logging: Structured logging with support for colored console output, text, and JSON formats.
+  - End-to-End Testing: Comprehensive integration test suites using Testcontainers for AWS, Azure, GCP, Vault, and Kubernetes.
+- **Coordinates Reconstitution**: Implemented `fmt.Stringer` (`String()` method) on `types.SecretCoord` to reconstruct the URI representation from parsed secret coordinates.
+
+### Fixed
+
+- **Kubernetes Source**: Fixed URI parsing for `k8s://NAME/` to correctly return the entire secret data map as JSON.
 
 ### Changed
 
-- **Dependencies**: Bumped toolchain versions in `.tool-versions` including Go to `1.26.5`.
-- **Dependencies**: Updated all Go module dependencies across the workspace to their latest available versions.
+- **Task Runner & CI**: Integrated `cmd/spelunk` across workspace `Taskfile.yaml` workflows (build, test, lint, format, vulnerability scan) and added CLI test coverage reporting in CI.
+- **Dependencies**: Bumped Go toolchain to `1.26.6` and updated Go module dependencies across the workspace.
 
 ## [2.0.0] - 2026-05-29
 
