@@ -42,10 +42,12 @@ func WithVault(vaultClient *api.Client) spelunk.SpelunkerOption {
 	return spelunk.WithSource(source)
 }
 
+const Type = "vault"
+
 var _ types.SecretSource = (*SecretSourceVault)(nil)
 
 func (s *SecretSourceVault) Type() string {
-	return "vault"
+	return Type
 }
 
 func (s *SecretSourceVault) DigUp(

@@ -23,6 +23,7 @@ var (
 )
 
 const (
+	Type             = "k8s"
 	defaultNamespace = "default"
 )
 
@@ -53,7 +54,7 @@ func WithKubernetes(k8sClient corev1.SecretsGetter) spelunk.SpelunkerOption {
 var _ types.SecretSource = (*SecretSourceKubernetes)(nil)
 
 func (s *SecretSourceKubernetes) Type() string {
-	return "k8s"
+	return Type
 }
 
 func (s *SecretSourceKubernetes) DigUp(

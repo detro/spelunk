@@ -1,6 +1,6 @@
-# Vault Secret Source (`vault://`)
+# HashiCorp Vault Secret Source (`vault://`)
 
-The **Vault** secret source retrieves secrets directly from the [HashiCorp Vault](https://www.hashicorp.com/products/vault) API.
+The **HashiCorp Vault** secret source retrieves secrets directly from the [HashiCorp Vault](https://www.hashicorp.com/products/vault) API.
 
 ## Status
 

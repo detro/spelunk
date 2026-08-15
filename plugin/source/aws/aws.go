@@ -57,10 +57,12 @@ func WithAWS(client *secretsmanager.Client) spelunk.SpelunkerOption {
 	})
 }
 
+const Type = "aws"
+
 var _ types.SecretSource = (*SecretSourceAWS)(nil)
 
 func (s *SecretSourceAWS) Type() string {
-	return "aws"
+	return Type
 }
 
 func (s *SecretSourceAWS) DigUp(ctx context.Context, coord types.SecretCoord) (string, error) {

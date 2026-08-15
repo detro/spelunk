@@ -38,10 +38,12 @@ func WithKeeper(client *ksm.SecretsManager) spelunk.SpelunkerOption {
 	})
 }
 
+const Type = "kp"
+
 var _ types.SecretSource = (*SecretSourceKeeper)(nil)
 
 func (s *SecretSourceKeeper) Type() string {
-	return "kp"
+	return Type
 }
 
 func (s *SecretSourceKeeper) DigUp(

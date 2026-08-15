@@ -56,10 +56,12 @@ func WithAzure(client *azsecrets.Client) spelunk.SpelunkerOption {
 	})
 }
 
+const Type = "az"
+
 var _ types.SecretSource = (*SecretSourceAzure)(nil)
 
 func (s *SecretSourceAzure) Type() string {
-	return "az"
+	return Type
 }
 
 func (s *SecretSourceAzure) DigUp(ctx context.Context, coord types.SecretCoord) (string, error) {
