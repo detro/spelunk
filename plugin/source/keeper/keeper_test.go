@@ -8,6 +8,7 @@ import (
 	spelunkkeeper "github.com/detro/spelunk/plugin/source/keeper/v2"
 	"github.com/detro/spelunk/v2"
 	"github.com/detro/spelunk/v2/types"
+	ksm "github.com/keeper-security/secrets-manager-go/core"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,10 +18,15 @@ func TestSecretSourceKeeper_Type(t *testing.T) {
 }
 
 func TestSecretSourceKeeper_DigUp_Parsing(t *testing.T) {
-	// We can pass nil for the client because (for now) we are only testing
-	// the coordinate parsing logic which happens before client invocation.
+	// Initialize a dummy client with in-memory storage so no client-config.json
+	// file is created on disk during tests.
+	dummyClient := ksm.NewSecretsManager(&ksm.ClientOptions{
+		Token:  "US:dummy-token",
+		Config: ksm.NewMemoryKeyValueStorage(),
+	})
+
 	spelunker := spelunk.NewSpelunker(
-		spelunkkeeper.WithKeeper(nil),
+		spelunkkeeper.WithKeeper(dummyClient),
 		jsonpath.WithJSONPath(),
 	)
 
@@ -40,14 +46,44 @@ func TestSecretSourceKeeper_DigUp_Parsing(t *testing.T) {
 			errMatch: types.ErrInvalidLocation,
 		},
 		{
-			name:     "invalid location (UID too short)",
-			coordStr: "kp://short_uid/password",
+			name:     "invalid location (UID too short - 21 chars)",
+			coordStr: "kp://123456789012345678901/password",
+			errMatch: types.ErrInvalidLocation,
+		},
+		{
+			name:     "invalid location (UID too long - 23 chars)",
+			coordStr: "kp://12345678901234567890123/password",
 			errMatch: types.ErrInvalidLocation,
 		},
 		{
 			name:     "invalid location (UID contains invalid chars)",
 			coordStr: "kp://invalid_uid_with_!@#$/password",
 			errMatch: types.ErrInvalidLocation,
+		},
+		{
+			name:     "valid 22-char UID coordinate without field (attempts fetch)",
+			coordStr: "kp://abcdefghijklmnopqrstuv",
+			errMatch: types.ErrCouldNotFetchSecret,
+		},
+		{
+			name:     "valid 22-char UID coordinate with trailing slash (attempts fetch)",
+			coordStr: "kp://abcdefghijklmnopqrstuv/",
+			errMatch: types.ErrCouldNotFetchSecret,
+		},
+		{
+			name:     "valid 22-char UID coordinate with standard field (attempts fetch)",
+			coordStr: "kp://abcdefghijklmnopqrstuv/password",
+			errMatch: types.ErrCouldNotFetchSecret,
+		},
+		{
+			name:     "valid 22-char UID coordinate with custom field (attempts fetch)",
+			coordStr: "kp://abcdefghijklmnopqrstuv/custom_field",
+			errMatch: types.ErrCouldNotFetchSecret,
+		},
+		{
+			name:     "valid 22-char UID containing base64url characters _ and - (attempts fetch)",
+			coordStr: "kp://_bcdefghijklmnopqrstu-/password",
+			errMatch: types.ErrCouldNotFetchSecret,
 		},
 	}
 

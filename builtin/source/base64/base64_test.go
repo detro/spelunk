@@ -34,6 +34,30 @@ func TestSecretSourceBase64_DigUp(t *testing.T) {
 			want:     "user:pass@host",
 		},
 		{
+			name: "value with slash and plus in base64 encoding",
+			coordStr: "base64://" + base64.StdEncoding.EncodeToString(
+				[]byte{0xfb, 0xef, 0xbe, 0xfd},
+			),
+			want: string([]byte{0xfb, 0xef, 0xbe, 0xfd}),
+		},
+		{
+			name:     "invalid base64 with leading slash",
+			coordStr: "base64:///" + base64.StdEncoding.EncodeToString([]byte("my-secret")),
+			errMatch: b64.ErrSecretSourceBase64FailedDecoding,
+		},
+		{
+			name:     "invalid unpadded base64",
+			coordStr: "base64://" + base64.RawStdEncoding.EncodeToString([]byte("hello")),
+			errMatch: b64.ErrSecretSourceBase64FailedDecoding,
+		},
+		{
+			name: "invalid url-safe base64 with dash and underscore",
+			coordStr: "base64://" + base64.URLEncoding.EncodeToString(
+				[]byte{0xfb, 0xef, 0xbe, 0xfd},
+			),
+			errMatch: b64.ErrSecretSourceBase64FailedDecoding,
+		},
+		{
 			name:     "invalid base64",
 			coordStr: "base64://invalid-base64-string",
 			errMatch: b64.ErrSecretSourceBase64FailedDecoding,

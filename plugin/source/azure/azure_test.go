@@ -41,7 +41,7 @@ func TestSecretSourceAzure_DigUp_Integration(t *testing.T) {
 	ctx := context.Background()
 	azClient, err := setupAzureTestContainer(t, ctx)
 	require.NoError(t, err)
-	createTestSecrets(t, azClient)
+	plainSecretVersion := createTestSecrets(t, azClient)
 
 	spelunker := spelunk.NewSpelunker(
 		azure.WithAzure(azClient),
@@ -57,6 +57,26 @@ func TestSecretSourceAzure_DigUp_Integration(t *testing.T) {
 		{
 			name:     "secret by name",
 			coordStr: fmt.Sprintf("az://%s", plainSecretName),
+			want:     plainSecretValue,
+		},
+		{
+			name:     "secret by name with leading slash (///)",
+			coordStr: fmt.Sprintf("az:///%s", plainSecretName),
+			want:     plainSecretValue,
+		},
+		{
+			name:     "secret by name with trailing slash",
+			coordStr: fmt.Sprintf("az://%s/", plainSecretName),
+			want:     plainSecretValue,
+		},
+		{
+			name:     "secret by name and version",
+			coordStr: fmt.Sprintf("az://%s/%s", plainSecretName, plainSecretVersion),
+			want:     plainSecretValue,
+		},
+		{
+			name:     "secret by name and version with leading slash (///)",
+			coordStr: fmt.Sprintf("az:///%s/%s", plainSecretName, plainSecretVersion),
 			want:     plainSecretValue,
 		},
 		{
@@ -101,8 +121,8 @@ func TestSecretSourceAzure_DigUp_Integration(t *testing.T) {
 	}
 }
 
-func createTestSecrets(t *testing.T, client *azsecrets.Client) {
-	_, err := client.SetSecret(
+func createTestSecrets(t *testing.T, client *azsecrets.Client) string {
+	resp, err := client.SetSecret(
 		t.Context(),
 		plainSecretName,
 		azsecrets.SetSecretParameters{Value: new(plainSecretValue)},
@@ -117,6 +137,8 @@ func createTestSecrets(t *testing.T, client *azsecrets.Client) {
 		nil,
 	)
 	require.NoError(t, err)
+
+	return resp.ID.Version()
 }
 
 func setupAzureTestContainer(t *testing.T, ctx context.Context) (*azsecrets.Client, error) {

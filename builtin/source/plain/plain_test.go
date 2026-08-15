@@ -39,6 +39,26 @@ func TestSecretSourcePlain_DigUp(t *testing.T) {
 			coordStr: "plain://user:pass@host",
 			want:     "user:pass@host",
 		},
+		{
+			name:     "value with leading slash",
+			coordStr: "plain:///path/to/secret",
+			want:     "/path/to/secret",
+		},
+		{
+			name:     "value with root slash",
+			coordStr: "plain:///",
+			want:     "/",
+		},
+		{
+			name:     "value with percent-encoded characters",
+			coordStr: "plain:///hello%20world%21",
+			want:     "/hello world!",
+		},
+		{
+			name:     "value with whitespace and multiline",
+			coordStr: "plain:///line1%20word%0Aline2",
+			want:     "/line1 word\nline2",
+		},
 	}
 
 	spelunker := spelunk.NewSpelunker(
