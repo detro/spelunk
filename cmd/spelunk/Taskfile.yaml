@@ -7,7 +7,7 @@ env:
 vars:
   BUILD_NAME: spelunk
   BUILD_VERSION:
-    sh: ver=$(git tag --points-at HEAD | cut -c2-); echo ${ver:-"no-version"}
+    sh: ver=$(git tag --points-at HEAD | grep -E '^cmd/spelunk/v' | sed 's|^cmd/spelunk/v||' | head -n 1); if [ -z "$ver" ]; then ver=$(git tag --points-at HEAD | grep -E '^v' | sed 's|^v||' | head -n 1); fi; echo ${ver:-"no-version"}
   BUILD_COMMIT:
     sh: git log -n 1 --format=%h 2>/dev/null || echo "n/a"
   BUILD_BRANCH:
@@ -113,3 +113,23 @@ tasks:
     deps:
       - mod.update
       - mod.tidy
+
+  tag:
+    desc: Create release tag for the spelunk CLI submodule
+    cmd: |
+      # Check if version was provided
+      if [ -z "{{.CLI_ARGS}}" ]; then
+        echo "Error: You must provide a version tag (e.g. task tag -- v2.0.0)"
+        exit 1
+      fi
+
+      TAG_VER="{{.CLI_ARGS}}"
+      # Validate version starts with 'v'
+      if [[ ! "$TAG_VER" =~ ^v[0-9] ]]; then
+        echo "Error: Version must start with 'v' followed by a number (e.g. v2.0.0), got '$TAG_VER'"
+        exit 1
+      fi
+
+      echo "Tagging spelunk CLI with tag: cmd/spelunk/$TAG_VER"
+      git tag "cmd/spelunk/$TAG_VER"
+      echo "Tag created successfully. To push tag, run: git push origin cmd/spelunk/$TAG_VER"

@@ -25,13 +25,32 @@ The CLI binary bundles:
 
 ## Installation
 
-### From Source
+### 1. Pre-compiled Binaries (GitHub Releases)
+
+Download pre-compiled binaries for Linux, macOS, and Windows directly from the [GitHub Releases](https://github.com/detro/spelunk/releases) page.
+
+#### macOS Quarantine Notes
+
+If downloaded via a web browser or GUI application, macOS Gatekeeper may block execution due to the quarantine attribute. You can clear this attribute using either method:
+
+* **Command Line (`xattr`)**:
+
+  ```shell
+  xattr -d com.apple.quarantine ./spelunk
+  chmod +x ./spelunk
+  ```
+
+* **System Settings**:
+
+  Open **System Settings** -> **Privacy & Security**, scroll down to the **Security** section, and click **Allow Anyway** next to `spelunk`.
+
+### 2. From Source (`go install`)
 
 ```shell
 go install github.com/detro/spelunk/cmd/spelunk@latest
 ```
 
-### Using Task
+### 3. Build with Task
 
 ```shell
 # From repository root

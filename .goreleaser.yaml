@@ -1,0 +1,134 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+project_name: spelunk
+
+builds:
+  - id: spelunk-darwin
+    dir: cmd/spelunk
+    main: .
+    binary: spelunk
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -trimpath
+    ldflags:
+      - >-
+        -s -w
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.name={{.ProjectName}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.version={{.Version}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.commit={{.ShortCommit}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.branch={{.Branch}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.date={{.Date}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=goreleaser'
+
+  - id: spelunk-linux
+    dir: cmd/spelunk
+    main: .
+    binary: spelunk
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=1
+      - CC_linux_amd64=x86_64-linux-gnu-gcc
+      - CC_linux_arm64=aarch64-linux-gnu-gcc
+    flags:
+      - -trimpath
+    ldflags:
+      - >-
+        -s -w
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.name={{.ProjectName}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.version={{.Version}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.commit={{.ShortCommit}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.branch={{.Branch}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.date={{.Date}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=goreleaser'
+
+  - id: spelunk-windows
+    dir: cmd/spelunk
+    main: .
+    binary: spelunk
+    goos:
+      - windows
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=1
+      - CC=x86_64-w64-mingw32-gcc
+    flags:
+      - -trimpath
+    ldflags:
+      - >-
+        -s -w
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.name={{.ProjectName}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.version={{.Version}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.commit={{.ShortCommit}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.branch={{.Branch}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.date={{.Date}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=goreleaser'
+
+source:
+  enabled: false
+
+archives:
+  - formats:
+      - binary
+    files:
+      - none*
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha512
+
+signs:
+  - id: cosign-checksums
+    artifacts: checksum
+    cmd: cosign
+    args:
+      - "sign-blob"
+      - "--yes"
+      - "--output-signature=${signature}"
+      - "--output-certificate=${certificate}"
+      - "${artifact}"
+  - id: cosign-binaries
+    artifacts: binary
+    cmd: cosign
+    args:
+      - "sign-blob"
+      - "--yes"
+      - "--output-signature=${signature}"
+      - "--output-certificate=${certificate}"
+      - "${artifact}"
+  - id: gpg-checksums
+    artifacts: checksum
+    cmd: gpg
+    args:
+      - "--batch"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+
+changelog:
+  sort: asc
+  filters:
+    include:
+      - "^feat:.*"
+      - "^fix:.*"
+      - "^docs:.*"
+      - "^chore:.*"
+
+release:
+  github:
+    owner: detro
+    name: spelunk
+  prerelease: auto
+  make_latest: auto
+

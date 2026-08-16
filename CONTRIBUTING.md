@@ -164,18 +164,19 @@ When releasing version `vX.Y.Z`:
 2. Push your changes to `main`.
 3. Use the unified `task tag` utility to automatically tag either the whole workspace or a specific submodule:
    ```shell
-   # Tag the entire workspace (root module and all 12 plugin submodules) at v2.0.0:
+   # Tag the entire workspace (root module, all 12 plugin submodules, and the CLI binary submodule) at v2.0.0:
    $ task tag -- v2.0.0
 
-   # Tag ONLY a specific submodule (e.g., if releasing a standalone patch for a plugin):
+   # Tag ONLY a specific submodule (e.g., if releasing a standalone patch for a plugin or CLI):
    $ task tag -- v2.0.1 plugin/source/aws
+   $ task tag -- v2.0.1 cmd/spelunk
    ```
 4. Push all generated tags to GitHub:
    ```shell
    $ git push origin --tags
    ```
 
-By using prefix-based tags (e.g., `plugin/source/aws/vX.Y.Z`), Go clients can cleanly import specific submodules at defined releases independent of each other.
+By using prefix-based tags (e.g., `plugin/source/aws/vX.Y.Z` or `cmd/spelunk/vX.Y.Z`), Go clients can cleanly import specific submodules or install the CLI at defined releases independent of each other.
 
 ## Code of Conduct
 
