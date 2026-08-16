@@ -22,10 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Kubernetes Source**: Fixed URI parsing for `k8s://NAME/` to correctly return the entire secret data map as JSON.
+- **Task Tagging Propagation**: Fixed root `task tag` command to properly delegate tagging to `cmd/spelunk` child task via dependencies instead of searching it in directory traversal.
 
 ### Changed
 
-- **Task Runner & CI**: Integrated `cmd/spelunk` across workspace `Taskfile.yaml` workflows (build, test, lint, format, vulnerability scan, release tagging), added CLI test coverage reporting in CI, and configured automated release builds via GoReleaser.
+- **Task Runner Output**: Silenced command echoing (`silent: true`) for verbose tasks (`lint`, `vuln`, `fmt`, `mod.*`, `tag`, `tools.*`) across root and CLI taskfiles.
+- **CI Workflows**: Decoupled CLI release pipeline into a dedicated GitHub Actions workflow (`.github/workflows/release-cli.yaml`), separating it from continuous integration (`.github/workflows/ci.yaml`).
 - **Dependencies**: Bumped Go toolchain to `1.26.6` and updated Go module dependencies across the workspace.
 
 ## [2.0.0] - 2026-05-29
