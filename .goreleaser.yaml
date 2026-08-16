@@ -94,24 +94,25 @@ signs:
   - id: cosign-checksums
     artifacts: checksum
     cmd: cosign
+    signature: "${artifact}.sigstore.json"
     args:
       - "sign-blob"
       - "--yes"
-      - "--output-signature=${signature}"
-      - "--output-certificate=${certificate}"
+      - "--bundle=${signature}"
       - "${artifact}"
   - id: cosign-binaries
     artifacts: binary
     cmd: cosign
+    signature: "${artifact}.sigstore.json"
     args:
       - "sign-blob"
       - "--yes"
-      - "--output-signature=${signature}"
-      - "--output-certificate=${certificate}"
+      - "--bundle=${signature}"
       - "${artifact}"
   - id: gpg-checksums
     artifacts: checksum
     cmd: gpg
+    signature: "${artifact}.sig"
     args:
       - "--batch"
       - "--output"
