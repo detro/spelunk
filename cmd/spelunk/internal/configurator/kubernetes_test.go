@@ -25,7 +25,7 @@ const (
 
 func setupK3STestContainer(t *testing.T) (*typedcorev1.CoreV1Client, string, error) {
 	t.Helper()
-	k3sContainer, err := k3s.Run(t.Context(), "rancher/k3s:v1.35.2-k3s1")
+	k3sContainer, err := k3s.Run(t.Context(), "rancher/k3s:v1.35.7-k3s1")
 	if err != nil {
 		return nil, "", err
 	}
