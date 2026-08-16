@@ -60,7 +60,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat coverage.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          go tool cover -func=cmd/spelunk/coverage.out > cmd/spelunk/coverage.txt
+          (cd cmd/spelunk && go tool cover -func=coverage.out > coverage.txt)
           echo "## Test Coverage Report (cmd/spelunk)" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat cmd/spelunk/coverage.txt >> $GITHUB_STEP_SUMMARY
