@@ -128,6 +128,7 @@ release:
     owner: detro
     name: spelunk
   mode: keep-existing
+  draft: true
   name_template: "{{ .Tag }}"
   prerelease: auto
   make_latest: auto
