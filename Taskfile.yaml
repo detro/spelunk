@@ -53,6 +53,7 @@ tasks:
       {{end}}
 
   lint:
+    silent: true
     deps:
       - cli:lint
     cmd: |
@@ -63,6 +64,7 @@ tasks:
         golangci-lint run --allow-parallel-runners --verbose'
 
   vuln:
+    silent: true
     desc: Run govulncheck for vulnerability scanning
     deps:
       - cli:vuln
@@ -74,6 +76,7 @@ tasks:
         govulncheck ./...'
 
   lint-fix:
+    silent: true
     deps:
       - cli:lint-fix
     cmd: |
@@ -84,6 +87,7 @@ tasks:
         golangci-lint run --fix --allow-parallel-runners --verbose'
 
   fmt:
+    silent: true
     deps:
       - cli:fmt
     cmd: |
@@ -97,6 +101,7 @@ tasks:
     cmd: go run . {{.CLI_ARGS}}
 
   mod.update:
+    silent: true
     deps:
       - cli:mod.update
     cmd: |
@@ -108,6 +113,7 @@ tasks:
         go get -t -u ./...'
 
   mod.tidy:
+    silent: true
     deps:
       - cli:mod.tidy
     cmd: |
@@ -124,6 +130,7 @@ tasks:
       - mod.tidy
 
   tag:
+    silent: true
     desc: Create release tags for the root module and submodules
     cmd: |
       # Check if version was provided
@@ -169,6 +176,7 @@ tasks:
       echo "Tags created successfully. To push tags, run: git push origin --tags"
 
   tools.plugins:
+    silent: true
     desc: Install all necessary asdf plugins
     cmd: |
       # Install all plugins listed in .tool-versions (will fail but continue for out-of-registry ones)
@@ -179,6 +187,7 @@ tasks:
       asdf plugin add govulncheck https://github.com/wizzardich/asdf-govulncheck.git
 
   tools.update:
+    silent: true
     desc: Update all tools in .tool-versions to latest available versions via asdf
     deps:
       - tools.plugins

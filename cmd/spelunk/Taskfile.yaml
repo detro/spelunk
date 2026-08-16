@@ -115,6 +115,7 @@ tasks:
       - mod.tidy
 
   tag:
+    silent: true
     desc: Create release tag for the spelunk CLI submodule
     cmd: |
       # Check if version was provided
