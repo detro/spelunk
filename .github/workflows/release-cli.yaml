@@ -21,16 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install asdf
-        uses: asdf-vm/actions/setup@v4
-
-      - name: Install Task
-        run: |
-          asdf plugin add task
-          asdf install task
-
-      - name: Install Tools
-        run: task tools.install
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: .tool-versions
 
       - name: Install Cross Compilers
         run: |
@@ -46,9 +40,6 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Build Release Binary via Task
-        run: task cli:build-release
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v7
