@@ -132,6 +132,8 @@ tasks:
   tag:
     silent: true
     desc: Create release tags for the root module and submodules
+    deps:
+      - cli:tag
     cmd: |
       # Check if version was provided
       if [ -z "{{.CLI_ARGS}}" ]; then
@@ -167,7 +169,7 @@ tasks:
         echo "Tagging root module with tag: $TAG_VER"
         git tag "$TAG_VER"
 
-        find plugin cmd -name go.mod -exec dirname {} \; | while read -r dir; do
+        find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
           echo "Tagging submodule '$dir' with tag: $dir/$TAG_VER"
           git tag "$dir/$TAG_VER"
         done
