@@ -199,7 +199,7 @@ func createTestSecrets(
 
 func setupK3STestContainer(t *testing.T) (*typedcorev1.CoreV1Client, error) {
 	// See: https://hub.docker.com/r/rancher/k3s
-	k3sContainer, err := k3s.Run(t.Context(), "rancher/k3s:v1.35.2-k3s1")
+	k3sContainer, err := k3s.Run(t.Context(), "rancher/k3s:v1.35.7-k3s1")
 	testcontainers.CleanupContainer(t, k3sContainer)
 	require.NoError(t, err)
 
