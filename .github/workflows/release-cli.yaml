@@ -13,8 +13,17 @@ on:
 
 jobs:
   release:
-    name: Release Spelunk CLI
-    runs-on: ubuntu-latest
+    name: Release Spelunk CLI (${{ matrix.target_os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target_os: linux
+          - os: macos-latest
+            target_os: darwin
+          - os: windows-latest
+            target_os: windows
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -26,10 +35,18 @@ jobs:
         with:
           go-version-file: .tool-versions
 
-      - name: Install Cross Compilers
+      - name: Install ARM64 Cross Compiler
+        if: matrix.target_os == 'linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu gcc-mingw-w64-x86-64
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Set Release Environment
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME#cmd/spelunk/}"
+          echo "GORELEASER_CURRENT_TAG=${TAG}" >> "$GITHUB_ENV"
+          echo "TARGET_OS=${{ matrix.target_os }}" >> "$GITHUB_ENV"
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v4.1.2

@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Built-in Support: Integrated all secret sources (AWS, Azure, GCP, Vault, Kubernetes, 1Password, Bitwarden, Keeper, file, env, plain, base64) and modifiers (JSONPath, TOMLPath, XPath, YAMLPath, base64).
   - Configurable Logging: Structured logging with support for colored console output, text, and JSON formats.
   - End-to-End Testing: Comprehensive integration test suites using Testcontainers for AWS, Azure, GCP, Vault, and Kubernetes.
-- **CLI Automated Release & Signing Pipeline**: Added GoReleaser configuration (`.goreleaser.yaml`) and GitHub Actions release workflow triggering on `cmd/spelunk/v*` tags with cryptographic artifact signing via Sigstore Cosign (keyless) and GPG checksum signing.
+- **CLI Automated Release & Signing Pipeline**: Added GoReleaser configuration (`.goreleaser.yaml`) and a multi-platform GitHub Actions release workflow (`.github/workflows/release-cli.yaml`) executing native builds across Linux, macOS, and Windows runners on `cmd/spelunk/v*` tags, with per-platform checksum generation, keyless Sigstore Cosign artifact signing, and GPG checksum signing.
 - **Coordinates Reconstitution**: Implemented `fmt.Stringer` (`String()` method) on `types.SecretCoord` to reconstruct the URI representation from parsed secret coordinates.
 - **Secret Source Coordinate Test Coverage**: Expanded test suites across all built-in and plugin `SecretSource` implementations to systematically exercise supported coordinate format variations (including leading/trailing slashes, encoded paths, version specifications, and offline parsing validations).
 

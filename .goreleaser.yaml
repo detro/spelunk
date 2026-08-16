@@ -4,6 +4,7 @@ project_name: spelunk
 
 builds:
   - id: spelunk-darwin
+    skip: '{{ ne .Env.TARGET_OS "darwin" }}'
     dir: cmd/spelunk
     main: .
     binary: spelunk
@@ -27,6 +28,7 @@ builds:
         -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=goreleaser'
 
   - id: spelunk-linux
+    skip: '{{ ne .Env.TARGET_OS "linux" }}'
     dir: cmd/spelunk
     main: .
     binary: spelunk
@@ -37,8 +39,9 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=1
-      - CC_linux_amd64=x86_64-linux-gnu-gcc
+      - CC_linux_amd64=gcc
       - CC_linux_arm64=aarch64-linux-gnu-gcc
+      - CC={{ index .Env (print "CC_" .Os "_" .Arch) }}
     flags:
       - -trimpath
     ldflags:
@@ -52,6 +55,7 @@ builds:
         -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=goreleaser'
 
   - id: spelunk-windows
+    skip: '{{ ne .Env.TARGET_OS "windows" }}'
     dir: cmd/spelunk
     main: .
     binary: spelunk
@@ -61,7 +65,6 @@ builds:
       - amd64
     env:
       - CGO_ENABLED=1
-      - CC=x86_64-w64-mingw32-gcc
     flags:
       - -trimpath
     ldflags:
@@ -84,7 +87,7 @@ archives:
       - none*
 
 checksum:
-  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Env.TARGET_OS }}_checksums.txt"
   algorithm: sha512
 
 signs:
@@ -117,18 +120,14 @@ signs:
       - "${artifact}"
 
 changelog:
-  sort: asc
-  filters:
-    include:
-      - "^feat:.*"
-      - "^fix:.*"
-      - "^docs:.*"
-      - "^chore:.*"
+  disable: true
 
 release:
   github:
     owner: detro
     name: spelunk
+  mode: keep-existing
+  name_template: "{{ .Tag }}"
   prerelease: auto
   make_latest: auto
 
