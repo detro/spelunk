@@ -8,6 +8,8 @@ permissions:
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - 'cmd/spelunk/v*'
     paths-ignore:
       - '**.md'
   pull_request:
@@ -22,6 +24,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Install asdf
         uses: asdf-vm/actions/setup@v4
@@ -61,3 +65,56 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat cmd/spelunk/coverage.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+
+  release:
+    name: Release Spelunk CLI
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/cmd/spelunk/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@v4
+
+      - name: Install Task
+        run: |
+          asdf plugin add task
+          asdf install task
+
+      - name: Install Tools
+        run: task tools.install
+
+      - name: Install Cross Compilers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu gcc-mingw-w64-x86-64
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4
+
+      - name: Import GPG Key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Build Release Binary via Task
+        run: task cli:build-release
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean --skip=validate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Built-in Support: Integrated all secret sources (AWS, Azure, GCP, Vault, Kubernetes, 1Password, Bitwarden, Keeper, file, env, plain, base64) and modifiers (JSONPath, TOMLPath, XPath, YAMLPath, base64).
   - Configurable Logging: Structured logging with support for colored console output, text, and JSON formats.
   - End-to-End Testing: Comprehensive integration test suites using Testcontainers for AWS, Azure, GCP, Vault, and Kubernetes.
+- **CLI Automated Release & Signing Pipeline**: Added GoReleaser configuration (`.goreleaser.yaml`) and GitHub Actions release workflow triggering on `cmd/spelunk/v*` tags with cryptographic artifact signing via Sigstore Cosign (keyless) and GPG checksum signing.
 - **Coordinates Reconstitution**: Implemented `fmt.Stringer` (`String()` method) on `types.SecretCoord` to reconstruct the URI representation from parsed secret coordinates.
 - **Secret Source Coordinate Test Coverage**: Expanded test suites across all built-in and plugin `SecretSource` implementations to systematically exercise supported coordinate format variations (including leading/trailing slashes, encoded paths, version specifications, and offline parsing validations).
 
@@ -24,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Task Runner & CI**: Integrated `cmd/spelunk` across workspace `Taskfile.yaml` workflows (build, test, lint, format, vulnerability scan) and added CLI test coverage reporting in CI.
+- **Task Runner & CI**: Integrated `cmd/spelunk` across workspace `Taskfile.yaml` workflows (build, test, lint, format, vulnerability scan, release tagging), added CLI test coverage reporting in CI, and configured automated release builds via GoReleaser.
 - **Dependencies**: Bumped Go toolchain to `1.26.6` and updated Go module dependencies across the workspace.
 
 ## [2.0.0] - 2026-05-29
