@@ -127,9 +127,9 @@ release:
   github:
     owner: detro
     name: spelunk
-  mode: keep-existing
+  mode: append
   draft: true
+  use_existing_draft: true
+  make_latest: true
   name_template: "{{ .Tag }}"
   prerelease: auto
-  make_latest: auto
-
