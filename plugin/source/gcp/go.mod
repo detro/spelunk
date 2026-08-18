@@ -8,9 +8,9 @@ replace github.com/detro/spelunk/plugin/modifier/jsonpath/v2 => ../../modifier/j
 
 require (
 	cloud.google.com/go/secretmanager v1.21.0
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0
-	github.com/detro/spelunk/v2 v2.0.0
-	github.com/stretchr/testify v1.11.1
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.1.0
+	github.com/detro/spelunk/v2 v2.1.0
+	github.com/stretchr/testify v1.12.0
 	github.com/testcontainers/testcontainers-go v0.44.0
 	google.golang.org/api v0.293.0
 	google.golang.org/grpc v1.83.0
@@ -31,7 +31,6 @@ require (
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
 	github.com/cpuguy83/dockercfg v0.3.2 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/go-connections v0.8.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -59,7 +58,6 @@ require (
 	github.com/oliveagle/jsonpath v0.1.4 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20260805114148-88456608a4f6 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.7 // indirect
 	github.com/sirupsen/logrus v1.10.0 // indirect
@@ -79,9 +77,9 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/genproto v0.0.0-20260810153831-ec0a7760b754 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260810153831-ec0a7760b754 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260810153831-ec0a7760b754 // indirect
+	google.golang.org/genproto v0.0.0-20260818201246-1b0934165a6f // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260818201246-1b0934165a6f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260818201246-1b0934165a6f // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -31,24 +31,24 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.36
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.44.6
 	github.com/bitwarden/sdk-go/v2 v2.1.0
-	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.0.0
-	github.com/detro/spelunk/plugin/modifier/tomlpath/v2 v2.0.0
-	github.com/detro/spelunk/plugin/modifier/xpath/v2 v2.0.0
-	github.com/detro/spelunk/plugin/modifier/yamlpath/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/1password/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/aws/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/azure/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/bitwarden/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/gcp/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/keeper/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/kubernetes/v2 v2.0.0
-	github.com/detro/spelunk/plugin/source/vault/v2 v2.0.0
-	github.com/detro/spelunk/v2 v2.0.0
+	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.1.0
+	github.com/detro/spelunk/plugin/modifier/tomlpath/v2 v2.1.0
+	github.com/detro/spelunk/plugin/modifier/xpath/v2 v2.1.0
+	github.com/detro/spelunk/plugin/modifier/yamlpath/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/1password/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/aws/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/azure/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/bitwarden/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/gcp/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/keeper/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/kubernetes/v2 v2.1.0
+	github.com/detro/spelunk/plugin/source/vault/v2 v2.1.0
+	github.com/detro/spelunk/v2 v2.1.0
 	github.com/hashicorp/vault/api v1.23.0
 	github.com/jotaen/kong-completion v0.0.14
 	github.com/keeper-security/secrets-manager-go/core v1.7.0
 	github.com/lmittmann/tint v1.2.0
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.0
 	github.com/testcontainers/testcontainers-go v0.44.0
 	github.com/testcontainers/testcontainers-go/modules/k3s v0.44.0
 	github.com/testcontainers/testcontainers-go/modules/localstack v0.44.0
@@ -101,7 +101,7 @@ require (
 	github.com/emicklei/go-restful/v3 v3.13.0 // indirect
 	github.com/extism/go-sdk v1.7.1 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
-	github.com/fxamacker/cbor/v2 v2.9.2 // indirect
+	github.com/fxamacker/cbor/v2 v2.9.3 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -162,7 +162,6 @@ require (
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/power-devops/perfstat v0.0.0-20260805114148-88456608a4f6 // indirect
 	github.com/riywo/loginshell v0.0.0-20200815045211-7d26008be1ab // indirect
@@ -193,9 +192,9 @@ require (
 	golang.org/x/term v0.45.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/genproto v0.0.0-20260810153831-ec0a7760b754 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260810153831-ec0a7760b754 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260810153831-ec0a7760b754 // indirect
+	google.golang.org/genproto v0.0.0-20260818201246-1b0934165a6f // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260818201246-1b0934165a6f // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260818201246-1b0934165a6f // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
