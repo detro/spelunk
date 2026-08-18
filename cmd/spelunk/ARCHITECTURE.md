@@ -185,5 +185,6 @@ sequenceDiagram
 ## Design Decisions
 
 * **All-in-One CLI Module**: While the Spelunk library uses decoupled Go submodules to keep dependencies minimal for library consumers, the CLI submodule (`cmd/spelunk`) explicitly depends on all plugin modules to produce a batteries-included binary.
+* **Zero-Configuration Provider Discovery**: The CLI inspects host environments at runtime and only initializes sources where credentials are detected. Unconfigured backends are safely skipped without error, allowing users to configure only the secret providers they need.
 * **Auto-Discovery over Explicit Flags**: Users do not need to specify `--source=aws` or `--source=vault`. The CLI detects environment context and resolves appropriate sources dynamically based on coordinates.
 * **Pipeline Purity**: Secret values are output verbatim to `stdout`. Diagnostics, logs, and errors write exclusively to `stderr` to ensure compatibility with Unix pipelines and command substitution.

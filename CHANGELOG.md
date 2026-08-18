@@ -5,30 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2026-08-18
 
 ### Added
 
-- **Spelunk CLI Documentation & Architecture**: Added dedicated `README.md` and `ARCHITECTURE.md` documentation for `cmd/spelunk` detailing CLI capabilities, subcommands, provider auto-configuration, shell completion, and architectural design, along with root documentation links.
-- **Spelunk CLI Utility**: Added a command-line interface in `cmd/spelunk` to dig up secrets directly from the terminal.
-  - Subcommands: `dig` (default) to retrieve secrets, `exist` (alias: `is`) to verify secret existence without outputting values, and `creds` (alias: `check`) to validate backend provider credentials.
-  - Built-in Support: Integrated all secret sources (AWS, Azure, GCP, Vault, Kubernetes, 1Password, Bitwarden, Keeper, file, env, plain, base64) and modifiers (JSONPath, TOMLPath, XPath, YAMLPath, base64).
-  - Configurable Logging: Structured logging with support for colored console output, text, and JSON formats.
-  - End-to-End Testing: Comprehensive integration test suites using Testcontainers for AWS, Azure, GCP, Vault, and Kubernetes.
-- **CLI Automated Release & Signing Pipeline**: Added GoReleaser configuration (`.goreleaser.yaml`) and a multi-platform GitHub Actions release workflow (`.github/workflows/release-cli.yaml`) executing native builds across Linux, macOS, and Windows runners on `cmd/spelunk/v*` tags, generating draft releases with per-platform checksums, keyless Sigstore Cosign artifact signing, and GPG checksum signing.
-- **Coordinates Reconstitution**: Implemented `fmt.Stringer` (`String()` method) on `types.SecretCoord` to reconstruct the URI representation from parsed secret coordinates.
-- **Secret Source Coordinate Test Coverage**: Expanded test suites across all built-in and plugin `SecretSource` implementations to systematically exercise supported coordinate format variations (including leading/trailing slashes, encoded paths, version specifications, and offline parsing validations).
+- **Spelunk CLI Utility**: New CLI (`cmd/spelunk`) to retrieve secrets directly from the terminal.
+  - Subcommands: `dig` (retrieve secret), `exists` (alias `is`, verify existence), and `creds` (alias `check`, validate provider credentials).
+  - Provider Support: Pre-configured with all built-in sources, plugin sources (AWS, Azure, GCP, Vault, Kubernetes, 1Password, Bitwarden, Keeper), and modifiers (`jp`, `yp`, `tp`, `xp`, `b64`).
+  - Logging: Structured logging with colored console, text, and JSON formats.
+  - Documentation: Dedicated `README.md` and `ARCHITECTURE.md` for CLI configuration, shell completions, and design.
+- **CLI Release Pipeline**: Automated multi-platform releases (`.github/workflows/release-cli.yaml`) via GoReleaser across Linux, macOS, and Windows with Cosign bundle signing and GPG signatures.
+- **Coordinate Formatting**: Added `fmt.Stringer` (`String()`) to `types.SecretCoord` to reconstruct URI strings from parsed coordinates.
+- **Test Coverage**: Added test suites across all sources covering URI syntax variations (slashes, URL encoding, version tags).
 
 ### Fixed
 
-- **Kubernetes Source**: Fixed URI parsing for `k8s://NAME/` to correctly return the entire secret data map as JSON.
-- **Task Tagging Propagation**: Fixed root `task tag` command to properly delegate tagging to `cmd/spelunk` child task via dependencies instead of searching it in directory traversal.
+- **Kubernetes Source**: Fixed `k8s://NAME/` URI parsing to return full secret data map as JSON.
+- **Task Tagging**: Fixed root `task tag` to propagate cleanly to `cmd/spelunk`.
 
 ### Changed
 
-- **Task Runner Output**: Silenced command echoing (`silent: true`) for verbose tasks (`lint`, `vuln`, `fmt`, `mod.*`, `tag`, `tools.*`) across root and CLI taskfiles.
-- **CI Workflows**: Decoupled CLI release pipeline into a dedicated GitHub Actions workflow (`.github/workflows/release-cli.yaml`), separating it from continuous integration (`.github/workflows/ci.yaml`).
-- **Dependencies**: Bumped Go toolchain to `1.26.6` and updated Go module dependencies across the workspace.
+- **Task Runner Output**: Silenced command echoing (`silent: true`) on verbose tasks (`lint`, `vuln`, `fmt`, `tag`, `tools.*`).
+- **CI Workflows**: Separated CLI releases (`release-cli.yaml`) from continuous integration (`ci.yaml`).
+- **Dependencies**: Updated Go toolchain to `1.26.6` and bumped module dependencies across workspace.
 
 ## [2.0.0] - 2026-05-29
 

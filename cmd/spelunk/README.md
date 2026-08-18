@@ -10,6 +10,7 @@ Standalone command-line interface for `spelunk`. Resolves, extracts, and inspect
 
 * **Shell Scripting & Pipelines**: Extract secrets directly inside terminal sessions, shell scripts, and CI/CD pipelines.
 * **Unified Interface**: Replace fragmented provider CLI tools (`aws`, `az`, `gcloud`, `vault`, `kubectl`, `op`, `bws`, `ksm`) with single syntax.
+* **Selective Provider Detection**: Automatically detects configured providers from the environment; you only need to supply credentials for the secret backends you actually use.
 * **Pipeline Safe**: Writes raw secret values directly to `stdout` without trailing newlines, banners, or formatting artifacts. Logs and diagnostics route to `stderr`.
 * **Pre-flight Checks**: Verify credential access (`creds`) or test secret coordinate existence (`exists`) before running workflows.
 
@@ -185,7 +186,9 @@ spelunk "k8s://prod/tls-certs/tls.crt" > /tmp/tls.crt
 
 ## Configuration Reference
 
-The CLI auto-detects credentials from standard environment variables, configuration files, and CLI flags.
+The CLI selectively initializes providers by inspecting the environment. You only need to configure credentials for the secret backends you actually query; unconfigured providers are safely ignored.
+
+Credentials are auto-detected from standard environment variables, configuration files, and CLI flags:
 
 | Backend | CLI Flags | Environment Variables | Auto-discovery Files |
 |---|---|---|---|
