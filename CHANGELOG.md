@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Windows CLI Startup**: The Windows executable was linked against the Bitwarden SDK's DLL import stub rather than its static library, so it aborted immediately on launch with `STATUS_DLL_NOT_FOUND`, looking for a `bitwarden_c.dll` that is not distributed anywhere. The Bitwarden code is now linked statically, and a release is aborted before publishing if a Windows binary ever imports that DLL again.
+
 ### Added
 
-- **Release Archives**: CLI binaries are now shipped as archives (`.tar.gz`, `.zip` on Windows) that bundle the `README`, `CHANGELOG`, `LICENSE`, and generated shell completions.
-- **Shell Completions in Releases**: A `completions/` directory with `bash`, `zsh`, and `fish` scripts is generated before every release and included in the archives.
+- **Release Archives**: CLI binaries are now shipped as archives (`.tar.gz`, `.zip` on Windows) that bundle the `README`, `CHANGELOG`, and `LICENSE`.
 - **SBOMs**: Software Bill of Materials is generated and published for each release archive (`syft` is now installed in the release workflow).
 - **Release Metadata**: Added a `metadata` section to the release configuration, pinning artifact timestamps to the commit date for reproducible builds.
 - **Homebrew (Disabled)**: Added a commented-out Homebrew tap release section, ready to be enabled.

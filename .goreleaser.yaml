@@ -5,14 +5,6 @@ project_name: spelunk
 metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
 
-before:
-  hooks:
-    - rm -rf completions
-    - mkdir completions
-    - sh -c 'cd cmd/spelunk && go run . completion -c bash > ../../completions/spelunk.bash'
-    - sh -c 'cd cmd/spelunk && go run . completion -c zsh > ../../completions/spelunk.zsh'
-    - sh -c 'cd cmd/spelunk && go run . completion -c fish > ../../completions/spelunk.fish'
-
 builds:
   - id: spelunk-darwin
     skip: '{{ ne .Env.TARGET_OS "darwin" }}'
@@ -70,12 +62,39 @@ builds:
     dir: cmd/spelunk
     main: .
     binary: spelunk
+    # Guard against silently regressing to a dynamically linked Bitwarden SDK:
+    # a `bitwarden_c.dll` entry in the PE import table means the executable
+    # cannot start on a machine that does not have that DLL, which is every
+    # machine. Runs before archiving, so a bad binary is never published. The
+    # string only ever comes from the DLL import stub, never from the static
+    # archive, which makes a plain byte scan a reliable check.
+    hooks:
+      post:
+        - output: true
+          cmd: >-
+            powershell -NoProfile -Command '
+            $exe = "{{ .Path }}";
+            $pe = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($exe));
+            if ($pe.Contains("bitwarden_c.dll")) {
+            throw "$exe imports bitwarden_c.dll: the Bitwarden SDK was linked dynamically and the binary will not start"
+            };
+            Write-Host "OK: $exe does not import bitwarden_c.dll"'
     goos:
       - windows
     goarch:
       - amd64
     env:
       - CGO_ENABLED=1
+      # The Bitwarden SDK ships both a static archive and a DLL import stub for
+      # Windows, and `-lbitwarden_c` makes the linker prefer the stub. That
+      # produces an executable importing `bitwarden_c.dll`, which is published
+      # nowhere, so it dies on startup with STATUS_DLL_NOT_FOUND. Requesting the
+      # archive by exact filename forces the static link. These flags land
+      # before the SDK's own `#cgo LDFLAGS`, so the symbols are already resolved
+      # by the time `-lbitwarden_c` is considered and the stub is never used.
+      # BITWARDEN_LIB_DIR is exported by the release workflow; an unset value
+      # fails the build loudly rather than silently reverting to a broken link.
+      - CGO_LDFLAGS=-L{{ .Env.BITWARDEN_LIB_DIR }} -l:libbitwarden_c.a
     flags:
       - -trimpath
     ldflags:
@@ -97,7 +116,6 @@ archives:
       - README*
       - CHANGELOG*
       - LICENSE*
-      - completions/*
     formats: ["tgz"]
     format_overrides:
       - goos: windows
@@ -157,7 +175,3 @@ release:
 #     homepage: "TODO: project homepage"
 #     description: "TODO: short description"
 #     license: "TODO: license identifier"
-#     extra_install: |-
-#       bash_completion.install "completions/{{ .ProjectName }}.bash" => "{{ .ProjectName }}"
-#       zsh_completion.install "completions/{{ .ProjectName }}.zsh" => "_{{ .ProjectName }}"
-#       fish_completion.install "completions/{{ .ProjectName }}.fish"

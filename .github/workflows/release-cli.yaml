@@ -49,6 +49,29 @@ jobs:
           echo "GORELEASER_CURRENT_TAG=${TAG}" >> "$GITHUB_ENV"
           echo "TARGET_OS=${{ matrix.target_os }}" >> "$GITHUB_ENV"
 
+      - name: Locate Bitwarden Static Library
+        if: matrix.target_os == 'windows'
+        shell: bash
+        working-directory: cmd/spelunk
+        run: |
+          # `go list -m` reports an empty directory (and still exits 0) for a
+          # module that has not been fetched yet, so download it up front.
+          go mod download github.com/bitwarden/sdk-go/v2
+
+          MODULE_DIR="$(go list -m -f '{{.Dir}}' github.com/bitwarden/sdk-go/v2 | tr '\\' '/')"
+          if [ -z "${MODULE_DIR}" ]; then
+            echo "::error::Could not resolve the directory of github.com/bitwarden/sdk-go/v2"
+            exit 1
+          fi
+
+          LIB_DIR="${MODULE_DIR}/internal/cinterface/lib/windows-x64"
+          if [ ! -f "${LIB_DIR}/libbitwarden_c.a" ]; then
+            echo "::error::Bitwarden static library not found in ${LIB_DIR}"
+            exit 1
+          fi
+
+          echo "BITWARDEN_LIB_DIR=${LIB_DIR}" >> "$GITHUB_ENV"
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@v4.1.2
 
