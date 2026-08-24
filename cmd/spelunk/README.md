@@ -26,7 +26,16 @@ The CLI binary bundles:
 
 ## Installation
 
-### 1. Pre-compiled Binaries (GitHub Releases)
+### 1. Homebrew (macOS)
+
+```shell
+brew install detro/tap/spelunk
+```
+
+The cask clears the macOS quarantine attribute for you, and installs `bash`, `zsh` and `fish`
+completions in the location each shell expects, so no extra setup is needed.
+
+### 2. Pre-compiled Binaries (GitHub Releases)
 
 Download pre-compiled binaries for Linux, macOS, and Windows directly from the [GitHub Releases](https://github.com/detro/spelunk/releases) page.
 
@@ -45,13 +54,13 @@ If downloaded via a web browser or GUI application, macOS Gatekeeper may block e
 
   Open **System Settings** -> **Privacy & Security**, scroll down to the **Security** section, and click **Allow Anyway** next to `spelunk`.
 
-### 2. From Source (`go install`)
+### 3. From Source (`go install`)
 
 ```shell
 go install github.com/detro/spelunk/cmd/spelunk@latest
 ```
 
-### 3. Build with Task
+### 4. Build with Task
 
 ```shell
 # From repository root

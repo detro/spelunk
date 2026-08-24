@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Release Archives**: CLI binaries are now shipped as archives (`.tar.gz`, `.zip` on Windows) that bundle the `README`, `CHANGELOG`, and `LICENSE`.
 - **SBOMs**: Software Bill of Materials is generated and published for each release archive (`syft` is now installed in the release workflow).
 - **Release Metadata**: Added a `metadata` section to the release configuration, pinning artifact timestamps to the commit date for reproducible builds.
-- **Homebrew (Disabled)**: Added a commented-out Homebrew tap release section, ready to be enabled.
+- **Homebrew Cask**: The CLI can now be installed on macOS with `brew install detro/tap/spelunk`. The cask is built from the published release archives, clears the macOS quarantine attribute so the binary runs without a Gatekeeper prompt, and installs `bash`, `zsh` and `fish` completions by invoking the freshly installed binary, so they always match the installed version.
 
 ### Changed
 

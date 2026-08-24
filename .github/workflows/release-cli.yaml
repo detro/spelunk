@@ -90,7 +90,9 @@ jobs:
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean --skip=validate
+          # Homebrew cask only published for macOS.
+          args: release --clean --skip=validate${{ matrix.target_os != 'darwin' && ',homebrew' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT_DETRO_HOMEBREW_TAP: ${{ secrets.GH_PAT_DETRO_HOMEBREW_TAP }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
