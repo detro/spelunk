@@ -52,6 +52,9 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v4.1.2
 
+      - name: Install Syft (SBOM generation)
+        uses: anchore/sbom-action/download-syft@v0.24.0
+
       - name: Import GPG Key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v7

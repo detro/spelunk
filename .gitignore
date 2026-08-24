@@ -9,6 +9,9 @@
 bin/
 dist/
 
+# Generated shell completions (built during release)
+completions/
+
 # Test binary, built with `go test -c`
 *.test
 

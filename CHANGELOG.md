@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Release Archives**: CLI binaries are now shipped as archives (`.tar.gz`, `.zip` on Windows) that bundle the `README`, `CHANGELOG`, `LICENSE`, and generated shell completions.
+- **Shell Completions in Releases**: A `completions/` directory with `bash`, `zsh`, and `fish` scripts is generated before every release and included in the archives.
+- **SBOMs**: Software Bill of Materials is generated and published for each release archive (`syft` is now installed in the release workflow).
+- **Release Metadata**: Added a `metadata` section to the release configuration, pinning artifact timestamps to the commit date for reproducible builds.
+- **Homebrew (Disabled)**: Added a commented-out Homebrew tap release section, ready to be enabled.
+
+### Changed
+
+- **Artifact Signing**: Signing now covers the checksums file only (archives are covered transitively), with signing output surfaced in release logs.
+- **Releases**: Dropped pre-release handling; all releases are treated as regular releases.
+
 ## [2.1.0] - 2026-08-18
 
 ### Added

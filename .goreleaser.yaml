@@ -2,6 +2,17 @@
 version: 2
 project_name: spelunk
 
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"
+
+before:
+  hooks:
+    - rm -rf completions
+    - mkdir completions
+    - sh -c 'cd cmd/spelunk && go run . completion -c bash > ../../completions/spelunk.bash'
+    - sh -c 'cd cmd/spelunk && go run . completion -c zsh > ../../completions/spelunk.zsh'
+    - sh -c 'cd cmd/spelunk && go run . completion -c fish > ../../completions/spelunk.fish'
+
 builds:
   - id: spelunk-darwin
     skip: '{{ ne .Env.TARGET_OS "darwin" }}'
@@ -81,10 +92,19 @@ source:
   enabled: false
 
 archives:
-  - formats:
-      - binary
+  - wrap_in_directory: true
     files:
-      - none*
+      - README*
+      - CHANGELOG*
+      - LICENSE*
+      - completions/*
+    formats: ["tgz"]
+    format_overrides:
+      - goos: windows
+        formats: ["zip"]
+
+sboms:
+  - artifacts: archive
 
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Env.TARGET_OS }}_checksums.txt"
@@ -100,15 +120,7 @@ signs:
       - "--yes"
       - "--bundle=${signature}"
       - "${artifact}"
-  - id: cosign-binaries
-    artifacts: binary
-    cmd: cosign
-    signature: "${artifact}.sigstore.json"
-    args:
-      - "sign-blob"
-      - "--yes"
-      - "--bundle=${signature}"
-      - "${artifact}"
+    output: true
   - id: gpg-checksums
     artifacts: checksum
     cmd: gpg
@@ -119,6 +131,7 @@ signs:
       - "${signature}"
       - "--detach-sign"
       - "${artifact}"
+    output: true
 
 changelog:
   disable: true
@@ -132,4 +145,19 @@ release:
   use_existing_draft: true
   make_latest: true
   name_template: "{{ .Tag }}"
-  prerelease: auto
+
+# brews:
+#   - repository:
+#       owner: detro
+#       name: homebrew-tap
+#       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+#     commit_author:
+#       name: "TODO: committer name"
+#       email: "TODO: committer email"
+#     homepage: "TODO: project homepage"
+#     description: "TODO: short description"
+#     license: "TODO: license identifier"
+#     extra_install: |-
+#       bash_completion.install "completions/{{ .ProjectName }}.bash" => "{{ .ProjectName }}"
+#       zsh_completion.install "completions/{{ .ProjectName }}.zsh" => "_{{ .ProjectName }}"
+#       fish_completion.install "completions/{{ .ProjectName }}.fish"
