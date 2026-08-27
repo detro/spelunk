@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/plugin/modifier/xpath/v2
 
-go 1.25
+go 1.25.0
 
 replace github.com/detro/spelunk/v2 => ../../../
 
