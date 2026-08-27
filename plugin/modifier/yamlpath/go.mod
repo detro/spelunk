@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/plugin/modifier/yamlpath/v2
 
-go 1.26.6
+go 1.20
 
 replace github.com/detro/spelunk/v2 => ../../../
 
