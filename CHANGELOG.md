@@ -7,21 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- **Windows CLI Startup**: The Windows executable was linked against the Bitwarden SDK's DLL import stub rather than its static library, so it aborted immediately on launch with `STATUS_DLL_NOT_FOUND`, looking for a `bitwarden_c.dll` that is not distributed anywhere. The Bitwarden code is now linked statically, and a release is aborted before publishing if a Windows binary ever imports that DLL again.
-
 ### Added
 
-- **Release Archives**: CLI binaries are now shipped as archives (`.tar.gz`, `.zip` on Windows) that bundle the `README`, `CHANGELOG`, and `LICENSE`.
-- **SBOMs**: Software Bill of Materials is generated and published for each release archive (`syft` is now installed in the release workflow).
-- **Release Metadata**: Added a `metadata` section to the release configuration, pinning artifact timestamps to the commit date for reproducible builds.
-- **Homebrew Cask**: The CLI can now be installed on macOS with `brew install detro/tap/spelunk`. The cask is built from the published release archives, clears the macOS quarantine attribute so the binary runs without a Gatekeeper prompt, and installs `bash`, `zsh` and `fish` completions by invoking the freshly installed binary, so they always match the installed version.
+- **Homebrew**: The CLI can now be installed on macOS with `brew install detro/tap/spelunk`, on both Intel and ARM. Installation clears the macOS quarantine attribute, so the binary runs without a Gatekeeper prompt, and generates `bash`, `zsh` and `fish` completions by invoking the freshly installed binary, so they always match the installed version.
+- **Release Archives**: CLI binaries are shipped as archives (`.tar.gz`, `.zip` on Windows) bundling the `README`, `CHANGELOG` and `LICENSE`, each accompanied by a Software Bill of Materials (SBOM).
 
 ### Changed
 
-- **Artifact Signing**: Signing now covers the checksums file only (archives are covered transitively), with signing output surfaced in release logs.
-- **Releases**: Dropped pre-release handling; all releases are treated as regular releases.
+- **CLI Release Pipeline**: Releases are produced by a single job that cross-compiles every supported platform (macOS, Linux and Windows, on Intel and ARM), instead of one job per operating system contributing to a shared draft release. Every published binary is now statically linked (no CGO), and reproducible via commit-pinned artifact timestamps.
+- **CLI Release Configuration**: Build and release configuration now lives alongside the CLI in `cmd/spelunk`, so the CLI can be built and released without repository root tooling.
+- **Artifact Signing**: Cosign and GPG signatures now cover the checksums file only; archives are covered transitively through it.
+
+### Removed
+
+- **BREAKING CHANGE - Bitwarden Support in the CLI**: The `bw://` source is no longer bundled in the `spelunk` CLI. Its SDK requires CGO and a platform-specific native library, which forced per-OS build machines and blocked a portable, statically linked binary (it also shipped a broken Windows executable). The Bitwarden plugin remains fully supported for Go programs using the library.
 
 ## [2.1.0] - 2026-08-18
 
