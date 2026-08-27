@@ -5,18 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.0] - Unreleased
 
 ### Added
 
 - **Homebrew**: The CLI can now be installed on macOS with `brew install detro/tap/spelunk`, on both Intel and ARM. Installation clears the macOS quarantine attribute, so the binary runs without a Gatekeeper prompt, and generates `bash`, `zsh` and `fish` completions by invoking the freshly installed binary, so they always match the installed version.
 - **Release Archives**: CLI binaries are shipped as archives (`.tar.gz`, `.zip` on Windows) bundling the `README`, `CHANGELOG` and `LICENSE`, each accompanied by a Software Bill of Materials (SBOM).
+- **Test Coverage**: Expanded test suites for the `jp`, `yp` and `tp` path extractor modifiers.
 
 ### Changed
 
 - **CLI Release Pipeline**: Releases are produced by a single job that cross-compiles every supported platform (macOS, Linux and Windows, on Intel and ARM), instead of one job per operating system contributing to a shared draft release. Every published binary is now statically linked (no CGO), and reproducible via commit-pinned artifact timestamps.
 - **CLI Release Configuration**: Build and release configuration now lives alongside the CLI in `cmd/spelunk`, so the CLI can be built and released without repository root tooling.
 - **Artifact Signing**: Cosign and GPG signatures now cover the checksums file only; archives are covered transitively through it.
+- **JSONPath Engine**: The `jp`, `yp` and `tp` modifiers now use the actively maintained [`ohler55/ojg`](https://github.com/ohler55/ojg) JSONPath implementation, replacing the unmaintained `oliveagle/jsonpath`.
+- **Minimum Go Version**: Every module now declares the lowest Go version it actually needs, instead of inheriting the latest one. The core module and several plugins build with Go as old as `1.20`, so consumers on older toolchains are no longer forced to upgrade.
+- **CLI Toolchain**: The `spelunk` CLI is built with Go `1.27`.
+- **Dependencies**: Bumped Go module dependencies across the workspace.
 
 ### Removed
 
