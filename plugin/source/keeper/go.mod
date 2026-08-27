@@ -10,10 +10,10 @@ require (
 	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.1.0
 	github.com/detro/spelunk/v2 v2.1.0
 	github.com/keeper-security/secrets-manager-go/core v1.7.0
-	github.com/stretchr/testify v1.12.0
+	github.com/stretchr/testify v1.12.1
 )
 
 require (
 	github.com/oliveagle/jsonpath v0.1.4 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 )
