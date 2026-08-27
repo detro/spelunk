@@ -53,7 +53,6 @@ classDiagram
         +Vault VaultConfigurator
         +Kubernetes KubernetesConfigurator
         +OnePassword OnePasswordConfigurator
-        +Bitwarden BitwardenConfigurator
         +Keeper KeeperConfigurator
         +All() []SecretSourceConfigurator
         +SpelunkerOptions(context.Context) ([]spelunk.SpelunkerOption, error)

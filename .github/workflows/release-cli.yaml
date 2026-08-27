@@ -13,18 +13,8 @@ on:
 
 jobs:
   release:
-    name: Release Spelunk CLI (${{ matrix.target_os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target_os: linux
-          - os: macos-latest
-            target_os: darwin
-          - os: windows-latest
-            target_os: windows
+    name: Release Spelunk CLI
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -36,41 +26,11 @@ jobs:
         with:
           go-version-file: .tool-versions
 
-      - name: Install ARM64 Cross Compiler
-        if: matrix.target_os == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu
-
       - name: Set Release Environment
         shell: bash
         run: |
           TAG="${GITHUB_REF_NAME#cmd/spelunk/}"
           echo "GORELEASER_CURRENT_TAG=${TAG}" >> "$GITHUB_ENV"
-          echo "TARGET_OS=${{ matrix.target_os }}" >> "$GITHUB_ENV"
-
-      - name: Locate Bitwarden Static Library
-        if: matrix.target_os == 'windows'
-        shell: bash
-        working-directory: cmd/spelunk
-        run: |
-          # `go list -m` reports an empty directory (and still exits 0) for a
-          # module that has not been fetched yet, so download it up front.
-          go mod download github.com/bitwarden/sdk-go/v2
-
-          MODULE_DIR="$(go list -m -f '{{.Dir}}' github.com/bitwarden/sdk-go/v2 | tr '\\' '/')"
-          if [ -z "${MODULE_DIR}" ]; then
-            echo "::error::Could not resolve the directory of github.com/bitwarden/sdk-go/v2"
-            exit 1
-          fi
-
-          LIB_DIR="${MODULE_DIR}/internal/cinterface/lib/windows-x64"
-          if [ ! -f "${LIB_DIR}/libbitwarden_c.a" ]; then
-            echo "::error::Bitwarden static library not found in ${LIB_DIR}"
-            exit 1
-          fi
-
-          echo "BITWARDEN_LIB_DIR=${LIB_DIR}" >> "$GITHUB_ENV"
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v4.1.2
@@ -90,8 +50,8 @@ jobs:
         with:
           distribution: goreleaser
           version: "~> v2"
-          # Homebrew cask only published for macOS.
-          args: release --clean --skip=validate${{ matrix.target_os != 'darwin' && ',homebrew' || '' }}
+          workdir: cmd/spelunk
+          args: release --clean --skip=validate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_PAT_DETRO_HOMEBREW_TAP: ${{ secrets.GH_PAT_DETRO_HOMEBREW_TAP }}

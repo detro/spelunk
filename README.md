@@ -190,13 +190,14 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 | [GCP Secrets Manager](https://cloud.google.com/security/products/secret-manager) | `gcp://`      |   plug-in    |   ✅    |    [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/gcp/v2)     |
 | [Azure Key Vault](https://azure.microsoft.com/en-gb/products/key-vault/)         | `az://`       |   plug-in    |   ✅    |   [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/azure/v2)    |
 | [1Password](https://developer.1password.com/docs/cli/)                           | `op://`       |   plug-in    |   ✅    | [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/1password/v2)  |
-| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    | 👷[^1] | [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/bitwarden/v2)  |
+| [Bitwarden](https://bitwarden.com/help/cli/)                                     | `bw://`       |   plug-in    | 👷[^1][^3] | [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/bitwarden/v2)  |
 | [Keeper](https://docs.keeper.io/en/enterprise-guide/commander-cli)               | `kp://`       |   plug-in    | 👷[^1] |   [link](https://pkg.go.dev/github.com/detro/spelunk/plugin/source/keeper/v2)   |
 | [LastPass](https://github.com/lastpass/lastpass-cli)                             | `lp://`       |   plug-in    | ❌ [^2] |                                                                                   |
 | [Dashlane](https://cli.dashlane.com/)                                            | `dl://`       |   plug-in    | ❌ [^2] |                                                                                   |
 
 [^1]: **Untested**: Looking for contributors with access to a test account/vault!
 [^2]: **Not Implemented**: Not implemented due to the lack of maintained Go SDK, no suitable REST API, and no local Testcontainers for simulation.
+[^3]: **Library only**: The Bitwarden SDK requires CGO and a platform-specific native library, so this source is not bundled in the `spelunk` CLI. It remains fully usable from Go code.
 
 ## Modifiers (`SecretModifier`)
 

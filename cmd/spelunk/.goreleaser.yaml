@@ -1,0 +1,130 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+project_name: spelunk
+
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"
+
+builds:
+  - id: spelunk
+    main: .
+    binary: spelunk
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - >-
+        -s -w
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.name={{.ProjectName}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.version={{.Version}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.commit={{.ShortCommit}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.branch={{.Branch}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.date={{.Date}}'
+        -X 'github.com/detro/spelunk/cmd/spelunk/internal/cli.builtBy=goreleaser'
+
+source:
+  enabled: false
+
+# GoReleaser cannot glob outside its own working directory, and the changelog
+# and licence live at the repository root, so they are staged here first.
+before:
+  hooks:
+    - mkdir -p .release-extras
+    - cp ../../CHANGELOG.md ../../LICENSE .release-extras/
+
+archives:
+  - wrap_in_directory: true
+    files:
+      - README*
+      - src: .release-extras/*
+        dst: .
+    formats: ["tgz"]
+    format_overrides:
+      - goos: windows
+        formats: ["zip"]
+
+sboms:
+  - artifacts: archive
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+  algorithm: sha512
+
+signs:
+  - id: cosign-checksums
+    artifacts: checksum
+    cmd: cosign
+    signature: "${artifact}.sigstore.json"
+    args:
+      - "sign-blob"
+      - "--yes"
+      - "--bundle=${signature}"
+      - "${artifact}"
+    output: true
+  - id: gpg-checksums
+    artifacts: checksum
+    cmd: gpg
+    signature: "${artifact}.sig"
+    args:
+      - "--batch"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+    output: true
+
+changelog:
+  disable: true
+
+release:
+  github:
+    owner: detro
+    name: spelunk
+  draft: true
+  make_latest: true
+  name_template: "{{ .Tag }}"
+
+homebrew_casks:
+  - name: spelunk
+    repository:
+      owner: detro
+      name: homebrew-tap
+      branch: main
+      token: "{{ .Env.GH_PAT_DETRO_HOMEBREW_TAP }}"
+    commit_author:
+      name: Ivan De Marino
+      email: detronizator+spelunk@gmail.com
+    commit_msg_template: "chore: bump {{ .ProjectName }} cask to {{ .Tag }}"
+    homepage: "https://github.com/detro/spelunk"
+    description: "Retrieve secrets from Kubernetes, Vault, AWS, GCP, Azure, 1Password and more"
+    url:
+      verified: github.com/detro/spelunk
+    binaries:
+      - spelunk
+    hooks:
+      post:
+        # Cosign signature is provided but not the Apple Developer ID one.
+        # So, stripping the quarantine attribute keeps the CLI runnable, and
+        # must happen before Homebrew runs it to generate the completions.
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/spelunk"]
+          end
+    generate_completions_from_executable:
+      executable: spelunk
+      args:
+        - completion
+        - -c
+      base_name: spelunk
+      shells:
+        - bash
+        - zsh
+        - fish

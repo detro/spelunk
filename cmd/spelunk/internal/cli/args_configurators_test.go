@@ -11,10 +11,10 @@ import (
 func TestPluginConfigs_Types(t *testing.T) {
 	var cfg Configurators
 	all := cfg.All()
-	require.Len(t, all, 8)
+	require.Len(t, all, 7)
 
 	expectedTypes := []string{
-		"aws", "az", "gcp", "vault", "k8s", "op", "bw", "kp",
+		"aws", "az", "gcp", "vault", "k8s", "op", "kp",
 	}
 
 	for i, p := range all {

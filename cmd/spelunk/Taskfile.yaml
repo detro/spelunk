@@ -6,6 +6,8 @@ env:
 
 vars:
   BUILD_NAME: spelunk
+  CASK_FILE: '{{.TASKFILE_DIR}}/dist/homebrew/Casks/spelunk.rb'
+  CASK_TAP: spelunk-dev/local
   BUILD_VERSION:
     sh: ver=$(git tag --points-at HEAD | grep -E '^cmd/spelunk/v' | sed 's|^cmd/spelunk/v||' | head -n 1); if [ -z "$ver" ]; then ver=$(git tag --points-at HEAD | grep -E '^v' | sed 's|^v||' | head -n 1); fi; echo ${ver:-"no-version"}
   BUILD_COMMIT:
@@ -52,6 +54,12 @@ tasks:
           BUILD_FLAGS: -trimpath
           LD_FLAGS: -s -w
 
+  clean:
+    cmds:
+      - rm -rf bin/
+      - rm -rf dist/
+      - rm -rf .release-extras/
+
   test:
     desc: Run all tests for the spelunk CLI (alias for test.full)
     deps:
@@ -83,6 +91,45 @@ tasks:
       {{else}}
       go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
       {{end}}
+
+  test.goreleaser:
+    desc: Build a full release of the spelunk CLI locally (no sign, sbom, publish)
+    cmd: |
+      set -e
+
+      # Release tags are prefixed (`cmd/spelunk/vX.Y.Z`) but a version must not
+      # contain slashes, so strip the prefix exactly like the release workflow.
+      TAG="$(git describe --tags --match 'cmd/spelunk/v*' --abbrev=0 2>/dev/null || echo 'cmd/spelunk/v0.0.0')"
+      export GORELEASER_CURRENT_TAG="${TAG#cmd/spelunk/}"
+      goreleaser release --snapshot --clean --skip=sign,sbom,publish {{.CLI_ARGS}}
+
+  cask.tap:
+    internal: true
+    # NOTE: Homebrew refuses casks outside a tap, so we need to create a scratch one to be able to run `lint.cask`
+    desc: Copy the generated cask into a scratch local tap
+    cmd: |
+      set -e
+
+      if [ ! -f "{{.CASK_FILE}}" ]; then
+        echo "Error: {{.CASK_FILE}} not found. Run 'task cli:test.goreleaser' first."
+        exit 1
+      fi
+
+      TAP_DIR="$(brew --repository {{.CASK_TAP}})"
+      [ -d "$TAP_DIR" ] || brew tap-new {{.CASK_TAP}} --no-git >/dev/null
+      mkdir -p "$TAP_DIR/Casks"
+      cp "{{.CASK_FILE}}" "$TAP_DIR/Casks/spelunk.rb"
+
+  lint.cask:
+    desc: Lint the Homebrew cask produced by `task cli:test.goreleaser`
+    deps:
+      - cask.tap
+    cmd: |
+      # Audit runs offline: a snapshot points at release URLs that do not exist.
+      brew audit --cask --strict {{.CASK_TAP}}/spelunk
+      # Style offences are all cosmetic and come from GoReleaser's own cask
+      # template, so they are reported but do not fail the task.
+      brew style --cask {{.CASK_TAP}}/spelunk || true
 
   lint:
     desc: Lint the spelunk CLI

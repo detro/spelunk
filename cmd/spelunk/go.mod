@@ -12,7 +12,6 @@ replace (
 	github.com/detro/spelunk/plugin/source/1password/v2 => ../../plugin/source/1password
 	github.com/detro/spelunk/plugin/source/aws/v2 => ../../plugin/source/aws
 	github.com/detro/spelunk/plugin/source/azure/v2 => ../../plugin/source/azure
-	github.com/detro/spelunk/plugin/source/bitwarden/v2 => ../../plugin/source/bitwarden
 	github.com/detro/spelunk/plugin/source/gcp/v2 => ../../plugin/source/gcp
 	github.com/detro/spelunk/plugin/source/keeper/v2 => ../../plugin/source/keeper
 	github.com/detro/spelunk/plugin/source/kubernetes/v2 => ../../plugin/source/kubernetes
@@ -30,7 +29,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.37
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.36
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.44.6
-	github.com/bitwarden/sdk-go/v2 v2.1.0
 	github.com/detro/spelunk/plugin/modifier/jsonpath/v2 v2.1.0
 	github.com/detro/spelunk/plugin/modifier/tomlpath/v2 v2.1.0
 	github.com/detro/spelunk/plugin/modifier/xpath/v2 v2.1.0
@@ -38,7 +36,6 @@ require (
 	github.com/detro/spelunk/plugin/source/1password/v2 v2.1.0
 	github.com/detro/spelunk/plugin/source/aws/v2 v2.1.0
 	github.com/detro/spelunk/plugin/source/azure/v2 v2.1.0
-	github.com/detro/spelunk/plugin/source/bitwarden/v2 v2.1.0
 	github.com/detro/spelunk/plugin/source/gcp/v2 v2.1.0
 	github.com/detro/spelunk/plugin/source/keeper/v2 v2.1.0
 	github.com/detro/spelunk/plugin/source/kubernetes/v2 v2.1.0

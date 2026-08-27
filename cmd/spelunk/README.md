@@ -4,12 +4,12 @@ Standalone command-line interface for `spelunk`. Resolves, extracts, and inspect
 
 ## Overview
 
-`spelunk` is a CLI tool designed to extract secrets from various storage backends (Kubernetes, HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Cloud Secret Manager, 1Password, Bitwarden, Keeper, environment variables, local files, and Base64 payloads) without writing application code.
+`spelunk` is a CLI tool designed to extract secrets from various storage backends (Kubernetes, HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Cloud Secret Manager, 1Password, Keeper, environment variables, local files, and Base64 payloads) without writing application code.
 
 ### Why It Exists
 
 * **Shell Scripting & Pipelines**: Extract secrets directly inside terminal sessions, shell scripts, and CI/CD pipelines.
-* **Unified Interface**: Replace fragmented provider CLI tools (`aws`, `az`, `gcloud`, `vault`, `kubectl`, `op`, `bws`, `ksm`) with single syntax.
+* **Unified Interface**: Replace fragmented provider CLI tools (`aws`, `az`, `gcloud`, `vault`, `kubectl`, `op`, `ksm`) with single syntax.
 * **Selective Provider Detection**: Automatically detects configured providers from the environment; you only need to supply credentials for the secret backends you actually use.
 * **Pipeline Safe**: Writes raw secret values directly to `stdout` without trailing newlines, banners, or formatting artifacts. Logs and diagnostics route to `stderr`.
 * **Pre-flight Checks**: Verify credential access (`creds`) or test secret coordinate existence (`exists`) before running workflows.
@@ -20,19 +20,20 @@ The CLI binary bundles:
 
 * **Core Engine**: `github.com/detro/spelunk/v2` coordinate parser and pipeline orchestrator.
 * **Built-in Sources & Modifiers**: `plain://`, `file://`, `env://`, `base64://`, and `b64`/`b64e`/`b64d` modifiers.
-* **Plugin Sources**: Decoupled plugins compiled together into single binary (`aws://`, `az://`, `gcp://`, `vault://`, `k8s://`, `op://`, `bw://`, `kp://`).
+* **Plugin Sources**: Decoupled plugins compiled together into single binary (`aws://`, `az://`, `gcp://`, `vault://`, `k8s://`, `op://`, `kp://`). The Bitwarden source (`bw://`) is not bundled: its SDK requires CGO and a platform-specific native library, which prevents shipping the CLI as a single cross-compiled static binary. It stays available to Go programs using the library.
 * **Plugin Modifiers**: Full path extraction suite (`?jp=`, `?yp=`, `?tp=`, `?xp=`).
 * **Auto-Configurators**: Automatic credential discovery from standard environment variables, configuration files (`~/.aws/credentials`, `~/.kube/config`, `~/.config/gcloud/...`), and CLI flags.
 
 ## Installation
 
-### 1. Homebrew (macOS)
+### 1. Homebrew (macOS and Linux)
 
 ```shell
 brew install detro/tap/spelunk
 ```
 
-The cask clears the macOS quarantine attribute for you, and installs `bash`, `zsh` and `fish`
+The cask covers macOS and Linux, on both `amd64` and `arm64`. It clears the macOS quarantine
+attribute for you, and installs `bash`, `zsh` and `fish`
 completions in the location each shell expects, so no extra setup is needed.
 
 ### 2. Pre-compiled Binaries (GitHub Releases)
@@ -159,9 +160,6 @@ spelunk "az://production-database-password"
 # 1Password (Vault / Item / Field)
 spelunk "op://Engineering/Database/password"
 
-# Bitwarden Secrets Manager (Secret UUID)
-spelunk "bw://550e8400-e29b-41d4-a716-446655440000"
-
 # Keeper Secrets Manager (Record UID / Field)
 spelunk "kp://abcdef1234567890abcdef/password"
 ```
@@ -207,7 +205,6 @@ Credentials are auto-detected from standard environment variables, configuration
 | **Vault** | `--vault-addr`<br>`--vault-token`<br>`--vault-namespace` | `VAULT_ADDR`<br>`VAULT_TOKEN`<br>`VAULT_NAMESPACE` | `~/.vault-token` |
 | **Kubernetes** | `--kubeconfig` | `KUBECONFIG` | In-cluster service account<br>`~/.kube/config` |
 | **1Password** | `--op-service-account-token`<br>`--op-integration-name`<br>`--op-integration-version` | `OP_SERVICE_ACCOUNT_TOKEN` | - |
-| **Bitwarden** | `--bws-access-token`<br>`--bws-server-url` | `BWS_ACCESS_TOKEN`<br>`BWS_SERVER_URL` | - |
 | **Keeper** | `--ksm-config` | `KSM_CONFIG` | Local file path or base64 config string |
 
 ### Logging Flags
