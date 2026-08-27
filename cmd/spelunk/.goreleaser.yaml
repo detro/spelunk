@@ -100,9 +100,9 @@ homebrew_casks:
       branch: main
       token: "{{ .Env.GH_PAT_DETRO_HOMEBREW_TAP }}"
     commit_author:
-      name: Ivan De Marino
-      email: detronizator+spelunk@gmail.com
-    commit_msg_template: "chore: bump {{ .ProjectName }} cask to {{ .Tag }}"
+      name: "github-actions[bot]"
+      email: "41898282+github-actions[bot]@users.noreply.github.com"
+    commit_msg_template: "chore(release): Cask for {{ .ProjectName }}@{{ .Tag }}"
     homepage: "https://github.com/detro/spelunk"
     description: "Retrieve secrets from Kubernetes, Vault, AWS, GCP, Azure, 1Password and more"
     url:
