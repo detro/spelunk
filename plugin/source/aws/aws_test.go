@@ -95,7 +95,7 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		},
 		{
 			name:     "(json) secret by exact ARN (with ///)",
-			coordStr: fmt.Sprintf("aws:///%s", *(secrets[jsonSecretName]).ARN),
+			coordStr: fmt.Sprintf("aws:///%s", *secrets[jsonSecretName].ARN),
 			want:     jsonSecretValue,
 		},
 		{
@@ -105,7 +105,7 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		},
 		{
 			name:     "(plain) secret by exact ARN (with ///)",
-			coordStr: fmt.Sprintf("aws:///%s", *(secrets[plainSecretName]).ARN),
+			coordStr: fmt.Sprintf("aws:///%s", *secrets[plainSecretName].ARN),
 			want:     plainSecretValueBase64,
 		},
 		{
@@ -115,7 +115,7 @@ func TestSecretSourceAWS_DigUp_Integration(t *testing.T) {
 		},
 		{
 			name:     "(plain) secret by exact ARN (with ///), base64 decoded",
-			coordStr: fmt.Sprintf("aws:///%s?b64d", *(secrets[plainSecretName]).ARN),
+			coordStr: fmt.Sprintf("aws:///%s?b64d", *secrets[plainSecretName].ARN),
 			want:     plainSecretValue,
 		},
 		{
