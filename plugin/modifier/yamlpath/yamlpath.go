@@ -7,7 +7,7 @@ import (
 	"github.com/detro/spelunk/v2"
 	"github.com/detro/spelunk/v2/common"
 	"github.com/detro/spelunk/v2/types"
-	jp "github.com/oliveagle/jsonpath"
+	"github.com/ohler55/ojg/jp"
 	"gopkg.in/yaml.v3"
 )
 
@@ -38,14 +38,21 @@ func (s *SecretModifierYAMLPath) Modify(
 		return "", fmt.Errorf("%w: %w", ErrSecretNotYAML, err)
 	}
 
-	compiledPath, err := jp.Compile(mod)
+	compiledPath, err := jp.ParseString(mod)
 	if err != nil {
 		return "", fmt.Errorf("%w (%q): %w", ErrYAMLPathInvalid, mod, err)
 	}
 
-	res, err := compiledPath.Lookup(data)
-	if err != nil {
-		return "", fmt.Errorf("%w (%q): %w", ErrYAMLPathFailed, mod, err)
+	matches := compiledPath.Get(data)
+	if len(matches) == 0 {
+		return "", fmt.Errorf("%w (%q): no match found", ErrYAMLPathFailed, mod)
+	}
+
+	// A single match is unwrapped, so that a matched list is post-processed as
+	// the list it is, rather than as a list of matches.
+	var res any = matches
+	if len(matches) == 1 {
+		res = matches[0]
 	}
 
 	strRes, err := common.PostProcessJSONPath(res)

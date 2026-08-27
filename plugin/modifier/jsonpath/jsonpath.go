@@ -8,7 +8,7 @@ import (
 	"github.com/detro/spelunk/v2"
 	"github.com/detro/spelunk/v2/common"
 	"github.com/detro/spelunk/v2/types"
-	jp "github.com/oliveagle/jsonpath"
+	"github.com/ohler55/ojg/jp"
 )
 
 var (
@@ -33,7 +33,7 @@ var (
 //
 // JSONPath has been normalized as RFC-9535 (https://www.rfc-editor.org/rfc/rfc9535).
 //
-// See: https://github.com/oliveagle/jsonpath (underlying library).
+// See: https://github.com/ohler55/ojg (underlying library).
 type SecretModifierJSONPath struct{}
 
 var _ types.SecretModifier = (*SecretModifierJSONPath)(nil)
@@ -52,14 +52,21 @@ func (s *SecretModifierJSONPath) Modify(
 		return "", fmt.Errorf("%w: %w", ErrSecretNotJSON, err)
 	}
 
-	compiledPath, err := jp.Compile(mod)
+	compiledPath, err := jp.ParseString(mod)
 	if err != nil {
 		return "", fmt.Errorf("%w (%q): %w", ErrJSONPathInvalid, mod, err)
 	}
 
-	res, err := compiledPath.Lookup(data)
-	if err != nil {
-		return "", fmt.Errorf("%w (%q): %w", ErrJSONPathFailed, mod, err)
+	matches := compiledPath.Get(data)
+	if len(matches) == 0 {
+		return "", fmt.Errorf("%w (%q): no match found", ErrJSONPathFailed, mod)
+	}
+
+	// A single match is unwrapped, so that a matched list is post-processed as
+	// the list it is, rather than as a list of matches.
+	var res any = matches
+	if len(matches) == 1 {
+		res = matches[0]
 	}
 
 	strRes, err := common.PostProcessJSONPath(res)
