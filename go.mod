@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/v2
 
-go 1.26.6
+go 1.20
 
 require github.com/stretchr/testify v1.12.1
 

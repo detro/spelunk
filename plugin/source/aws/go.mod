@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/plugin/source/aws/v2
 
-go 1.26.6
+go 1.25.0
 
 replace github.com/detro/spelunk/v2 => ../../../
 

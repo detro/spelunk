@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/plugin/source/kubernetes/v2
 
-go 1.26.6
+go 1.26
 
 replace github.com/detro/spelunk/v2 => ../../../
 
