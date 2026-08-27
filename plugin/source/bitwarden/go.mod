@@ -15,6 +15,6 @@ require (
 )
 
 require (
-	github.com/oliveagle/jsonpath v0.1.4 // indirect
+	github.com/ohler55/ojg v1.28.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 )
