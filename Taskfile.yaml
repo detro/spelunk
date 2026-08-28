@@ -19,6 +19,13 @@ tasks:
       - cli:build
     cmd: go build github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
 
+  clean:
+    deps:
+      - cli:clean
+    cmds:
+      - rm -rf bin/
+      - rm -f coverage.*
+
   test:
     deps: [test.full]
 
