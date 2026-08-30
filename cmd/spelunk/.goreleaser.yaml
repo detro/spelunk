@@ -113,18 +113,30 @@ homebrew_casks:
       post:
         # Cosign signature is provided but not the Apple Developer ID one.
         # So, stripping the quarantine attribute keeps the CLI runnable, and
-        # must happen before Homebrew runs it to generate the completions.
+        # must happen before the binary is run to generate the completions.
         install: |
           if OS.mac?
             system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/spelunk"]
           end
-    generate_completions_from_executable:
-      executable: spelunk
-      args:
-        - completion
-        - -c
-      base_name: spelunk
-      shells:
-        - bash
-        - zsh
-        - fish
+
+          {
+            "bash" => "#{HOMEBREW_PREFIX}/etc/bash_completion.d/spelunk",
+            "zsh"  => "#{HOMEBREW_PREFIX}/share/zsh/site-functions/_spelunk",
+            "fish" => "#{HOMEBREW_PREFIX}/share/fish/vendor_completions.d/spelunk.fish",
+          }.each do |shell, target|
+            completion = system_command("#{staged_path}/spelunk", args: ["completion", "-c", shell]).stdout
+            FileUtils.mkdir_p File.dirname(target)
+            File.write(target, completion)
+          end
+    # Shell completions are written by the post-install hook, so Homebrew does
+    # not track them: they have to be removed explicitly.
+    uninstall:
+      delete:
+        - "#{HOMEBREW_PREFIX}/etc/bash_completion.d/spelunk"
+        - "#{HOMEBREW_PREFIX}/share/zsh/site-functions/_spelunk"
+        - "#{HOMEBREW_PREFIX}/share/fish/vendor_completions.d/spelunk.fish"
+    zap:
+      delete:
+        - "#{HOMEBREW_PREFIX}/etc/bash_completion.d/spelunk"
+        - "#{HOMEBREW_PREFIX}/share/zsh/site-functions/_spelunk"
+        - "#{HOMEBREW_PREFIX}/share/fish/vendor_completions.d/spelunk.fish"
