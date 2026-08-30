@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2026-08-30
+
+### Fixed
+
+- **Homebrew Install**: Installing the CLI on macOS failed while generating shell completions. Homebrew ran the freshly downloaded binary before the macOS quarantine attribute was cleared, so Gatekeeper blocked it. Completions are now generated after the quarantine attribute is removed, and on Linux too, where casks are supported but the quarantine step does not apply.
+
+### Added
+
+- **Homebrew Uninstall**: Uninstalling the CLI (with or without `--zap`) now also removes the `bash`, `zsh` and `fish` completion files it installed, instead of leaving them behind.
+- **Local Cask Preview**: New `task cli:test.goreleaser.cask` builds the Homebrew cask locally, so its contents can be inspected before a release. Nothing is published or installed.
+
 ## [2.2.0] - 2026-08-28
 
 ### Added
