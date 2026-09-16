@@ -105,31 +105,32 @@ homebrew_casks:
     commit_msg_template: "chore(release): Cask for {{ .ProjectName }}@{{ .Tag }}"
     homepage: "https://github.com/detro/spelunk"
     description: "Retrieve secrets from Kubernetes, Vault, AWS, GCP, Azure, 1Password and more"
-    url:
-      verified: github.com/detro/spelunk
     binaries:
       - spelunk
-    hooks:
-      post:
-        # Cosign signature is provided but not the Apple Developer ID one.
-        # So, stripping the quarantine attribute keeps the CLI runnable, and
-        # must happen before the binary is run to generate the completions.
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/spelunk"]
-          end
+    # GoReleaser's `hooks.post.install` still emits the deprecated `postflight`
+    # stanza (raw Ruby), and doesn't yet support the newer `postflight_steps`
+    # declarative DSL (goreleaser/goreleaser#6873). Until it does, the
+    # equivalent steps are hand-written here via `custom_block`, which
+    # GoReleaser places verbatim at the top of the generated cask.
+    #
+    # Cosign signature is provided but not the Apple Developer ID one, so
+    # stripping the quarantine attribute keeps the CLI runnable; this must
+    # happen before the binary is run to generate the completions.
+    custom_block: |
+      postflight_steps do
+        on_macos do
+          run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "spelunk"], chdir: "."
+        end
 
-          {
-            "bash" => "#{HOMEBREW_PREFIX}/etc/bash_completion.d/spelunk",
-            "zsh"  => "#{HOMEBREW_PREFIX}/share/zsh/site-functions/_spelunk",
-            "fish" => "#{HOMEBREW_PREFIX}/share/fish/vendor_completions.d/spelunk.fish",
-          }.each do |shell, target|
-            completion = system_command("#{staged_path}/spelunk", args: ["completion", "-c", shell]).stdout
-            FileUtils.mkdir_p File.dirname(target)
-            File.write(target, completion)
-          end
-    # Shell completions are written by the post-install hook, so Homebrew does
-    # not track them: they have to be removed explicitly.
+        run "spelunk", base: :staged_path, args: ["completion", "-c", "bash"],
+            stdout_path: "{{"{{HOMEBREW_PREFIX}}"}}/etc/bash_completion.d/spelunk"
+        run "spelunk", base: :staged_path, args: ["completion", "-c", "zsh"],
+            stdout_path: "{{"{{HOMEBREW_PREFIX}}"}}/share/zsh/site-functions/_spelunk"
+        run "spelunk", base: :staged_path, args: ["completion", "-c", "fish"],
+            stdout_path: "{{"{{HOMEBREW_PREFIX}}"}}/share/fish/vendor_completions.d/spelunk.fish"
+      end
+    # Shell completions are written by the post-install steps, so Homebrew
+    # does not track them: they have to be removed explicitly.
     uninstall:
       delete:
         - "#{HOMEBREW_PREFIX}/etc/bash_completion.d/spelunk"
