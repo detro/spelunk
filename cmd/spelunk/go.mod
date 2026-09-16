@@ -1,6 +1,6 @@
 module github.com/detro/spelunk/cmd/spelunk
 
-go 1.27.0
+go 1.27.1
 
 replace github.com/detro/spelunk/v2 => ../../
 

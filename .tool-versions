@@ -1,5 +1,5 @@
 task 3.53.1
-golang 1.27.0
-golangci-lint 2.13.1
-govulncheck 1.7.0
-goreleaser 2.18.0
+golang 1.27.1
+golangci-lint 2.13.2
+govulncheck 0.0.0
+goreleaser 2.18.1

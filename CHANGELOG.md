@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Dependencies**: Bumped Go module dependencies across the workspace.
+- **Toolchain**: Bumped to Golang to [1.27.1](https://go.dev/doc/devel/release#go1.27.minor), as well as
+  other tools in [`.tool-versions`](.tool-versions) 
 
 ## [2.2.1] - 2026-08-30
 
