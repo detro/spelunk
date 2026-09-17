@@ -171,10 +171,14 @@ When releasing version `vX.Y.Z`:
    $ task tag -- v2.0.1 plugin/source/aws
    $ task tag -- v2.0.1 cmd/spelunk
    ```
-4. Push all generated tags to GitHub:
+4. Push all generated tags to GitHub with the unified `task tag.push` utility:
    ```shell
-   $ git push origin --tags
+   $ task tag.push -- v2.0.0
    ```
+   GitHub Actions does not trigger `push` events for tags when more than 3 tags are pushed in a
+   single `git push` (e.g. via `git push origin --tags`). Since `cmd/spelunk/vX.Y.Z` is the only tag
+   that triggers a workflow ([`release-cli.yaml`](.github/workflows/release-cli.yaml)), `task tag.push`
+   pushes it on its own first, then pushes the remaining tags together.
 
 By using prefix-based tags (e.g., `plugin/source/aws/vX.Y.Z` or `cmd/spelunk/vX.Y.Z`), Go clients can cleanly import specific submodules or install the CLI at defined releases independent of each other.
 

@@ -182,7 +182,46 @@ tasks:
         done
       fi
 
-      echo "Tags created successfully. To push tags, run: git push origin --tags"
+      echo "Tags created successfully. To push tags, run: task tag.push -- $TAG_VER"
+
+  tag.push:
+    silent: true
+    desc: Push release tags to GitHub, pushing cmd/spelunk's tag on its own so its release workflow triggers
+    cmd: |
+      # GitHub Actions does not fire `push` events for tags when more than 3
+      # tags are pushed in a single `git push`. release-cli.yaml only listens
+      # for `cmd/spelunk/v*` tags, so that tag must be pushed alone, in its
+      # own push, or the release workflow silently never runs.
+      # See: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#push
+
+      # Check if version was provided
+      if [ -z "{{.CLI_ARGS}}" ]; then
+        echo "Error: You must provide a version tag (e.g. task tag.push -- v2.0.0)"
+        exit 1
+      fi
+
+      TAG_VER="{{.CLI_ARGS}}"
+
+      # Validate version starts with 'v'
+      if [[ ! "$TAG_VER" =~ ^v[0-9] ]]; then
+        echo "Error: Version must start with 'v' followed by a number (e.g. v2.0.0), got '$TAG_VER'"
+        exit 1
+      fi
+
+      CLI_TAG="cmd/spelunk/$TAG_VER"
+      OTHER_TAGS=$(git tag -l "*$TAG_VER" | grep -vFx "$CLI_TAG" || true)
+
+      if git rev-parse "$CLI_TAG" >/dev/null 2>&1; then
+        echo "Pushing '$CLI_TAG' on its own, to trigger its release workflow..."
+        git push origin "$CLI_TAG"
+      fi
+
+      if [ -n "$OTHER_TAGS" ]; then
+        echo "Pushing remaining tags for $TAG_VER..."
+        echo "$OTHER_TAGS" | xargs git push origin
+      fi
+
+      echo "All tags for $TAG_VER pushed successfully."
 
   tools.plugins:
     silent: true
