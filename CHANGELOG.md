@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.2] -  2026-09-16
+## [2.2.2] -  2026-09-17
 
 ### Fixed
 
 - **Homebrew Cask**: Removed generated Cask sections that caused Homebrew warnings.
+- **Kubernetes Dependencies**: Realigned `k8s.io/kube-openapi` with the `k8s.io/apimachinery`, `k8s.io/api`
+  and `k8s.io/client-go` versions in use. A prior dependency bump had pulled in a newer `kube-openapi`
+  pseudo-version that depends on `sigs.k8s.io/structured-merge-diff/v7`, while `apimachinery` still expects
+  `/v6`, which broke both `govulncheck` and the CLI release build.
 
 ### Changed
 
