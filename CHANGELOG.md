@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.3.0] - 2026-11-21
+## [2.3.0] - Unreleased
 
 ### Changed
 
@@ -64,14 +64,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **CI Coverage of Plugins and Examples**: CI never built the examples nor built and tested the plugins
-  (except Bitwarden). The root `task build` and `task test.*` used package patterns such as
-  `github.com/detro/spelunk/plugin/...`, which only resolve through a `go.work` file. `go.work` is not
-  committed, so in CI those patterns matched no packages and Go only printed a warning. The tasks now run
-  `go build ./...` and `go test ./...` inside each module, in parallel, so CI again runs the
-  testcontainers integration tests (AWS, Azure, GCP, Kubernetes, Vault) and the 1Password integration
-  test. The CI step summary now reports the test coverage of every module, via the new
-  `task coverage.report`.
+- **CI Coverage of Plugins and Examples**: Since 2.0.0, CI has not built the plugins or examples, and has
+  not run the plugin tests, so none of the plugin integration tests ran in CI either.
+  - **Cause**: Commit `c9c6223` ("parallelize task runner commands", 2026-05-29) replaced the per-module
+    `go build ./...` and `go test ./...` calls with patterns such as `github.com/detro/spelunk/plugin/...`.
+    Those patterns only resolve through a `go.work` file, which is not committed, so in CI they matched
+    no packages and Go only printed a warning.
+  - **Affected releases**: 2.0.0, 2.1.0, 2.2.0, 2.2.1 and 2.2.2. The Bitwarden plugin was tested again in CI
+    from this release on, because of its dedicated toolchain step.
+  - **Fix**: `task build` and `task test.*` now run `go build ./...` and `go test ./...` inside each module,
+    in parallel. CI again runs the plugin unit tests, the testcontainers integration tests (AWS, Azure,
+    GCP, Kubernetes, Vault) and the 1Password integration test. The CI step summary now reports the test
+    coverage of every module, via the new `task coverage.report`.
 - **Targeted Test Runs**: `task test.short -- <path>` (and `test`, `test.full`, `test.ci`) failed even
   when the targeted tests passed, because the path was also passed to the CLI module's tests, where it does
   not exist. A path now runs only `go test` on that path.
