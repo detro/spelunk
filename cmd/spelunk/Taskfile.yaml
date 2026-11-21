@@ -162,4 +162,4 @@ tasks:
 
       echo "Tagging spelunk CLI with tag: cmd/spelunk/$TAG_VER"
       git tag "cmd/spelunk/$TAG_VER"
-      echo "Tag created successfully. To push tag, run: git push origin cmd/spelunk/$TAG_VER"
+      echo "Tag created successfully."

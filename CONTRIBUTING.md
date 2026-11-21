@@ -167,23 +167,26 @@ When releasing version `vX.Y.Z`:
 
 1. Update the `CHANGELOG.md` file following the [Keep a Changelog](https://keepachangelog.com/) guidelines.
 2. Push your changes to `main`.
-3. Use the unified `task tag` utility to automatically tag either the whole workspace or a specific submodule:
-   ```shell
-   # Tag the entire workspace (root module, all 12 plugin submodules, and the CLI binary submodule) at v2.0.0:
-   $ task tag -- v2.0.0
+3. Tag the whole workspace (root module, all 12 plugin submodules, and the CLI binary submodule) and push
+   the tags to GitHub with a single command:
 
-   # Tag ONLY a specific submodule (e.g., if releasing a standalone patch for a plugin or CLI):
-   $ task tag -- v2.0.1 plugin/source/aws
-   $ task tag -- v2.0.1 cmd/spelunk
-   ```
-4. Push all generated tags to GitHub with the unified `task tag.push` utility:
    ```shell
    $ task tag.push -- v2.0.0
    ```
-   GitHub Actions does not trigger `push` events for tags when more than 3 tags are pushed in a
-   single `git push` (e.g. via `git push origin --tags`). Since `cmd/spelunk/vX.Y.Z` is the only tag
-   that triggers a workflow ([`release-cli.yaml`](.github/workflows/release-cli.yaml)), `task tag.push`
-   pushes it on its own first, then pushes the remaining tags together.
+
+   It creates every tag (via `task tag`), pushes all of them except `cmd/spelunk/vX.Y.Z` in one
+   `git push`, then pushes `cmd/spelunk/vX.Y.Z` on its own in a second `git push`. GitHub Actions does
+   not trigger `push` events for tags when more than 3 tags are pushed in a single `git push` (e.g. via
+   `git push origin --tags`), and `cmd/spelunk/vX.Y.Z` is the only tag that triggers a workflow
+   ([`release-cli.yaml`](.github/workflows/release-cli.yaml)).
+
+   To release ONLY a specific submodule (e.g. a standalone patch for a plugin or the CLI), tag it with
+   `task tag` and push that single tag yourself:
+
+   ```shell
+   $ task tag -- v2.0.1 plugin/source/aws
+   $ git push origin plugin/source/aws/v2.0.1
+   ```
 
 By using prefix-based tags (e.g., `plugin/source/aws/vX.Y.Z` or `cmd/spelunk/vX.Y.Z`), Go clients can cleanly import specific submodules or install the CLI at defined releases independent of each other.
 
