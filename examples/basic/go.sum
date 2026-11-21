@@ -1,5 +1,5 @@
-github.com/detro/spelunk/v2 v2.2.1 h1:EfaXSHq61WV6vAghHLc4c3wiXqVTzr7iLV+QYrsVb2g=
-github.com/detro/spelunk/v2 v2.2.1/go.mod h1:YaqC/cBMOWyB46fZhk7ZVJfI+LtNxNefzr8Tx4+pU30=
+github.com/detro/spelunk/v2 v2.2.2 h1:JPu4vU1MKN6C2KAdayOBkq5YrAAkBmANF86FjZo4Hag=
+github.com/detro/spelunk/v2 v2.2.2/go.mod h1:YaqC/cBMOWyB46fZhk7ZVJfI+LtNxNefzr8Tx4+pU30=
 github.com/stretchr/testify v1.12.1 h1:EuwCh5fleGS7H32xRwO3wRGT7DxrDhLAT6FF8MpWDWE=
 github.com/stretchr/testify v1.12.1/go.mod h1:MDEgiDPPsNp5cuIrHPPCyornHKgEVbtFUmoNlxoYthg=
 go.yaml.in/yaml/v3 v3.0.5 h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=
