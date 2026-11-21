@@ -17,6 +17,23 @@ This plugin requires the official Bitwarden Go SDK:
 
 **Note on CGO**: The official Bitwarden SDK relies on a Rust core library (`bitwarden_c`). Your Go environment must have CGO enabled (`CGO_ENABLED=1`) and a C compiler available to build any application using this plugin.
 
+> [!WARNING]
+> **Supported Go versions**: For now, this plugin only builds with a Go toolchain that predates the fix for
+> [CVE-2026-97038](https://go.dev/issue/82572): Go `1.26.10` or older, or Go `1.27.0` to `1.27.3`.
+>
+> The fix is part of the cgo and `go` command security fixes in
+> [Go 1.27.4 and Go 1.26.11](https://go.dev/doc/devel/release#go1.27.minor) (released 2026-11-10).
+> Since then, the `go` command rejects linker inputs that embed LLVM link-time optimisation (LTO) sections.
+> The prebuilt `bitwarden_c` library shipped by the SDK contains such sections, so the build fails with:
+>
+> ```text
+> disallowed LTO section __LLVM,__bitcode in #cgo LDFLAGS
+> ```
+>
+> This will be lifted once Bitwarden ships a fixed library
+> ([bitwarden/sdk-sm#1592](https://github.com/bitwarden/sdk-sm/issues/1592)). Until then, you can build
+> with an older toolchain, for example: `GOTOOLCHAIN=go1.27.3 go build ./...`.
+
 ## Usage
 
 To use the Bitwarden source, use the `bw://` scheme followed by the exact Secret ID.

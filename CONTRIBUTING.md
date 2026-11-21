@@ -51,16 +51,22 @@ Since `go.work` and `go.work.sum` files are excluded from git, you need to creat
 # Initialize the workspace at the root directory
 $ go work init
 
-# Add the root module and all plugins/examples to the workspace
-$ go work use . $(find plugin examples -name go.mod -exec dirname {} \;)
+# Add the root module, the CLI and all plugins/examples to the workspace (except the Bitwarden plugin)
+$ go work use . ./cmd/spelunk $(find plugin examples -name go.mod -not -path 'plugin/source/bitwarden/*' -exec dirname {} \;)
 ```
+
+> [!NOTE]
+> The Bitwarden plugin (`plugin/source/bitwarden`) is deliberately left out of the workspace: for now it only
+> builds with Go `1.27.3` or older (see its [README](plugin/source/bitwarden/README.md)). The `task`
+> commands run it on dedicated lines, with `GOWORK=off` and `GOTOOLCHAIN=go1.27.3`.
 
 This creates a local `go.work` file containing:
 ```go
-go 1.26.3
+go 1.27.4
 
 use (
 	.
+	./cmd/spelunk
 	./plugin/modifier/jsonpath
 	./plugin/modifier/tomlpath
 	./plugin/modifier/yamlpath
@@ -68,7 +74,6 @@ use (
 	./plugin/source/1password
 	./plugin/source/aws
 	./plugin/source/azure
-	./plugin/source/bitwarden
 	./plugin/source/gcp
 	./plugin/source/keeper
 	./plugin/source/kubernetes

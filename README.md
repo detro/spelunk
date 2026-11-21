@@ -197,7 +197,7 @@ Some are _built-in_ to `spelunk.Spelunker`, others are _plug-in_ and need to be 
 
 [^1]: **Untested**: Looking for contributors with access to a test account/vault!
 [^2]: **Not Implemented**: Not implemented due to the lack of maintained Go SDK, no suitable REST API, and no local Testcontainers for simulation.
-[^3]: **Library only**: The Bitwarden SDK requires CGO and a platform-specific native library, so this source is not bundled in the `spelunk` CLI. It remains fully usable from Go code.
+[^3]: **Library only**: The Bitwarden SDK requires CGO and a platform-specific native library, so this source is not bundled in the `spelunk` CLI. It remains fully usable from Go code, but for now it only builds with Go `1.26.10` or older, or Go `1.27.0` to `1.27.3` (see the [plugin README](plugin/source/bitwarden/README.md)).
 
 ## Modifiers (`SecretModifier`)
 

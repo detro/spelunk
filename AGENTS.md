@@ -96,7 +96,7 @@ The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `t
     - **`source/kubernetes/`**: `k8s://` source implementation (integration tested with Testcontainers).
     - **`source/vault/`**: `vault://` source implementation (HashiCorp Vault KV).
     - **`source/1password/`**: `op://` source implementation (1Password).
-    - **`source/bitwarden/`**: `bw://` source implementation (Bitwarden Secrets Manager). Note: currently untested due to lack of test environment.
+    - **`source/bitwarden/`**: `bw://` source implementation (Bitwarden Secrets Manager). Note: currently untested due to lack of test environment. Excluded from the Go workspace and built with Go `1.27.3` via dedicated lines in `Taskfile.yaml` (see Gotchas).
     - **`source/keeper/`**: `kp://` source implementation (Keeper Secrets Manager). Note: currently untested due to lack of test environment.
 - **`examples/`**: Example implementations (e.g., `kong/`, `viper/`, `urfave-cli/`, `basic/`).
 - **`docs/`**: Documentation assets (images, logos).
@@ -153,5 +153,7 @@ Based on `CONTRIBUTING.md`:
     - For `k8s://` and `vault://`, a trailing slash in the path instructs the source to return the entire secret data map as a JSON object instead of a specific key.
     - For `aws://`, `az://`, and `gcp://`, trailing slashes are automatically stripped and ignored.
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
-- **Dependencies**: Ensure you have the correct Go version (1.26) as specified in `go.mod`.
+- **Dependencies**: The CLI (`cmd/spelunk`) requires Go 1.27.4, as pinned in `.tool-versions`. Library modules declare the lowest Go version they need in their `go.mod`.
+- **Bitwarden Plugin Toolchain**: Go 1.27.4 and 1.26.11 reject the Bitwarden SDK's prebuilt native library (CVE-2026-97038, https://go.dev/issue/82572; tracked in https://github.com/bitwarden/sdk-sm/issues/1592). `plugin/source/bitwarden` is therefore not in `go.work`, and every root task runs it on a dedicated line prefixed with `{{.BITWARDEN_GO_ENV}}` (`GOWORK=off GOTOOLCHAIN=go1.27.3`). Never add it back to the workspace or build it with the default toolchain.
+- **Taskfile Lists Modules Explicitly**: `Taskfile.yaml` has no loops: each per-module task (`lint`, `lint-fix`, `fmt`, `vuln`, `mod.update`, `mod.tidy`) lists every plugin/example module as a parallel `deps` entry calling its internal `<task>.module` helper with a `DIR` var (the Bitwarden entry also passes `GO_ENV`), and `tag` lists every plugin. When adding a new module, add it to every relevant task.
 - **Integration Tests with Testcontainers**: In case of integration test hangs, check for orphaned Docker containers. Use `testcontainers.CleanupContainer` effectively to ensure resources are managed.

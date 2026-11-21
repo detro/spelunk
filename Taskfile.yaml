@@ -1,6 +1,8 @@
 # See: https://taskfile.dev/docs/getting-started
 version: '3'
 
+output: prefixed
+
 includes:
   cli:
     taskfile: ./cmd/spelunk
@@ -8,6 +10,12 @@ includes:
 
 env:
   GOBIN: '{{.TASKFILE_DIR}}/bin'
+
+vars:
+  # The Bitwarden plugin only builds with Go releases that predate CVE-2026-97038
+  # (https://go.dev/issue/82572; upstream: https://github.com/bitwarden/sdk-sm/issues/1592),
+  # so it is kept out of the Go workspace and run with an older toolchain.
+  BITWARDEN_GO_ENV: GOWORK=off GOTOOLCHAIN=go1.27.3
 
 tasks:
   generate:
@@ -17,7 +25,9 @@ tasks:
     deps:
       - generate
       - cli:build
-    cmd: go build github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
+    cmds:
+      - go build github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
+      - cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go build ./...
 
   clean:
     deps:
@@ -37,6 +47,7 @@ tasks:
       go test -v -race -cover -short {{.CLI_ARGS}}
       {{else}}
       go test -v -race -cover -short github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/...
+      cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go test -v -race -cover -short ./...
       {{end}}
 
   test.full:
@@ -47,6 +58,7 @@ tasks:
       go test -v -race -cover {{.CLI_ARGS}}
       {{else}}
       go test -v -race -cover github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/...
+      cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go test -v -race -cover ./...
       {{end}}
 
   test.ci:
@@ -57,84 +69,173 @@ tasks:
       go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}
       {{else}}
       go test -v -race -coverprofile=coverage.out -covermode=atomic github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/...
+      cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
       {{end}}
 
   lint:
-    silent: true
     deps:
       - cli:lint
-    cmd: |
-      golangci-lint run --allow-parallel-runners --verbose
-      find plugin -name go.mod -exec dirname {} \; | 
-        xargs -I {} -P 8 sh -c 'echo "Linting in {}..." && 
-        cd {} && 
-        golangci-lint run --allow-parallel-runners --verbose'
+      - { task: lint.module, vars: { DIR: . } }
+      - { task: lint.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: lint.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: lint.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: lint.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: lint.module, vars: { DIR: plugin/source/1password } }
+      - { task: lint.module, vars: { DIR: plugin/source/aws } }
+      - { task: lint.module, vars: { DIR: plugin/source/azure } }
+      - { task: lint.module, vars: { DIR: plugin/source/gcp } }
+      - { task: lint.module, vars: { DIR: plugin/source/keeper } }
+      - { task: lint.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: lint.module, vars: { DIR: plugin/source/vault } }
+      - { task: lint.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  lint.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'lint:{{.DIR}}'
+    prefix: 'lint:{{.DIR}}'
+    cmd: '{{.GO_ENV}} golangci-lint run --allow-parallel-runners --verbose'
 
   vuln:
-    silent: true
     desc: Run govulncheck for vulnerability scanning
     deps:
       - cli:vuln
-    cmd: |
-      govulncheck ./...
-      find plugin examples -name go.mod -exec dirname {} \; | 
-        xargs -I {} -P 8 sh -c 'echo "Scanning vulnerabilities in {}..." && 
-        cd {} && 
-        govulncheck ./...'
+      - { task: vuln.module, vars: { DIR: . } }
+      - { task: vuln.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: vuln.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: vuln.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: vuln.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: vuln.module, vars: { DIR: plugin/source/1password } }
+      - { task: vuln.module, vars: { DIR: plugin/source/aws } }
+      - { task: vuln.module, vars: { DIR: plugin/source/azure } }
+      - { task: vuln.module, vars: { DIR: plugin/source/gcp } }
+      - { task: vuln.module, vars: { DIR: plugin/source/keeper } }
+      - { task: vuln.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: vuln.module, vars: { DIR: plugin/source/vault } }
+      - { task: vuln.module, vars: { DIR: examples/basic } }
+      - { task: vuln.module, vars: { DIR: examples/kong } }
+      - { task: vuln.module, vars: { DIR: examples/urfave-cli } }
+      - { task: vuln.module, vars: { DIR: examples/viper } }
+      - { task: vuln.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  vuln.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'vuln:{{.DIR}}'
+    prefix: 'vuln:{{.DIR}}'
+    cmd: '{{.GO_ENV}} govulncheck ./...'
 
   lint-fix:
-    silent: true
     deps:
       - cli:lint-fix
-    cmd: |
-      golangci-lint run --fix --allow-parallel-runners --verbose
-      find plugin -name go.mod -exec dirname {} \; | 
-        xargs -I {} -P 8 sh -c 'echo "Fixing linter issues in {}..." && 
-        cd {} && 
-        golangci-lint run --fix --allow-parallel-runners --verbose'
+      - { task: lint-fix.module, vars: { DIR: . } }
+      - { task: lint-fix.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: lint-fix.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: lint-fix.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: lint-fix.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/1password } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/aws } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/azure } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/gcp } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/keeper } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/vault } }
+      - { task: lint-fix.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  lint-fix.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'lint-fix:{{.DIR}}'
+    prefix: 'lint-fix:{{.DIR}}'
+    cmd: '{{.GO_ENV}} golangci-lint run --fix --allow-parallel-runners --verbose'
 
   fmt:
-    silent: true
     deps:
       - cli:fmt
-    cmd: |
-      golangci-lint fmt -v
-      find plugin -name go.mod -exec dirname {} \; | 
-        xargs -I {} -P 8 sh -c 'echo "Formatting in {}..." && 
-        cd {} && 
-        golangci-lint fmt -v'
+      - { task: fmt.module, vars: { DIR: . } }
+      - { task: fmt.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: fmt.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: fmt.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: fmt.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: fmt.module, vars: { DIR: plugin/source/1password } }
+      - { task: fmt.module, vars: { DIR: plugin/source/aws } }
+      - { task: fmt.module, vars: { DIR: plugin/source/azure } }
+      - { task: fmt.module, vars: { DIR: plugin/source/gcp } }
+      - { task: fmt.module, vars: { DIR: plugin/source/keeper } }
+      - { task: fmt.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: fmt.module, vars: { DIR: plugin/source/vault } }
+      - { task: fmt.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  fmt.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'fmt:{{.DIR}}'
+    prefix: 'fmt:{{.DIR}}'
+    cmd: '{{.GO_ENV}} golangci-lint fmt -v'
 
   run:
     cmd: go run . {{.CLI_ARGS}}
 
   mod.update:
-    silent: true
     deps:
       - cli:mod.update
-    cmd: |
-      echo "Updating root module..."
-      go get -t -u ./...
-      find plugin examples -name go.mod -exec dirname {} \; | 
-        xargs -I {} -P 8 sh -c 'echo "Updating dependencies in {}..." && 
-        cd {} && 
-        go get -t -u ./...'
+      - { task: mod.update.module, vars: { DIR: . } }
+      - { task: mod.update.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: mod.update.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: mod.update.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: mod.update.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/1password } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/aws } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/azure } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/gcp } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/keeper } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/vault } }
+      - { task: mod.update.module, vars: { DIR: examples/basic } }
+      - { task: mod.update.module, vars: { DIR: examples/kong } }
+      - { task: mod.update.module, vars: { DIR: examples/urfave-cli } }
+      - { task: mod.update.module, vars: { DIR: examples/viper } }
+      - { task: mod.update.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  mod.update.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'mod.update:{{.DIR}}'
+    prefix: 'mod.update:{{.DIR}}'
+    cmd: '{{.GO_ENV}} go get -t -u ./...'
 
   mod.tidy:
-    silent: true
     deps:
       - cli:mod.tidy
-    cmd: |
-      echo "Tidying root module..."
-      go mod tidy -v
-      find plugin examples -name go.mod -exec dirname {} \; | 
-        xargs -I {} -P 8 sh -c 'echo "Tidying module in {}..." && 
-        cd {} && 
-        go mod tidy -v'
+      - { task: mod.tidy.module, vars: { DIR: . } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/1password } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/aws } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/azure } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/gcp } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/keeper } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/vault } }
+      - { task: mod.tidy.module, vars: { DIR: examples/basic } }
+      - { task: mod.tidy.module, vars: { DIR: examples/kong } }
+      - { task: mod.tidy.module, vars: { DIR: examples/urfave-cli } }
+      - { task: mod.tidy.module, vars: { DIR: examples/viper } }
+      - { task: mod.tidy.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  mod.tidy.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'mod.tidy:{{.DIR}}'
+    prefix: 'mod.tidy:{{.DIR}}'
+    cmd: '{{.GO_ENV}} go mod tidy -v'
 
   dependencies.update:
-    deps:
-      - mod.update
-      - mod.tidy
+    cmds:
+      - task: mod.update
+      - task: mod.tidy
 
   tag:
     silent: true
@@ -176,10 +277,19 @@ tasks:
         echo "Tagging root module with tag: $TAG_VER"
         git tag "$TAG_VER"
 
-        find plugin -name go.mod -exec dirname {} \; | while read -r dir; do
-          echo "Tagging submodule '$dir' with tag: $dir/$TAG_VER"
-          git tag "$dir/$TAG_VER"
-        done
+        echo "Tagging plugin submodules with tag: $TAG_VER"
+        git tag "plugin/modifier/jsonpath/$TAG_VER"
+        git tag "plugin/modifier/tomlpath/$TAG_VER"
+        git tag "plugin/modifier/xpath/$TAG_VER"
+        git tag "plugin/modifier/yamlpath/$TAG_VER"
+        git tag "plugin/source/1password/$TAG_VER"
+        git tag "plugin/source/aws/$TAG_VER"
+        git tag "plugin/source/azure/$TAG_VER"
+        git tag "plugin/source/bitwarden/$TAG_VER"
+        git tag "plugin/source/gcp/$TAG_VER"
+        git tag "plugin/source/keeper/$TAG_VER"
+        git tag "plugin/source/kubernetes/$TAG_VER"
+        git tag "plugin/source/vault/$TAG_VER"
       fi
 
       echo "Tags created successfully. To push tags, run: task tag.push -- $TAG_VER"
@@ -226,23 +336,25 @@ tasks:
   tools.plugins:
     silent: true
     desc: Install all necessary asdf plugins
-    cmd: |
-      # Install all plugins listed in .tool-versions (will fail but continue for out-of-registry ones)
-      cut -d' ' -f1 .tool-versions | while read -r plugin; do
-        asdf plugin add "$plugin" || true
-      done
-      # Install out-of-registry plugins
-      asdf plugin add govulncheck https://github.com/wizzardich/asdf-govulncheck.git
+    cmds:
+      # Will fail but continue if the plugin is already installed
+      - asdf plugin add task || true
+      - asdf plugin add golang || true
+      - asdf plugin add golangci-lint || true
+      - asdf plugin add goreleaser || true
+      - asdf plugin add govulncheck https://github.com/wizzardich/asdf-govulncheck.git || true
 
   tools.update:
     silent: true
     desc: Update all tools in .tool-versions to latest available versions via asdf
     deps:
       - tools.plugins
-    cmd: |
-        cut -d' ' -f1 .tool-versions | while read -r plugin; do
-          asdf set "$plugin" latest || true
-        done
+    cmds:
+      - asdf set task latest
+      - asdf set golang latest
+      - asdf set golangci-lint latest
+      - asdf set govulncheck latest
+      - asdf set goreleaser latest
 
   tools.install:
     desc: Install all tools in .tool-versions via asdf
