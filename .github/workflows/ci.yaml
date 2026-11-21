@@ -53,13 +53,5 @@ jobs:
           SPELUNK_1PASSWORD_TEST_SATOKEN: ${{ secrets.SPELUNK_1PASSWORD_TEST_SATOKEN }}
         run: |
           task test.ci
-          go tool cover -func=coverage.out > coverage.txt
-          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat coverage.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          (cd cmd/spelunk && go tool cover -func=coverage.out > coverage.txt)
-          echo "## Test Coverage Report (cmd/spelunk)" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat cmd/spelunk/coverage.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          task coverage.report
+          cat coverage.md >> $GITHUB_STEP_SUMMARY

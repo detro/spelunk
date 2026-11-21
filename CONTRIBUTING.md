@@ -103,7 +103,7 @@ $ task <TAB><TAB>
 
 ### Running Tests
 
-By default, the test tasks recursively run across the root module and **all** workspace submodules (plugins and examples) automatically:
+By default, the test tasks run `go test ./...` inside the root module, the CLI and **every** plugin module, in parallel. They don't depend on a `go.work` file, so they behave the same locally and in CI:
 
 To run the full test suite across the entire workspace (including integration tests):
 ```shell
@@ -117,7 +117,7 @@ $ task test.short
 
 #### Targeting Specific Packages/Plugins
 
-If you are developing a specific plugin, you can avoid running the whole workspace test suite by targeting its directory path. Append `-- <path>` to target a single submodule directory:
+If you are developing a specific plugin, you can avoid running the whole test suite by targeting its directory path. Append `-- <path>` to target a single submodule directory (this resolves through your local `go.work`, so the Bitwarden plugin can't be targeted this way):
 ```shell
 # Run full tests on a single plugin module
 $ task test -- ./plugin/source/1password

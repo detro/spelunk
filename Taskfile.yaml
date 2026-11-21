@@ -19,15 +19,36 @@ vars:
 
 tasks:
   generate:
-    cmd: go generate github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
+    cmd: go generate ./...
 
   build:
     deps:
       - generate
       - cli:build
-    cmds:
-      - go build github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/... github.com/detro/spelunk/examples/...
-      - cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go build ./...
+      - { task: build.module, vars: { DIR: . } }
+      - { task: build.module, vars: { DIR: plugin/modifier/jsonpath } }
+      - { task: build.module, vars: { DIR: plugin/modifier/tomlpath } }
+      - { task: build.module, vars: { DIR: plugin/modifier/xpath } }
+      - { task: build.module, vars: { DIR: plugin/modifier/yamlpath } }
+      - { task: build.module, vars: { DIR: plugin/source/1password } }
+      - { task: build.module, vars: { DIR: plugin/source/aws } }
+      - { task: build.module, vars: { DIR: plugin/source/azure } }
+      - { task: build.module, vars: { DIR: plugin/source/gcp } }
+      - { task: build.module, vars: { DIR: plugin/source/keeper } }
+      - { task: build.module, vars: { DIR: plugin/source/kubernetes } }
+      - { task: build.module, vars: { DIR: plugin/source/vault } }
+      - { task: build.module, vars: { DIR: examples/basic } }
+      - { task: build.module, vars: { DIR: examples/kong } }
+      - { task: build.module, vars: { DIR: examples/urfave-cli } }
+      - { task: build.module, vars: { DIR: examples/viper } }
+      - { task: build.module, vars: { DIR: plugin/source/bitwarden, GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  build.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: 'build:{{.DIR}}'
+    prefix: 'build:{{.DIR}}'
+    cmd: '{{.GO_ENV}} go build ./...'
 
   clean:
     deps:
@@ -40,37 +61,107 @@ tasks:
     deps: [test.full]
 
   test.short:
+    cmds:
+      - cmd: go test -v -race -cover -short {{.CLI_ARGS}}
+        if: '[ -n "{{.CLI_ARGS}}" ]'
+      - task: test.short.all
+        if: '[ -z "{{.CLI_ARGS}}" ]'
+
+  test.short.all:
+    internal: true
     deps:
       - cli:test.short
-    cmd: |
-      {{if .CLI_ARGS}}
-      go test -v -race -cover -short {{.CLI_ARGS}}
-      {{else}}
-      go test -v -race -cover -short github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/...
-      cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go test -v -race -cover -short ./...
-      {{end}}
+      - { task: test.module, vars: { DIR: ., NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/jsonpath, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/tomlpath, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/xpath, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/yamlpath, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/1password, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/aws, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/azure, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/gcp, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/keeper, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/kubernetes, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/vault, NAME: test.short, FLAGS: '-v -race -cover -short' } }
+      - { task: test.module, vars: { DIR: plugin/source/bitwarden, NAME: test.short, FLAGS: '-v -race -cover -short', GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
 
   test.full:
+    cmds:
+      - cmd: go test -v -race -cover {{.CLI_ARGS}}
+        if: '[ -n "{{.CLI_ARGS}}" ]'
+      - task: test.full.all
+        if: '[ -z "{{.CLI_ARGS}}" ]'
+
+  test.full.all:
+    internal: true
     deps:
       - cli:test.full
-    cmd: |
-      {{if .CLI_ARGS}}
-      go test -v -race -cover {{.CLI_ARGS}}
-      {{else}}
-      go test -v -race -cover github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/...
-      cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go test -v -race -cover ./...
-      {{end}}
+      - { task: test.module, vars: { DIR: ., NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/jsonpath, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/tomlpath, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/xpath, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/yamlpath, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/1password, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/aws, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/azure, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/gcp, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/keeper, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/kubernetes, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/vault, NAME: test.full, FLAGS: '-v -race -cover' } }
+      - { task: test.module, vars: { DIR: plugin/source/bitwarden, NAME: test.full, FLAGS: '-v -race -cover', GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
 
   test.ci:
+    cmds:
+      - cmd: go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}
+        if: '[ -n "{{.CLI_ARGS}}" ]'
+      - task: test.ci.all
+        if: '[ -z "{{.CLI_ARGS}}" ]'
+
+  test.ci.all:
+    internal: true
     deps:
       - cli:test.ci
-    cmd: |
-      {{if .CLI_ARGS}}
-      go test -v -race -coverprofile=coverage.out -covermode=atomic {{.CLI_ARGS}}
-      {{else}}
-      go test -v -race -coverprofile=coverage.out -covermode=atomic github.com/detro/spelunk/v2/... github.com/detro/spelunk/plugin/...
-      cd plugin/source/bitwarden && {{.BITWARDEN_GO_ENV}} go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-      {{end}}
+      - { task: test.module, vars: { DIR: ., NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/jsonpath, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/tomlpath, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/xpath, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/modifier/yamlpath, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/1password, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/aws, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/azure, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/gcp, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/keeper, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/kubernetes, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/vault, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic' } }
+      - { task: test.module, vars: { DIR: plugin/source/bitwarden, NAME: test.ci, FLAGS: '-v -race -coverprofile=coverage.out -covermode=atomic', GO_ENV: '{{.BITWARDEN_GO_ENV}}' } }
+
+  test.module:
+    internal: true
+    dir: '{{.DIR}}'
+    label: '{{.NAME}}:{{.DIR}}'
+    prefix: '{{.NAME}}:{{.DIR}}'
+    cmd: '{{.GO_ENV}} go test {{.FLAGS}} ./...'
+
+  coverage.report:
+    desc: Write the coverage of every module, produced by test.ci, to coverage.md
+    silent: true
+    cmds:
+      - rm -f coverage.md
+      - |
+        { echo "## Test Coverage Report (root module)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd cmd/spelunk && { echo "## Test Coverage Report (cmd/spelunk)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/modifier/jsonpath && { echo "## Test Coverage Report (plugin/modifier/jsonpath)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/modifier/tomlpath && { echo "## Test Coverage Report (plugin/modifier/tomlpath)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/modifier/xpath && { echo "## Test Coverage Report (plugin/modifier/xpath)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/modifier/yamlpath && { echo "## Test Coverage Report (plugin/modifier/yamlpath)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/1password && { echo "## Test Coverage Report (plugin/source/1password)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/aws && { echo "## Test Coverage Report (plugin/source/aws)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/azure && { echo "## Test Coverage Report (plugin/source/azure)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/gcp && { echo "## Test Coverage Report (plugin/source/gcp)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/keeper && { echo "## Test Coverage Report (plugin/source/keeper)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/kubernetes && { echo "## Test Coverage Report (plugin/source/kubernetes)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/vault && { echo "## Test Coverage Report (plugin/source/vault)"; echo '```'; go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
+      - cd plugin/source/bitwarden && { echo "## Test Coverage Report (plugin/source/bitwarden)"; echo '```'; {{.BITWARDEN_GO_ENV}} go tool cover -func=coverage.out; echo '```'; } >> "{{.ROOT_DIR}}/coverage.md"
 
   lint:
     deps:

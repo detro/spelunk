@@ -64,6 +64,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **CI Coverage of Plugins and Examples**: CI never built the examples nor built and tested the plugins
+  (except Bitwarden). The root `task build` and `task test.*` used package patterns such as
+  `github.com/detro/spelunk/plugin/...`, which only resolve through a `go.work` file. `go.work` is not
+  committed, so in CI those patterns matched no packages and Go only printed a warning. The tasks now run
+  `go build ./...` and `go test ./...` inside each module, in parallel, so CI again runs the
+  testcontainers integration tests (AWS, Azure, GCP, Kubernetes, Vault) and the 1Password integration
+  test. The CI step summary now reports the test coverage of every module, via the new
+  `task coverage.report`.
+- **Targeted Test Runs**: `task test.short -- <path>` (and `test`, `test.full`, `test.ci`) failed even
+  when the targeted tests passed, because the path was also passed to the CLI module's tests, where it does
+  not exist. A path now runs only `go test` on that path.
 - **CLI Release**: GoReleaser no longer leaves the GitHub release in draft state after publishing.
 
 ## [2.2.2] -  2026-09-17

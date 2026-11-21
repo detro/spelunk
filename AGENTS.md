@@ -49,6 +49,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 | `task test.full` | Run all tests with race detection and coverage. Supports `-- <path>` |
 | `task test.short` | Run short tests (skips integration tests). Supports `-- <path>` |
 | `task test.ci` | Run tests with coverage profile for CI. Supports `-- <path>` |
+| `task coverage.report` | Collect the coverage of every module (after `test.ci`) into `coverage.md` |
 | `task lint` | Run linter |
 | `task lint-fix` | Run linter and automatically fix issues |
 | `task fmt` | Format code |
@@ -65,7 +66,7 @@ All development tasks are defined in `Taskfile.yaml`. **Always use `task` instea
 The project's CI pipeline (`.github/workflows/ci.yaml`) is driven entirely by `task` commands. This ensures that what you run locally matches what runs in CI.
 
 - **Build**: `task build`
-- **Test**: `task test.ci` (generates `coverage.out` used for step summary)
+- **Test**: `task test.ci` (writes a `coverage.out` in every module), then `task coverage.report` (collects them into `coverage.md` for the step summary)
 - **Lint & Format**: `task lint-fix` && `task fmt`
 - **Security Check**: `task vuln`
 
@@ -155,5 +156,6 @@ Based on `CONTRIBUTING.md`:
 - **Error Types**: `SecretCoord` parsing returns specific errors (e.g., `ErrSecretCoordHaveNoType`). Tests should check for these using `errors.Is`.
 - **Dependencies**: The CLI (`cmd/spelunk`) requires Go 1.27.4, as pinned in `.tool-versions`. Library modules declare the lowest Go version they need in their `go.mod`.
 - **Bitwarden Plugin Toolchain**: Go 1.27.4 and 1.26.11 reject the Bitwarden SDK's prebuilt native library (CVE-2026-97038, https://go.dev/issue/82572; tracked in https://github.com/bitwarden/sdk-sm/issues/1592). `plugin/source/bitwarden` is therefore not in `go.work`, and every root task runs it on a dedicated line prefixed with `{{.BITWARDEN_GO_ENV}}` (`GOWORK=off GOTOOLCHAIN=go1.27.3`). Never add it back to the workspace or build it with the default toolchain.
-- **Taskfile Lists Modules Explicitly**: `Taskfile.yaml` has no loops: each per-module task (`lint`, `lint-fix`, `fmt`, `vuln`, `mod.update`, `mod.tidy`) lists every plugin/example module as a parallel `deps` entry calling its internal `<task>.module` helper with a `DIR` var (the Bitwarden entry also passes `GO_ENV`), and `tag` lists every plugin. When adding a new module, add it to every relevant task.
+- **Build and Test Never Rely on `go.work`**: `go.work` is gitignored, so CI has none. `build` and the `test.*` tasks run `go build ./...` / `go test ./...` inside each module directory (via `build.module` / `test.module`). Never go back to cross-module patterns like `github.com/detro/spelunk/plugin/...`: without a workspace they silently match no packages.
+- **Taskfile Lists Modules Explicitly**: `Taskfile.yaml` has no loops: each per-module task (`build`, `test.*`, `lint`, `lint-fix`, `fmt`, `vuln`, `mod.update`, `mod.tidy`) lists every plugin/example module as a parallel `deps` entry calling its internal `<task>.module` helper with a `DIR` var (the Bitwarden entry also passes `GO_ENV`), and `tag` lists every plugin. When adding a new module, add it to every relevant task.
 - **Integration Tests with Testcontainers**: In case of integration test hangs, check for orphaned Docker containers. Use `testcontainers.CleanupContainer` effectively to ensure resources are managed.
