@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-11-21
+
+### Changed
+
+- **Bitwarden Plugin Go Version**: The `bw://` plugin (`plugin/source/bitwarden`) can, for now, only be built
+  with a Go toolchain that predates the fix for [CVE-2026-97038](https://go.dev/issue/82572), i.e. Go
+  `1.26.10` or older, or Go `1.27.0` to `1.27.3`. The fix is part of the cgo and `go` command security fixes shipped in
+  [Go 1.27.4 and Go 1.26.11](https://go.dev/doc/devel/release#go1.27.minor) (both released 2026-11-10): the
+  `go` command now rejects linker inputs that embed LLVM link-time optimisation (LTO) sections. The
+  prebuilt native library shipped by the Bitwarden Go SDK contains such sections, so the build fails
+  with `disallowed LTO section __LLVM,__bitcode in #cgo LDFLAGS`. This will be revisited once
+  Bitwarden ships a fixed library ([bitwarden/sdk-sm#1592](https://github.com/bitwarden/sdk-sm/issues/1592)).
+  The `spelunk` CLI is not affected, because it has not bundled the Bitwarden source since 2.2.0.
+- **Toolchain**: Bumped Golang to [1.27.4](https://go.dev/doc/devel/release#go1.27.minor), which
+  includes the latest security fixes (including [GO-2026-6859](https://pkg.go.dev/vuln/GO-2026-6859) in `net/http`). The `spelunk` CLI now
+  requires Go `1.27.4`. Other tools in [`.tool-versions`](.tool-versions) are also bumped: `task` to 3.54.0, `golangci-lint` to
+  2.15.0, `govulncheck` to 1.9.0 and `goreleaser` to 2.20.0.
+- **Development Workflow**: The Bitwarden plugin is no longer part of the local Go workspace. The `task`
+  commands build, test, lint and scan it with `GOWORK=off GOTOOLCHAIN=go1.27.3` (the `go` command
+  downloads that toolchain automatically), so CI keeps covering the plugin.
+- **Taskfile**: Tasks now list every plugin and example module explicitly, instead of discovering them
+  with `find`/`xargs` loops. New modules must be added to [`Taskfile.yaml`](Taskfile.yaml). Modules are
+  still processed in parallel, and each output line is now prefixed with the task and module it belongs to.
+- **Release Tooling**: `task tag.push -- vX.Y.Z` now also creates the tags (via `task tag`), so a release
+  is a single command. It pushes all tags except `cmd/spelunk/vX.Y.Z` first, then pushes
+  `cmd/spelunk/vX.Y.Z` on its own, in a separate `git push`, so the CLI release workflow triggers.
+- **Dependency Updates**: `task dependencies.update` now tidies modules only after updating them. Before,
+  both steps ran at the same time, so the tidy could run against modules that were not updated yet.
+- **Dependencies**: Bumped the direct Go module dependencies across the workspace:
+  - `cloud.google.com/go/secretmanager`: `v1.21.0` → `v1.24.0`
+  - `github.com/Azure/azure-sdk-for-go/sdk/azcore`: `v1.23.1` → `v1.24.0`
+  - `github.com/Azure/azure-sdk-for-go/sdk/azidentity`: `v1.14.1` → `v1.15.0`
+  - `github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets`: `v1.5.0` → `v1.5.1`
+  - `github.com/alecthomas/kong`: `v1.16.1` → `v1.17.0`
+  - `github.com/antchfx/xmlquery`: `v1.5.1` → `v1.5.2`
+  - `github.com/aws/aws-sdk-go-v2`: `v1.47.0` → `v1.48.0`
+  - `github.com/aws/aws-sdk-go-v2/config`: `v1.33.5` → `v1.33.21`
+  - `github.com/aws/aws-sdk-go-v2/credentials`: `v1.20.5` → `v1.21.3`
+  - `github.com/aws/aws-sdk-go-v2/service/secretsmanager`: `v1.50.0` → `v1.51.0`
+  - `github.com/jotaen/kong-completion`: `v0.0.14` → `v0.0.15`
+  - `github.com/lmittmann/tint`: `v1.2.0` → `v1.2.1`
+  - `github.com/ohler55/ojg`: `v1.28.6` → `v1.28.9`
+  - `github.com/testcontainers/testcontainers-go`: `v0.44.0` → `v0.45.0`
+  - `github.com/testcontainers/testcontainers-go/modules/k3s`: `v0.44.0` → `v0.45.0`
+  - `github.com/testcontainers/testcontainers-go/modules/localstack`: `v0.44.0` → `v0.45.0`
+  - `github.com/testcontainers/testcontainers-go/modules/vault`: `v0.44.0` → `v0.45.0`
+  - `golang.org/x/oauth2`: `v0.37.0` → `v0.38.0`
+  - `google.golang.org/api`: `v0.298.0` → `v0.316.0`
+  - `google.golang.org/grpc`: `v1.83.2` → `v1.85.0`
+  - `k8s.io/api`: `v0.37.0` → `v0.37.2`
+  - `k8s.io/apimachinery`: `v0.37.0` → `v0.37.2`
+  - `k8s.io/client-go`: `v0.37.0` → `v0.37.2`
+  - `k8s.io/kube-openapi` is deliberately kept at the version `apimachinery` and `client-go` expect,
+    because the latest one requires `sigs.k8s.io/structured-merge-diff/v7`, which breaks the build
+    (same issue as in 2.2.2).
+- **CI**: Bumped `anchore/sbom-action` to 0.24.2.
+
+### Fixed
+
+- **CLI Release**: GoReleaser no longer leaves the GitHub release in draft state after publishing.
+
 ## [2.2.2] -  2026-09-17
 
 ### Fixed
