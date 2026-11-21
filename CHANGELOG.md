@@ -60,7 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `k8s.io/kube-openapi` is deliberately kept at the version `apimachinery` and `client-go` expect,
     because the latest one requires `sigs.k8s.io/structured-merge-diff/v7`, which breaks the build
     (same issue as in 2.2.2).
-- **CI**: Bumped `anchore/sbom-action` to 0.24.2.
+- **CI**: Bumped GitHub Actions to their latest versions:
+  - `sigstore/cosign-installer`: `v4.1.2` → `v4.1.3`
+  - `anchore/sbom-action/download-syft`: `v0.24.0` → `v0.24.3`
 
 ### Fixed
 
